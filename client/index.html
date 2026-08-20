@@ -173,9 +173,25 @@
         </aside>
 
         <main class="lx-main">
+          <!--
+            The version banner. art/version-hero.png is a drop-in: if it is
+            absent -- which it is on a fresh clone, since the game ships no
+            image assets -- onerror reveals the placeholder underneath rather
+            than leaving a broken-image icon in the middle of the launcher.
+          -->
           <div class="lx-hero">
-            <h1>Blockcraft</h1>
-            <p>Build, mine, fly, survive &mdash; then go and beat the dragon.</p>
+            <div class="lx-art">
+              <img id="version-art" src="art/version-hero.png" alt=""
+                   onerror="this.hidden=true;this.parentNode.classList.add('is-empty')" />
+              <div class="lx-art-fallback" aria-hidden="true">
+                <span class="lx-art-slot">version art</span>
+                <span class="lx-art-hint">art/version-hero.png &middot; 8:3</span>
+              </div>
+              <div class="lx-art-title">
+                <h1>Blockcraft</h1>
+                <p>Build, mine, fly, survive &mdash; then go and beat the dragon.</p>
+              </div>
+            </div>
           </div>
 
           <div class="lx-body">

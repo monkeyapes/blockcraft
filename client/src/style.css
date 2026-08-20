@@ -394,17 +394,81 @@ html, body {
  * Hero: a stone wall with a strip of turf along its bottom edge, which is
  * the game's own landscape in the only two textures a header has room for.
  */
+/* ------------------------------------------------------------- version art */
+/*
+ * The banner across the top of the launcher. It is the one place the game
+ * carries a hand-made picture rather than a generated texture, so it earns
+ * its own slot instead of being folded into a background.
+ *
+ * The frame keeps its 8:3 whatever the window does, so the layout never
+ * jumps as the image loads, and the title sits over a gradient rather than
+ * over bare art -- key art is busy, and text on top of it has to be readable
+ * against whatever the artist happened to put in that corner.
+ */
 .lx-hero {
   position: relative;
-  padding: 26px 28px 30px;
   border-bottom: 1px solid var(--edge);
+}
+
+.lx-art {
+  position: relative;
+  aspect-ratio: 8 / 3;
+  max-height: 46vh;
+  overflow: hidden;
   background-color: #16202e;
-  background-image:
-    linear-gradient(rgba(14, 20, 30, 0.74), rgba(14, 20, 30, 0.88)),
-    radial-gradient(120% 150% at 12% 0%, rgba(107, 191, 79, 0.20), transparent 60%),
-    var(--tex-stone, none);
-  background-repeat: repeat;
+}
+
+.lx-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Pixel art, so no smoothing: the whole point is the hard edges. */
   image-rendering: pixelated;
+}
+
+/*
+ * Shown when there is no art yet. Deliberately looks like an empty slot
+ * rather than like a design -- it should read as "something goes here",
+ * so nobody ships it by accident thinking it was intended.
+ */
+.lx-art-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #131a26;
+  background-image:
+    linear-gradient(rgba(14, 20, 30, 0.82), rgba(14, 20, 30, 0.9)),
+    var(--tex-stone, none);
+  image-rendering: pixelated;
+  border: 2px dashed rgba(255, 255, 255, 0.16);
+}
+.lx-art.is-empty .lx-art-fallback { display: flex; }
+
+.lx-art-slot {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.lx-art-hint {
+  font: 500 11px var(--mono);
+  color: rgba(238, 241, 246, 0.28);
+}
+
+/* The title plate. Sits over the art, bottom-left, on its own scrim. */
+.lx-art-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 26px 28px 26px;
+  background: linear-gradient(transparent, rgba(8, 11, 17, 0.86) 62%);
 }
 
 /* The turf strip, sitting on the hero's bottom edge like a ground line. */
@@ -420,9 +484,10 @@ html, body {
   background-repeat: repeat-x;
   image-rendering: pixelated;
   box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.28);
+  z-index: 2;
 }
 
-.lx-hero h1 {
+.lx-art-title h1 {
   margin: 0;
   font-size: 38px;
   font-weight: 800;
@@ -430,7 +495,7 @@ html, body {
   text-shadow: 0 3px 0 #101823;
 }
 
-.lx-hero p { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-dim); }
+.lx-art-title p { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-dim); }
 
 .lx-body { flex: 1; overflow-y: auto; padding: 20px 28px; min-height: 0; }
 .lx-body::-webkit-scrollbar { width: 9px; }
