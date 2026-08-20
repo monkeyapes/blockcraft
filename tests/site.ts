@@ -164,6 +164,43 @@ for (const asset of referenced
   check(`referenced asset exists: ${asset}`, exists);
 }
 
+// --- licensing -----------------------------------------------------------
+//
+// The repository is public, so the licence is load-bearing rather than
+// paperwork: without it nobody may legally fork the code, and a bundled font
+// redistributed without its licence breaks the terms it was given under.
+
+const repoRoot = join(here, '..');
+function present(rel: string): boolean {
+  try {
+    readFileSync(join(repoRoot, rel));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+check('the project has a LICENSE', present('LICENSE'));
+check('third-party notices exist', present('THIRD-PARTY-NOTICES.md'));
+
+// Every font shipped in the repo needs its licence shipped alongside it. The
+// OFL that Archivo uses says so outright, and the next font added here will
+// almost certainly carry the same requirement.
+const fonts = ['site/fonts/archivo.woff2', 'client/src/fonts/archivo.woff2']
+  .filter(present);
+check('the bundled fonts are where the notices say they are',
+  fonts.length === 2, `found ${fonts.length} of 2`);
+check('the bundled font ships with its licence',
+  present('licenses/Archivo-OFL.txt'));
+
+const notices = present('THIRD-PARTY-NOTICES.md')
+  ? readFileSync(join(repoRoot, 'THIRD-PARTY-NOTICES.md'), 'utf8')
+  : '';
+check('the notices name the font licence',
+  /SIL Open Font License/.test(notices));
+check('the notices point at the full licence text',
+  notices.includes('licenses/Archivo-OFL.txt'));
+
 console.log(failures === 0
   ? '\nAll site checks passed.'
   : `\n${failures} site check(s) failed.`);

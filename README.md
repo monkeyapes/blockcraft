@@ -56,6 +56,14 @@ The installer lands in `desktop/src-tauri/target/release/bundle/nsis/`.
 | `design/` | Design canvas source for the launcher |
 | `tests/` | The test suite |
 
+## Licence
+
+MIT — see [LICENSE](LICENSE). Use it, fork it, sell it; just keep the notice.
+
+The one third-party thing in the repository is the Archivo font, which is under
+the SIL Open Font License. Details and the full text are in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
 ## Credits
 
 Blockcraft is an original voxel sandbox, heavily inspired by **Minecraft** by
