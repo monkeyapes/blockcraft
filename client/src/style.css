@@ -47,6 +47,12 @@
   --gold: #e6b64c;
 
   /* Geometry */
+  /*
+   * Corner softening. Hard 0 read as cut rather than made -- the blocks in
+   * the world have bevels, and the UI should look machined to match. 3px is
+   * small enough that nothing reads as a rounded-rectangle app.
+   */
+  --edge-round: 3px;
   --r-sm: 3px;
   --r-md: 8px;
   --r-lg: 14px;
@@ -114,7 +120,7 @@ html, body {
   letter-spacing: 0.4px;
   padding: 12px 28px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-color: #6d6d70;
   background-image: var(--tex-stone-btn, none);
   background-size: 44px 44px;
@@ -180,7 +186,7 @@ html, body {
   padding: 11px 12px;
   flex: 1;
   min-width: 0;
-  border-radius: 0;
+  border-radius: var(--edge-round);
   border: 2px solid var(--keyline);
   background: #0d1016;
   box-shadow:
@@ -285,7 +291,7 @@ html, body {
   height: min(660px, 92vh);
   /* Square, with the same keyline the buttons use: the shell is a block too. */
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   overflow: hidden;
   background: rgba(12, 15, 21, 0.96);
   box-shadow: var(--shadow);
@@ -348,7 +354,7 @@ html, body {
   text-align: left;
   padding: 11px 12px;
   border: 2px solid transparent;
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background: transparent;
   color: var(--ink-faint);
   cursor: pointer;
@@ -573,7 +579,7 @@ html, body {
   text-transform: uppercase;
   padding: 15px 58px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-color: #5f9e46;
   background-image: var(--tex-stone-btn, none);
   background-size: 48px 48px;
@@ -601,7 +607,7 @@ html, body {
 .new-world-box {
   margin-top: 14px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-color: #3a2c1c;
   background-image:
     linear-gradient(rgba(18, 12, 6, 0.62), rgba(18, 12, 6, 0.72)),
@@ -670,7 +676,7 @@ html, body {
   gap: 10px;
   padding: 11px 12px;
   border: 2px solid rgba(255, 255, 255, 0.09);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background: rgba(255, 255, 255, 0.03);
   transition: border-color 0.12s, background 0.12s;
 }
@@ -687,7 +693,7 @@ html, body {
   width: 40px;
   height: 40px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-size: cover;
   background-color: var(--panel-hover);
   image-rendering: pixelated;
@@ -1522,7 +1528,7 @@ html, body {
   padding: 13px 10px;
   min-height: 46px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-color: #4a4a4e;
   background-image: var(--tex-stone-btn, none);
   background-size: 44px 44px;
@@ -1583,7 +1589,7 @@ html, body {
   min-height: 62px;
   padding: 10px;
   border: 2px solid var(--keyline);
-  border-radius: 0;
+  border-radius: var(--edge-round);
   background-color: #6d6d70;
   background-image: var(--tex-stone-btn, none);
   background-size: 44px 44px;

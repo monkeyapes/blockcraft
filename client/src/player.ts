@@ -1,6 +1,7 @@
 /** Local player: camera, movement, collision and block targeting. */
 
 import { Block, blockDef, isLiquid, isSolid } from '@shared/blocks.js';
+import { shapeOf } from '@shared/shapes.js';
 import { WORLD_Y } from '@shared/constants.js';
 import type { Vec3 } from './math.js';
 import type { ClientWorld } from './world.js';
@@ -31,6 +32,11 @@ const MAX_STEP = 0.35;
  * teleport the player up onto it.
  */
 const SKIN = 1e-4;
+
+/** Tallest ledge a walking body climbs without jumping. */
+const STEP_HEIGHT = 0.6;
+/** How far past the blocking face to place the body when stepping up. */
+const STEP_PROBE = 1e-3;
 
 export interface InputState {
   forward: boolean;
@@ -168,9 +174,9 @@ export class Player {
   private step(world: ClientWorld, dx: number, dy: number, dz: number): void {
     // One axis at a time, so walking into a wall slides instead of sticking.
     this.x += dx;
-    this.resolve(world, 0, dx);
+    if (this.resolve(world, 0, dx)) this.tryStepUp(world, 0, dx);
     this.z += dz;
-    this.resolve(world, 2, dz);
+    if (this.resolve(world, 2, dz)) this.tryStepUp(world, 2, dz);
     this.y += dy;
     const hit = this.resolve(world, 1, dy);
     if (hit) {
@@ -181,6 +187,92 @@ export class Player {
     }
   }
 
+  /**
+   * Walk up a small ledge instead of stopping dead at it.
+   *
+   * Shapes made this necessary rather than merely nice. A conveyor is a
+   * 3/16 slab, and without step assist it is a wall you have to jump -- which
+   * would make walking along your own production line worse than walking
+   * beside it, and no amount of getting the hitbox right would fix that.
+   *
+   * Only from the ground, and only over a ledge low enough to be a step: from
+   * mid-air it would let a player climb a sheer face by holding forward.
+   */
+  private tryStepUp(world: ClientWorld, axis: 0 | 2, delta: number): void {
+    if (!this.onGround || delta === 0) return;
+
+    const rise = this.ledgeHeight(world, axis, delta);
+    if (rise === null || rise <= 0 || rise > STEP_HEIGHT) return;
+
+    const savedX = this.x;
+    const savedY = this.y;
+    const savedZ = this.z;
+
+    // Put the body back where it was heading, lifted onto the ledge.
+    this.y = savedY + rise;
+    if (axis === 0) this.x = savedX + (delta > 0 ? STEP_PROBE : -STEP_PROBE);
+    else this.z = savedZ + (delta > 0 ? STEP_PROBE : -STEP_PROBE);
+
+    // Accept only if the body actually fits up there -- otherwise this would
+    // push the player into a one-block gap and leave them stuck in the
+    // ceiling.
+    if (this.overlaps(world)) {
+      this.x = savedX;
+      this.y = savedY;
+      this.z = savedZ;
+    }
+  }
+
+  /** How far above the feet the blocking ledge sits, or null if unblocked. */
+  private ledgeHeight(world: ClientWorld, axis: 0 | 2, delta: number): number | null {
+    const half = PLAYER_WIDTH / 2;
+    const probe = half - SKIN;
+    const ahead = delta > 0 ? probe + STEP_PROBE : -probe - STEP_PROBE;
+
+    const px = axis === 0 ? this.x + ahead : this.x;
+    const pz = axis === 2 ? this.z + ahead : this.z;
+
+    const bx = Math.floor(px);
+    const bz = Math.floor(pz);
+    let top: number | null = null;
+
+    // Only the cell at the feet: a ledge is something to step onto, and
+    // anything higher is a wall whatever its shape.
+    for (let by = Math.floor(this.y); by <= Math.floor(this.y + STEP_HEIGHT); by++) {
+      const id = world.getBlock(bx, by, bz);
+      if (!isSolid(id)) continue;
+      for (const box of shapeOf(id)) {
+        const boxTop = by + box.y1;
+        if (boxTop <= this.y + SKIN) continue;
+        if (top === null || boxTop > top) top = boxTop;
+      }
+    }
+    return top === null ? null : top - this.y;
+  }
+
+  /** Is the body overlapping any solid shape where it currently stands? */
+  private overlaps(world: ClientWorld): boolean {
+    const half = PLAYER_WIDTH / 2;
+    const probe = half - SKIN;
+    const lo = [this.x - probe, this.y + SKIN, this.z - probe];
+    const hi = [this.x + probe, this.y + PLAYER_HEIGHT - SKIN, this.z + probe];
+
+    for (let bx = Math.floor(lo[0]); bx <= Math.floor(hi[0]); bx++) {
+      for (let by = Math.floor(lo[1]); by <= Math.min(Math.floor(hi[1]), WORLD_Y - 1); by++) {
+        for (let bz = Math.floor(lo[2]); bz <= Math.floor(hi[2]); bz++) {
+          const id = world.getBlock(bx, by, bz);
+          if (!isSolid(id)) continue;
+          for (const box of shapeOf(id)) {
+            if (bx + box.x0 < hi[0] && bx + box.x1 > lo[0] &&
+                by + box.y0 < hi[1] && by + box.y1 > lo[1] &&
+                bz + box.z0 < hi[2] && bz + box.z1 > lo[2]) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   private resolve(world: ClientWorld, axis: 0 | 1 | 2, delta: number): boolean {
     if (delta === 0) return false;
     // Snap with the true half-width so the body ends up flush against the
@@ -188,40 +280,70 @@ export class Player {
     // then read as an overlap on the next axis.
     const half = PLAYER_WIDTH / 2;
     const probe = half - SKIN;
-    const x0 = Math.floor(this.x - probe);
-    const x1 = Math.floor(this.x + probe);
-    const y0 = Math.floor(this.y + SKIN);
-    const y1 = Math.min(Math.floor(this.y + PLAYER_HEIGHT - SKIN), WORLD_Y - 1);
-    const z0 = Math.floor(this.z - probe);
-    const z1 = Math.floor(this.z + probe);
 
-    // Find the blocking block *nearest the face we are moving into*. Taking
-    // whichever block the scan happened to reach first snaps the player to the
-    // far side of a two-block-thick wall, which reads as walking through it.
+    // The body, as an interval on each axis.
+    const lo = [this.x - probe, this.y + SKIN, this.z - probe];
+    const hi = [this.x + probe, this.y + PLAYER_HEIGHT - SKIN, this.z + probe];
+
+    const x0 = Math.floor(lo[0]);
+    const x1 = Math.floor(hi[0]);
+    const y0 = Math.floor(lo[1]);
+    const y1 = Math.min(Math.floor(hi[1]), WORLD_Y - 1);
+    const z0 = Math.floor(lo[2]);
+    const z1 = Math.floor(hi[2]);
+
+    // Find the blocking face *nearest the one we are moving into*. Taking
+    // whichever block the scan happened to reach first snaps the player to
+    // the far side of a two-block-thick wall, which reads as walking through
+    // it.
+    //
+    // Faces come from the block's shape rather than from the cell, so a
+    // conveyor stops the body at belt height instead of at the cell top, and
+    // a cable only blocks the thin run it actually occupies. A shape whose
+    // boxes do not overlap the body on the two perpendicular axes is not in
+    // the way at all -- which is the whole point of a cable you can stand
+    // beside.
     let found = false;
     let edge = 0;
 
     for (let bx = x0; bx <= x1; bx++) {
       for (let by = y0; by <= y1; by++) {
         for (let bz = z0; bz <= z1; bz++) {
-          if (!isSolid(world.getBlock(bx, by, bz))) continue;
-          const candidate = axis === 0 ? bx : axis === 1 ? by : bz;
-          if (!found) {
-            found = true;
-            edge = candidate;
-          } else if (delta > 0) {
-            if (candidate < edge) edge = candidate; // nearest on the +side
-          } else if (candidate > edge) {
-            edge = candidate; // nearest on the -side
+          const id = world.getBlock(bx, by, bz);
+          if (!isSolid(id)) continue;
+          const cell = [bx, by, bz];
+
+          for (const box of shapeOf(id)) {
+            const bLo = [cell[0] + box.x0, cell[1] + box.y0, cell[2] + box.z0];
+            const bHi = [cell[0] + box.x1, cell[1] + box.y1, cell[2] + box.z1];
+
+            // Must overlap on both axes that are not being resolved.
+            let clear = false;
+            for (let a = 0; a < 3; a++) {
+              if (a === axis) continue;
+              if (bHi[a] <= lo[a] || bLo[a] >= hi[a]) { clear = true; break; }
+            }
+            if (clear) continue;
+
+            // The face this box presents to an incoming body.
+            const candidate = delta > 0 ? bLo[axis] : bHi[axis];
+            if (!found) {
+              found = true;
+              edge = candidate;
+            } else if (delta > 0) {
+              if (candidate < edge) edge = candidate; // nearest on the +side
+            } else if (candidate > edge) {
+              edge = candidate; // nearest on the -side
+            }
           }
         }
       }
     }
     if (!found) return false;
 
-    if (axis === 0) this.x = delta < 0 ? edge + 1 + half : edge - half;
-    else if (axis === 1) this.y = delta < 0 ? edge + 1 : edge - PLAYER_HEIGHT;
-    else this.z = delta < 0 ? edge + 1 + half : edge - half;
+    if (axis === 0) this.x = delta < 0 ? edge + half : edge - half;
+    else if (axis === 1) this.y = delta < 0 ? edge : edge - PLAYER_HEIGHT;
+    else this.z = delta < 0 ? edge + half : edge - half;
     return true;
   }
 
