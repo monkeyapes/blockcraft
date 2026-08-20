@@ -8,14 +8,18 @@ than a broken image, so a fresh clone still looks deliberate.
 
 ## Constraints
 
-- **Aspect ratio 8:3.** The frame holds that ratio whatever the window does
-  and crops with `object-fit: cover`, so keep anything important away from
-  the extreme edges.
+- **Aspect ratio 5:2 — author at 400x160.** Measured, not guessed: at the
+  launcher's real width the frame renders 828x331, which is 2.5 exactly, and
+  it is pinned there so it never fights `max-height`. Art at 5:2 shows
+  uncropped. The first piece was 16:10 and lost 36% of its height to
+  `object-fit: cover`.
+- 320x128 or 500x200 work equally well; it is the ratio that matters, not the
+  size.
 - **The bottom third is covered** by a dark gradient carrying the title and
   strapline. Put detail you want seen in the upper two thirds; the bottom
   should be quieter ground, sky, or water that reads fine half-hidden.
 - **Pixel art, drawn with `image-rendering: pixelated`.** Author it small and
-  let the browser scale it: **384×144** is plenty and stays crisp at any
+  let the browser scale it: **400x160** is plenty and stays crisp at any
   size. Do not pre-scale it in an editor with smoothing on — that blurs the
   hard edges the whole style depends on.
 - Palette to match the game: grass `#5f9e46`, gold `#e6b64c`, sky-blue
@@ -56,8 +60,8 @@ Swap the middle clause to shift the emphasis:
 
 ### Settings
 
-- Size **384×144** if the tool takes an arbitrary size. If it only offers
-  squares, generate **256×256** or **512×512** and crop to 8:3 — compose
+- Size **400x160** if the tool takes an arbitrary size. If it only offers
+  squares, generate **512x512** and crop to 5:2 — compose
   knowing the top and bottom will go.
 - No outline / no border, if offered: the game's own art has none, and an
   outlined banner sits oddly against it.

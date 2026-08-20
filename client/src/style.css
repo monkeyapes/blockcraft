@@ -47,7 +47,7 @@
   --gold: #e6b64c;
 
   /* Geometry */
-  --r-sm: 4px;
+  --r-sm: 3px;
   --r-md: 8px;
   --r-lg: 14px;
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
@@ -412,16 +412,42 @@ html, body {
 
 .lx-art {
   position: relative;
-  aspect-ratio: 8 / 3;
+  /*
+   * Without an explicit width, `aspect-ratio` and `max-height` together make
+   * the box narrow itself to keep the ratio rather than fill the column --
+   * which left a third of the banner empty. Width first, then the ratio sets
+   * the height, then max-height clamps it and the image crops to suit.
+   */
+  width: 100%;
+  /*
+   * 16:9 rather than a wider banner: the art is 16:10, and a 8:3 crop cut
+   * the plane out of the sky along with a third of the water.
+   */
+  /*
+   * 5:2. Not an arbitrary pick: at the launcher's real width this is the
+   * shape the column already wants, so the frame never fights max-height and
+   * art authored at 5:2 shows uncropped. Anything squarer gets its top and
+   * bottom eaten -- the first piece at 16:10 lost 35% that way.
+   */
+  aspect-ratio: 5 / 2;
   max-height: 46vh;
   overflow: hidden;
-  background-color: #16202e;
+  /*
+   * The sky sits here rather than in the PNG. The art is drawn with an
+   * unpainted sky -- a fifth of it is transparent -- so this shows through
+   * above the skyline, and swapping the art or the sky does not require
+   * re-exporting the other. Colours are taken from the art's own palette.
+   */
+  background-color: #24344f;
+  background-image: linear-gradient(180deg, #22314a 0%, #3f6a92 62%, #7096b4 100%);
 }
 
 .lx-art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Bias the crop down: the top of the art is empty sky, the ground is not. */
+  object-position: 50% 62%;
   display: block;
   /* Pixel art, so no smoothing: the whole point is the hard edges. */
   image-rendering: pixelated;
