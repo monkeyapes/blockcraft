@@ -1,5 +1,53 @@
 # Where to pick up
 
+## Next up: `.bc` addresses and a hosting app
+
+Asked for, agreed, and started. `shared/src/address.ts` exists and is
+complete as a module, but it is **not wired to anything and has no tests
+yet** -- that is step one, not a leftover.
+
+### What `donutsmp.bc` costs to make real
+
+`.bc` is not a real top-level domain and never will be. It resolves inside
+Blockcraft and nowhere else: it will not ping, it will not open in a browser,
+and no DNS server has heard of it. That is normal for a game, and it is why
+the game has to do the lookup itself.
+
+A memorable name has to resolve *somewhere*, so something has to hold the
+mapping. The free option that needs no server kept running: a `registry.json`
+published on the GitHub Pages site that already exists. A name is claimed by
+adding a line to it. If the registry cannot be reached, direct `host:port`
+addresses keep working -- naming sits on top of addressing and must never
+become a dependency of it.
+
+### The order to build it
+
+1. **Tests for `address.ts`.** Parsing is where this fails quietly: a name
+   that only nearly matches resolves to nothing, and the error looks like the
+   server being down rather than like a typo.
+2. **Publish `site/registry.json`** and teach the client to fetch and cache
+   it. Handle unreachable, malformed, and unknown-name separately -- they need
+   different messages.
+3. **Wire it into the multiplayer pane**, replacing the raw address box.
+4. **The hosting app.** A second Tauri exe wrapping the existing server, with
+   a UI: start/stop, the address to share, who is connected, a log, and world
+   selection.
+
+### The part to be honest about up front
+
+A home PC is behind NAT, so *hosting is not free of effort even though it is
+free of cost*. There are two ways out and the app should say so plainly
+rather than letting someone discover it when nobody can join:
+
+- **Port forwarding** -- free, no third party, needs router access.
+- **A free tunnel** (playit.gg, Cloudflare Tunnel, ngrok all have free
+  tiers) -- no router access needed, and gives a public address the registry
+  can point at.
+
+The host app should detect which situation the user is in and offer the
+matching path, because "why can nobody join my server" is the question that
+kills self-hosting.
+
 ## Open: horizontal lines on block faces
 
 Still unsolved. This session eliminated most of the field, including the
