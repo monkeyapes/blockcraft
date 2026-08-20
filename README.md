@@ -44,6 +44,21 @@ npm run desktop:build
 
 The installer lands in `desktop/src-tauri/target/release/bundle/nsis/`.
 
+## Debug parameters
+
+The browser build takes two query parameters, which exist so a rendering
+question can be reproduced from a link instead of by flying there and hoping:
+
+| Parameter | Effect |
+|---|---|
+| `?pose=x,y,z,yaw,pitch` | Places the camera exactly and holds it there. Angles in degrees, and optional -- `?pose=x,y,z` keeps the current facing. |
+| `?seed=...` | Pre-fills the seed box, so the pose refers to the world it was recorded in. |
+
+    /play/?seed=59708&pose=8,72,8,0,-89.9
+
+Same world, same camera, every time. Time of day still advances, so two runs
+differ in brightness -- compare geometry, not absolute pixels.
+
 ## Layout
 
 | Path | What it is |

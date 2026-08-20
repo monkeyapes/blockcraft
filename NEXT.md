@@ -68,18 +68,42 @@ than their neighbours -- but that detector cannot separate an artifact from a
 legitimate terrace step, where a top face genuinely meets a side face 35%
 darker. It needs a flat surface to be meaningful.
 
-### The blocker, and how to remove it
+### The blocker is gone: `?pose=` and `?seed=`
 
 The decisive test is a single flat surface filling the frame, where *any* line
-is an artifact. That needs a known camera pose, and the camera cannot be
-driven from automation: pointer lock requires a real user gesture, and an
-automated click does not satisfy it. Nothing is exposed on `window` either.
+is an artifact. That needed a known camera pose, and the camera could not be
+driven from automation -- pointer lock requires a real user gesture, and a
+synthetic click does not satisfy it.
 
-**Suggested fix: a debug pose parameter** -- `?pose=x,y,z,yaw,pitch` -- that
-places the camera without pointer lock. That makes the artifact reproducible
-on demand instead of depending on flying to the right spot by hand, and it
-would pay for itself the first time anyone investigates a rendering question
-again.
+Both parameters now exist, so a finding can carry the URL that shows it:
+
+    /play/?seed=59708&pose=8,72,8,0,-89.9        x,y,z,yaw,pitch in degrees
+    /play/?seed=59708&pose=8,72,8                keep the current facing
+
+`?pose=` places the camera and holds it there -- flying on, vertical speed
+zeroed, and the usual drop-onto-solid-ground step suppressed, since a pose
+that falls somewhere else on load is not a pose. `?seed=` pre-fills the seed
+box, because a pose without a seed points at whatever terrain the next random
+world happens to make. Parsing is in `client/src/pose.ts` and refuses anything
+it cannot use exactly, rather than half-applying it; `tests/pose.ts` covers
+that with 28 checks.
+
+**Known limit:** the same URL reproduces the same world and the same camera,
+but not the same *frame* -- time of day still advances, so two runs differ in
+overall brightness. Compare geometry and relative row-to-row variation, not
+absolute pixels. A `?time=` parameter would close that if frame-exact
+comparison is ever needed.
+
+### A warning about which surface to test on
+
+The first attempt used water, and the result was worthless: water is
+translucent, so it brightens over shallow sand, and the `water` tile has 17
+luminance of row variation of its own. Both were mistaken for banding.
+
+**Use an opaque, uniform surface** -- a stone plateau, or a platform built for
+the purpose. Check the tile's own row variation first with
+`tests/diagnostics/tile-borders.ts`, and subtract it before believing
+anything.
 
 Reproduce the headless analyses with:
 

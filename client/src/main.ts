@@ -51,6 +51,7 @@ import type { Vec3 } from './math.js';
 import { ClientWorld } from './world.js';
 import { PointerLockKeeper } from './pointerlock.js';
 import { TouchControls, isTouchDevice } from './touch.js';
+import { applyPose, parsePose } from './pose.js';
 
 /** What creative mode offers in the hotbar: building blocks, then the toys. */
 const CREATIVE_KIT = [
@@ -270,6 +271,12 @@ async function start(
 
   const inventory = new Inventory();
   const player = new Player();
+
+  // A ?pose= in the URL places the camera exactly, so a rendering question
+  // can be reproduced from a link instead of by flying there. See pose.ts.
+  const debugPose = parsePose(location.search);
+  if (debugPose) applyPose(player, debugPose);
+
   const survival = new Survival();
   const mining = new Mining();
   survival.mode = mode;
@@ -1229,6 +1236,10 @@ async function start(
   /** Drop the player onto solid ground once their spawn chunk exists. */
   function settleSpawn(): void {
     if (spawned || !world) return;
+    // A pose is a deliberate placement, including in mid-air. Dropping it
+    // onto the ground the moment the chunk loads would silently move the
+    // camera somewhere other than the one place it was asked to be.
+    if (debugPose) { applyPose(player, debugPose); spawned = true; return; }
     if (!world.isLoaded(Math.floor(player.x), Math.floor(player.z))) return;
     for (let y = WORLD_Y - 2; y > 0; y--) {
       if (blockDef(world.getBlock(Math.floor(player.x), y, Math.floor(player.z))).solid) {

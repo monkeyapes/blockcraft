@@ -36,6 +36,14 @@ export class Launcher {
   onLaunch: (request: LaunchRequest) => void = () => {};
 
   constructor() {
+    // ?seed= pre-fills the seed box, so a URL that carries a ?pose= also
+    // carries the world that pose refers to. Without it the pose would
+    // point at whatever terrain the next random seed happened to make,
+    // which is no reproduction at all. It only fills the field -- creating
+    // the world stays a deliberate click.
+    const urlSeed = new URLSearchParams(location.search).get('seed');
+    if (urlSeed) this.seedEl.value = urlSeed;
+
     this.createBtn.addEventListener('click', () => this.create());
     this.multiBtn.addEventListener('click', () => {
       this.onLaunch({ multiplayer: true, serverAddress: this.serverEl.value.trim() });
