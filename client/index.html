@@ -169,7 +169,7 @@
             <button class="lt" data-pane="controls"><span class="lt-dot"></span>Controls</button>
             <button class="lt" data-pane="credits"><span class="lt-dot"></span>About</button>
           </nav>
-          <div class="lx-version">v0.1.0</div>
+          <div class="lx-version">v0.2.0</div>
         </aside>
 
         <main class="lx-main">
@@ -222,6 +222,35 @@
               <button id="create-world" class="btn btn-primary">Create world</button>
             </div>
           </details>
+
+          <!--
+            A shelf of what is worth doing next. It is here because a launcher
+            that only lists saves tells a new player nothing about the game
+            they just downloaded, and the interesting systems are invisible
+            until something points at them.
+          -->
+          <div class="shelf">
+            <article class="shelf-card" data-tint="grass">
+              <span class="shelf-kicker">Start here</span>
+              <h4>Punch a tree</h4>
+              <p>Wood makes a crafting table, which makes a pickaxe, which reaches the ore. Press <kbd>L</kbd> in game for the whole trail.</p>
+            </article>
+            <article class="shelf-card" data-tint="gold">
+              <span class="shelf-kicker">Automation</span>
+              <h4>Build a NoVolt line</h4>
+              <p>A generator pushes pressure down conduit. Every block of it costs, and so does every machine drawing on the run — so keep them close.</p>
+            </article>
+            <article class="shelf-card" data-tint="sky">
+              <span class="shelf-kicker">Get around</span>
+              <h4>Six ways to travel</h4>
+              <p>Skateboard, car, truck, boat, plane, helicopter. Press <kbd>Q</kbd> to get out of any of them.</p>
+            </article>
+            <article class="shelf-card" data-tint="ender">
+              <span class="shelf-kicker">The ending</span>
+              <h4>Beat the dragon</h4>
+              <p>Blaze rods and ender pearls make eyes of ender. Twelve of them open the way to the End.</p>
+            </article>
+          </div>
         </div>
 
         <div data-pane-body="multiplayer" class="pane" hidden>
@@ -296,9 +325,15 @@
           </div>
 
           <div class="lx-play">
+            <!--
+              A picker rather than a caption. The world list is the place to
+              manage worlds; this is the place to choose one and go, without
+              scrolling back up to click a row first.
+            -->
             <div class="lx-play-info">
-              <span class="lx-play-label">Ready to play</span>
-              <span class="lx-play-world" id="selected-world">No world selected</span>
+              <label class="lx-play-label" for="world-picker">World</label>
+              <select id="world-picker" class="lx-picker"></select>
+              <span class="lx-play-world" id="selected-world"></span>
               <span id="status"></span>
             </div>
             <button id="play-now" class="btn-play">Play</button>

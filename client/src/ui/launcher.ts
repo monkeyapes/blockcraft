@@ -30,6 +30,7 @@ export class Launcher {
   private tabsEl = document.getElementById('launcher-tabs') as HTMLDivElement;
   private playBtn = document.getElementById('play-now') as HTMLButtonElement;
   private selectedEl = document.getElementById('selected-world') as HTMLSpanElement;
+  private pickerEl = document.getElementById('world-picker') as HTMLSelectElement;
 
   private selected: string | null = null;
 
@@ -43,6 +44,13 @@ export class Launcher {
     // the world stays a deliberate click.
     const urlSeed = new URLSearchParams(location.search).get('seed');
     if (urlSeed) this.seedEl.value = urlSeed;
+
+    // Choosing from the picker selects in the list too, so the two never
+    // disagree about which world Play will open.
+    this.pickerEl.addEventListener('change', () => {
+      this.selected = this.pickerEl.value || null;
+      this.refresh();
+    });
 
     this.createBtn.addEventListener('click', () => this.create());
     this.multiBtn.addEventListener('click', () => {
@@ -91,11 +99,29 @@ export class Launcher {
   /** Keeps the play bar in step with the selection. */
   private updatePlayBar(worlds: WorldEntry[]): void {
     const world = worlds.find((w) => w.slot === this.selected);
+
+    // Rebuild the options only when they have actually changed: replacing
+    // them on every refresh closes the dropdown under the pointer of anyone
+    // mid-choice.
+    const wanted = worlds.map((w) => `${w.slot}:${w.name}`).join('|');
+    if (this.pickerEl.dataset.built !== wanted) {
+      this.pickerEl.dataset.built = wanted;
+      this.pickerEl.replaceChildren();
+      for (const w of worlds) {
+        const opt = document.createElement('option');
+        opt.value = w.slot;
+        opt.textContent = `${w.name} — ${describeWorld(w)}`;
+        this.pickerEl.append(opt);
+      }
+    }
+    this.pickerEl.disabled = worlds.length === 0;
+    if (world) this.pickerEl.value = world.slot;
+
     if (world) {
-      this.selectedEl.textContent = `${world.name} — ${describeWorld(world)}`;
+      this.selectedEl.textContent = '';
       this.playBtn.textContent = 'Play';
     } else if (worlds.length === 0) {
-      this.selectedEl.textContent = 'No worlds yet';
+      this.selectedEl.textContent = 'No worlds yet — create one below';
       this.playBtn.textContent = 'Create';
     } else {
       this.selectedEl.textContent = 'Pick a world';

@@ -75,6 +75,9 @@
     inset 3px 3px 0 var(--bevel-lit),
     inset -3px -3px 0 var(--bevel-dark),
     0 4px 0 #0b0d11;
+  --sunk:
+    inset 3px 3px 0 rgba(0, 0, 0, 0.55),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.06);
   --bevel-pressed:
     inset -3px -3px 0 rgba(255, 255, 255, 0.14),
     inset 3px 3px 0 var(--bevel-dark);
@@ -288,7 +291,7 @@ html, body {
   display: grid;
   grid-template-columns: 208px 1fr;
   width: min(1040px, 96vw);
-  height: min(660px, 92vh);
+  height: min(720px, 94vh);
   /* Square, with the same keyline the buttons use: the shell is a block too. */
   border: 2px solid var(--keyline);
   border-radius: var(--edge-round);
@@ -394,7 +397,14 @@ html, body {
   color: var(--ink-faint);
 }
 
-.lx-main { display: flex; flex-direction: column; min-width: 0; }
+/*
+ * min-height: 0 is load-bearing. A grid item will not shrink below its
+ * content, so without it this column grew past the shell -- 947px inside a
+ * 660px frame -- and pushed the play bar off the bottom of the window while
+ * the body's own overflow:auto never engaged, because the body had been
+ * given all the room it asked for.
+ */
+.lx-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 
 /*
  * Hero: a stone wall with a strip of turf along its bottom edge, which is
@@ -546,6 +556,98 @@ html, body {
 }
 
 /* Bottom action bar ----------------------------------------------------- */
+
+/* ------------------------------------------------------------------ shelf */
+/*
+ * The row of cards under the world list. A launcher that only lists saves
+ * tells a new player nothing about the game, and the systems worth finding
+ * -- NoVolt, the vehicles, the ending -- are invisible until something says
+ * they exist.
+ */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.shelf-card {
+  position: relative;
+  padding: 14px 14px 15px;
+  border: 2px solid var(--keyline);
+  border-radius: var(--edge-round);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  transition: background 0.15s, transform 0.15s;
+}
+.shelf-card:hover { background: rgba(255, 255, 255, 0.07); transform: translateY(-2px); }
+
+/* A colour bar down the left edge, so the four read apart at a glance. */
+.shelf-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--tint, var(--grass));
+}
+.shelf-card[data-tint='grass'] { --tint: var(--grass); }
+.shelf-card[data-tint='gold'] { --tint: var(--gold); }
+.shelf-card[data-tint='sky'] { --tint: var(--sky); }
+.shelf-card[data-tint='ender'] { --tint: #9b6bd6; }
+
+.shelf-kicker {
+  display: block;
+  font: 700 9.5px var(--mono);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--tint, var(--grass));
+}
+.shelf-card h4 {
+  margin: 6px 0 5px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.shelf-card p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-dim); }
+
+/* Inline keys, matching the ones on the site. */
+.shelf-card kbd {
+  display: inline-block;
+  min-width: 16px;
+  padding: 1px 5px;
+  font: 700 10px var(--mono);
+  text-align: center;
+  color: var(--ink);
+  background: #22262e;
+  border: 1px solid var(--keyline);
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------- world picker */
+/*
+ * Sunk rather than raised: it is somewhere to choose from, not something to
+ * press, and the play button beside it should be the only thing that looks
+ * pressable.
+ */
+.lx-picker {
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  max-width: 340px;
+  padding: 8px 10px;
+  margin-top: 3px;
+  color: var(--ink);
+  background: #0d1016;
+  border: 2px solid var(--keyline);
+  border-radius: var(--edge-round);
+  box-shadow: var(--sunk, inset 3px 3px 0 rgba(0, 0, 0, 0.5));
+  outline: none;
+}
+.lx-picker:focus { border-color: var(--gold); }
+.lx-picker:disabled { opacity: 0.5; }
 
 .lx-play {
   display: flex;
