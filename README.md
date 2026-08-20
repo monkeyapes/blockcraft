@@ -7,8 +7,8 @@ Written from scratch in TypeScript — a hand-written WebGL2 renderer, no game
 engine, and no image assets at all: every built-in texture is generated from
 code at startup.
 
-**[Play in your browser](https://YOUR-USERNAME.github.io/blockcraft/play/)** ·
-**[Download for Windows](https://github.com/YOUR-USERNAME/blockcraft/releases/latest)**
+**[Play in your browser](https://monkeyapes.github.io/blockcraft/play/)** ·
+**[Download for Windows](https://github.com/monkeyapes/blockcraft/releases/latest)**
 
 ## What is in it
 

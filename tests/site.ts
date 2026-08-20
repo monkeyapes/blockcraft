@@ -131,11 +131,16 @@ check('the game has advancements for the site to claim', ADVANCEMENTS.length > 0
 check('the "0 image files" claim is marked as the key stat',
   /<div class="stat key"><b>0<\/b><span>image files<\/span>/.test(html));
 
-// Both GitHub links must carry the same placeholder, so publish.ps1's single
-// replace catches every one of them.
-const placeholders = (html.match(/YOUR-USERNAME/g) || []).length;
-check('every GitHub link still uses the one placeholder publish.ps1 replaces',
-  placeholders === 2, `found ${placeholders}`);
+// Every GitHub link has to point at one repository. A half-substituted page --
+// a real owner on the download button and a leftover placeholder on the source
+// link -- would send someone to a 404 from the one place they went looking.
+const repos = [...html.matchAll(/github\.com\/([\w.-]+)\/([\w.-]+)/g)]
+  .map((m) => `${m[1]}/${m[2]}`);
+check('the page carries GitHub links at all', repos.length >= 2, `found ${repos.length}`);
+check('every GitHub link points at the same repository',
+  new Set(repos).size === 1, `found ${[...new Set(repos)].join(', ')}`);
+check('no unsubstituted placeholder is left in a link',
+  !/YOUR-USERNAME/.test(html));
 
 // The play link is relative, so the site works from a project subpath.
 check('the play link is relative, not rooted',

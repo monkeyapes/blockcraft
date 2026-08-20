@@ -416,6 +416,103 @@ footer {
 }
 footer p { margin: 0 0 10px; max-width: 70ch; }
 
+/* --- the progression trail --------------------------------------------- */
+/*
+ * Nineteen steps, laid out as a trail rather than a checklist: the game hands
+ * you a world and no instructions, and the point of showing this on the site
+ * is that there is a route through it and an end to reach.
+ */
+.trail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2px;
+  background: var(--keyline);
+  border: 2px solid var(--keyline);
+}
+.step {
+  display: flex;
+  gap: 12px;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.028);
+}
+.step .no {
+  flex: 0 0 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font: 800 11px var(--mono);
+  color: #0b0d11;
+  background: var(--gold);
+}
+.step.end .no { background: var(--sky); color: #04070a; }
+.step b { display: block; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; }
+.step span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-dim); }
+
+/* --- controls ---------------------------------------------------------- */
+/* Two lists, so two columns -- auto-fit would lay out tracks for children
+   that do not exist and strand the second list mid-row. */
+.keys { display: grid; grid-template-columns: 1fr 1fr; gap: 0 34px; }
+@media (max-width: 720px) { .keys { grid-template-columns: 1fr; } }
+.keys dl { margin: 0; }
+.keys div {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--edge);
+}
+.keys dt { flex: 0 0 122px; }
+.keys dd { margin: 0; font-size: 14px; color: var(--ink-dim); }
+kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 4px 7px;
+  font: 700 11px var(--mono);
+  text-align: center;
+  color: var(--ink);
+  background: #22262e;
+  border: 2px solid var(--keyline);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.14), inset -2px -2px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* --- FAQ --------------------------------------------------------------- */
+/*
+ * Native <details>, so it opens with no script, is keyboard operable and is
+ * announced correctly, without a line of JavaScript behind it.
+ */
+.faq details {
+  border: 2px solid var(--keyline);
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 10px;
+}
+.faq summary {
+  padding: 15px 18px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+/* A plus that becomes a minus, drawn in text so it needs no asset. */
+.faq summary::before {
+  content: '+';
+  flex: 0 0 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  font: 800 15px var(--mono);
+  color: #0b0d11;
+  background: var(--gold);
+}
+.faq details[open] summary::before { content: '2'; }
+.faq summary:hover { background: rgba(255, 255, 255, 0.045); }
+.faq .a { padding: 0 18px 16px 52px; font-size: 14px; color: var(--ink-dim); }
+.faq .a p { margin: 0 0 9px; }
+.faq .a p:last-child { margin-bottom: 0; }
+
 /*
  * Touch targets.
  *
@@ -458,6 +555,7 @@ footer p { margin: 0 0 10px; max-width: 70ch; }
       <a href="#features" class="hide-sm">Features</a>
       <a href="#novolt" class="hide-sm">NoVolt</a>
       <a href="#shots" class="hide-sm">Screens</a>
+      <a href="#faq" class="hide-sm">FAQ</a>
       <a href="#download" class="go">Get it</a>
     </nav>
   </div>
@@ -550,6 +648,39 @@ footer p { margin: 0 0 10px; max-width: 70ch; }
           the same game at a shorter view distance, with touch controls on a phone.
         </p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="progression">
+  <div class="wrap">
+    <h2 class="reveal">Something to aim at</h2>
+    <p class="sub reveal">
+      A sandbox hands you a world and no instructions, and the good parts stay invisible
+      until something points at them. These nineteen do the pointing &mdash; each one names
+      the next thing to try rather than congratulating you for the last. Press <kbd>L</kbd>
+      in game to see how far along you are.
+    </p>
+    <div class="trail reveal">
+        <div class="step"><span class="no">1</span><span><b>Getting Wood</b><span>Punch a tree. Everything starts here.</span></span></div>
+        <div class="step"><span class="no">2</span><span><b>Somewhere to Work</b><span>A crafting table gives you the full 3×3 grid.</span></span></div>
+        <div class="step"><span class="no">3</span><span><b>Time to Mine</b><span>Stone needs a pickaxe. Better pickaxes reach better ore.</span></span></div>
+        <div class="step"><span class="no">4</span><span><b>Hot Stuff</b><span>Smelt iron ore in a furnace. Iron opens up the machines.</span></span></div>
+        <div class="step"><span class="no">5</span><span><b>Diamonds!</b><span>The best tools, and the way into the End.</span></span></div>
+        <div class="step"><span class="no">6</span><span><b>Good Night</b><span>Sleep to skip the night and set where you respawn.</span></span></div>
+        <div class="step"><span class="no">7</span><span><b>Set Sail</b><span>Water stops being a wall.</span></span></div>
+        <div class="step"><span class="no">8</span><span><b>Slipped the Surly Bonds</b><span>Take off in a plane or a helicopter.</span></span></div>
+        <div class="step"><span class="no">9</span><span><b>Things That Move</b><span>Conveyors carry dropped items. Point them where you want them.</span></span></div>
+        <div class="step"><span class="no">10</span><span><b>No Volts Required</b><span>A generator pushes NoVolt down conduit. Keep machines close to it.</span></span></div>
+        <div class="step"><span class="no">11</span><span><b>Wired Up</b><span>Every block of conduit costs pressure. Boosters buy it back.</span></span></div>
+        <div class="step"><span class="no">12</span><span><b>Double or Nothing</b><span>A powered crusher doubles your ore. It will not run without NoVolt.</span></span></div>
+        <div class="step"><span class="no">13</span><span><b>Free Lunch</b><span>Solar needs open sky, and rain halves it. Batteries cover the gap.</span></span></div>
+        <div class="step"><span class="no">14</span><span><b>Stone From Nowhere</b><span>A stone generator turns NoVolt into cobblestone, forever.</span></span></div>
+        <div class="step"><span class="no">15</span><span><b>Industrial Scale</b><span>A quarry clears nine columns at once, and drinks power to do it.</span></span></div>
+        <div class="step"><span class="no">16</span><span><b>Into the Fire</b><span>Blaze rods are down here. You will need them for eyes of ender.</span></span></div>
+        <div class="step"><span class="no">17</span><span><b>Eye of Ender</b><span>Blaze powder plus an ender pearl. The End portal wants twelve.</span></span></div>
+        <div class="step end"><span class="no">18</span><span><b>The End?</b><span>Something very large lives here.</span></span></div>
+        <div class="step end"><span class="no">19</span><span><b>Free the Sky</b><span>You beat the Ender Dragon. The world is yours.</span></span></div>
     </div>
   </div>
 </section>
@@ -664,6 +795,136 @@ footer p { margin: 0 0 10px; max-width: 70ch; }
   </div>
 </section>
 
+<section id="controls" class="alt">
+  <div class="wrap">
+    <h2 class="reveal">Controls</h2>
+    <p class="sub reveal">
+      Mouse and keyboard on the desktop and in a browser. On a phone the left half of
+      the screen is a thumbstick that appears wherever your thumb lands, and the right
+      half looks around.
+    </p>
+    <div class="keys reveal">
+      <dl>
+        <div><dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd>Jump, or rise while flying</dd></div>
+        <div><dt><kbd>Shift</kbd></dt><dd>Sneak, or descend</dd></div>
+        <div><dt>Left click</dt><dd>Mine &mdash; hold to keep breaking</dd></div>
+        <div><dt>Right click</dt><dd>Place a block, or use what you are holding</dd></div>
+        <div><dt>Middle click</dt><dd>Pick the block you are looking at</dd></div>
+        <div><dt><kbd>1</kbd>&ndash;<kbd>9</kbd>, wheel</dt><dd>Choose a hotbar slot</dd></div>
+      </dl>
+      <dl>
+        <div><dt><kbd>E</kbd></dt><dd>Inventory and crafting</dd></div>
+        <div><dt><kbd>L</kbd></dt><dd>List advancements, done and still ahead</dd></div>
+        <div><dt><kbd>V</kbd></dt><dd>Switch first and third person</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Fly &mdash; creative mode only</dd></div>
+        <div><dt><kbd>Q</kbd></dt><dd>Get out of a vehicle</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Chat, and slash commands</dd></div>
+        <div><dt><kbd>F3</kbd></dt><dd>Debug overlay</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Pause</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2 class="reveal">Questions</h2>
+    <div class="faq reveal">
+      <details>
+        <summary>Is this Minecraft?</summary>
+        <div class="a">
+          <p>
+            No. It is an original game in the same genre, and it borrows that genre&rsquo;s
+            vocabulary &mdash; blocks, a crafting grid, a Nether, a dragon at the end &mdash;
+            the way any voxel sandbox does. None of Minecraft&rsquo;s code or artwork is in
+            it. The terrain generator, the renderer, the physics and every built-in texture
+            were written from scratch.
+          </p>
+          <p>It is not affiliated with Mojang or Microsoft, and it is free.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Windows says the publisher is unknown. Is it safe?</summary>
+        <div class="a">
+          <p>
+            That warning means the installer is not code-signed, not that anything is wrong
+            with it. A signing certificate costs a few hundred a year, which this project
+            does not have. SmartScreen shows the same notice for every unsigned installer
+            on the internet.
+          </p>
+          <p>
+            If you would rather not take a stranger&rsquo;s word for it: the whole source is
+            on GitHub, the installer is built by a public GitHub Actions run you can read,
+            and the browser version needs no install at all.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>What is the difference between the download and the browser version?</summary>
+        <div class="a">
+          <p>
+            Same game, same worlds. The desktop build renders further, holds more chunks in
+            memory and runs with no network at all. The browser build trades view distance
+            for starting instantly, and picks up touch controls on a phone.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>Will it run on my machine?</summary>
+        <div class="a">
+          <p>
+            Windows 10 or 11, 64-bit, and a GPU that does WebGL2 &mdash; which in practice
+            means anything made in the last decade. The installer is about 1.3&nbsp;MB
+            because the desktop build uses the WebView already on your system rather than
+            shipping a browser inside itself.
+          </p>
+          <p>
+            There is no macOS or Linux build yet. Both would play in a browser today.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>Can I play with other people?</summary>
+        <div class="a">
+          <p>
+            Yes. Terrain is a pure function of its seed, so every player generates the same
+            world independently and only the blocks someone actually changed cross the
+            network. That is little enough traffic to host a game from a home connection.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>Can I use my own textures?</summary>
+        <div class="a">
+          <p>
+            Drop in any Minecraft-style resource pack and it loads at its own resolution,
+            up to 128&nbsp;px. Packs stay on your machine and are never uploaded anywhere
+            &mdash; they are their authors&rsquo; work, so please respect the licence each
+            one ships with.
+          </p>
+          <p>
+            Nothing is required, though. With no pack at all the game draws every texture
+            itself at startup.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>What does &ldquo;no image files&rdquo; actually mean?</summary>
+        <div class="a">
+          <p>
+            The build contains no <code>.png</code> art for the world. Every block and item
+            texture is generated in code when the game starts &mdash; noise, posterised into
+            a few flat tones, then shaded. That is why the download is measured in megabytes
+            rather than hundreds of them, and why changing a texture means editing a function
+            instead of opening an image editor.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
 <section id="download" class="alt">
   <div class="wrap">
     <h2 class="reveal">Download</h2>
@@ -678,7 +939,7 @@ footer p { margin: 0 0 10px; max-width: 70ch; }
         <span id="dl-meta">v0.1.0 · 1.3 MB installer · Windows 10/11 64-bit</span>
       </div>
       <a class="btn btn-primary" id="dl-btn"
-         href="https://github.com/YOUR-USERNAME/blockcraft/releases/latest">Download</a>
+         href="https://github.com/monkeyapes/blockcraft/releases/latest">Download</a>
       <a class="btn" href="play/">Play in browser</a>
     </div>
 
@@ -703,7 +964,7 @@ footer p { margin: 0 0 10px; max-width: 70ch; }
       never redistributed here. Please respect each pack's licence.
     </p>
     <p style="margin-top: 20px;">
-      <a href="https://github.com/YOUR-USERNAME/blockcraft">Source on GitHub</a>
+      <a href="https://github.com/monkeyapes/blockcraft">Source on GitHub</a>
     </p>
   </div>
 </footer>
