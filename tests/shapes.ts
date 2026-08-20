@@ -14,7 +14,7 @@ import { CHUNK_X, CHUNK_Z, Dimension, SECTION_Y, WORLD_Y } from '../shared/src/c
 import { ClientWorld } from '../client/src/world.js';
 import { meshSection, FLOATS_PER_VERTEX } from '../client/src/mesher.js';
 import {
-  CABLE_INSET, CONVEYOR_HEIGHT, FULL_BOX, boundingBox, isFullCube, shapeOf,
+  CABLE_INSET, CONVEYOR_HEIGHT, FULL_BOX, GANTRY_BASE, boundingBox, isFullCube, shapeOf,
   supportHeight,
 } from '../shared/src/shapes.js';
 import { PLAYER_WIDTH, Player, type InputState } from '../client/src/player.js';
@@ -45,8 +45,12 @@ check('a cable runs the full height',
   shapeOf(Block.Cable)[0].y0 === 0 && shapeOf(Block.Cable)[0].y1 === 1);
 
 check('a sorter is two boxes: belt plus housing', shapeOf(Block.Sorter).length === 2);
-check('a sorter housing sits on top of the belt, not floating',
-  shapeOf(Block.Sorter)[1].y0 === CONVEYOR_HEIGHT);
+// The housing is a gantry over the belt, not a box sitting on it. Cargo rests
+// exactly at belt height, so a housing starting exactly there decides whether
+// an item is blocked on a margin of half a thousandth.
+check('a sorter housing clears the belt so cargo can pass under it',
+  shapeOf(Block.Sorter)[1].y0 === GANTRY_BASE &&
+  GANTRY_BASE > CONVEYOR_HEIGHT);
 
 // Every box has to be inside its cell and non-degenerate, or the mesher will
 // emit faces outside the block and the collider will snap to nonsense.

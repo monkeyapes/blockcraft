@@ -77,6 +77,12 @@ export enum Block {
   Compressor = 56,
   Quarry = 57,
   WaterWheel = 58,
+  // Logistics. Conveyors move items along the floor; these decide where the
+  // items go, which is the difference between a belt and a factory.
+  Splitter = 59,
+  Tube = 60,
+  Filter = 61,
+  Incinerator = 62,
 }
 
 export interface BlockDef {
@@ -200,6 +206,19 @@ def(Block.Quarry, 'Quarry', ['quarry_top', 'iron_block', 'quarry_side'],
   { hardness: 4 });
 def(Block.WaterWheel, 'Water Wheel', ['waterwheel_top', 'planks', 'waterwheel_side'],
   { hardness: 2 });
+
+// --- logistics -----------------------------------------------------------
+//
+// None of these are full cubes; see shared/src/shapes.ts. They are the pieces
+// that turn a conveyor loop into something that routes.
+
+def(Block.Splitter, 'Splitter', ['splitter_top', 'iron_block', 'splitter_side'],
+  { hardness: 1, opaque: false });
+def(Block.Tube, 'Item Tube', 'tube', { hardness: 1, opaque: false, solid: true });
+def(Block.Filter, 'Line Filter', ['filter_top', 'iron_block', 'filter_side'],
+  { hardness: 1, opaque: false });
+def(Block.Incinerator, 'Incinerator', ['incinerator_top', 'iron_block', 'incinerator_side'],
+  { hardness: 1 });
 def(Block.Netherrack, 'Netherrack', 'netherrack', { hardness: 0.7 });
 def(Block.SoulSand, 'Soul Sand', 'soul_sand', { hardness: 1 });
 def(Block.Lava, 'Lava', 'lava', {

@@ -1257,6 +1257,72 @@ const RECIPES: Record<string, (t: Tile) => void> = {
     t.rect(4, 11, 8, 1, gold);
     t.rect(6, 12, 4, 1, gold);
   },
+  // --- logistics ---------------------------------------------------------
+  //
+  // Each one has to say what it does from directly above, since that is where
+  // you stand while laying a line. A splitter fans, a filter gates, a tube
+  // carries: the top faces spell that out rather than being decorated metal.
+
+  splitter_top: (t) => {
+    beltBase(t);
+    const gold: RGB = [206, 182, 62];
+    // One stem in, three arms out: the shape of what it does to a line.
+    t.rect(7, 10, 2, 5, gold);
+    t.rect(3, 8, 10, 2, gold);
+    t.rect(3, 4, 2, 4, gold);
+    t.rect(11, 4, 2, 4, gold);
+    t.rect(7, 2, 2, 6, gold);
+    t.rect(2, 3, 4, 1, gold);
+    t.rect(10, 3, 4, 1, gold);
+  },
+  splitter_side: (t) => {
+    beltBase(t);
+    t.rect(0, 0, TILE, 3, [88, 88, 96], 4);
+    t.blot(4, 5, 8, 6, [148, 130, 48], 5);
+  },
+
+  filter_top: (t) => {
+    beltBase(t);
+    // A grille across the belt: the thing the items have to get through.
+    t.rect(2, 6, 12, 4, [176, 176, 186], 5);
+    for (let x = 3; x < 13; x += 2) t.rect(x, 6, 1, 4, [58, 58, 66]);
+    t.rect(2, 6, 12, 1, [214, 214, 224], 3);
+  },
+  filter_side: (t) => {
+    beltBase(t);
+    t.rect(1, 4, 14, 7, [120, 120, 130], 5);
+    for (let x = 2; x < 15; x += 3) t.rect(x, 5, 1, 5, [52, 52, 60]);
+  },
+
+  tube: (t) => {
+    // A glass pipe with a metal band, so cargo reads as travelling inside it.
+    t.fill([70, 78, 88], 5).patches(7, [58, 66, 76], 6, 3).posterize(10);
+    t.rect(4, 0, 8, TILE, [126, 148, 166], 6);      // the bore
+    t.rect(4, 0, 1, TILE, [176, 200, 216], 4);      // lit edge
+    t.rect(11, 0, 1, TILE, [78, 94, 110], 4);       // shadowed edge
+    t.rect(0, 5, TILE, 3, [150, 150, 160], 5);      // band
+    t.rect(0, 5, TILE, 1, [196, 196, 206], 3);
+    t.border([40, 46, 54]);
+  },
+
+  incinerator_top: (t) => {
+    t.fill([58, 52, 52], 5).patches(9, [46, 40, 40], 6, 3).posterize(6);
+    t.border([32, 28, 28]);
+    // An open mouth with fire in it: unmistakably where things go to die.
+    t.rect(3, 3, 10, 10, [26, 20, 18], 4);
+    t.blot(4, 8, 8, 4, [188, 78, 30], 6);
+    t.blot(5, 10, 6, 3, [232, 148, 44], 5);
+    t.blot(7, 11, 2, 2, [248, 214, 120], 3);
+  },
+  incinerator_side: (t) => {
+    t.fill([58, 52, 52], 5).patches(9, [46, 40, 40], 6, 3).posterize(6);
+    t.border([32, 28, 28]);
+    t.rect(2, 2, 12, 3, [150, 62, 26], 5);          // hazard band
+    for (let x = 3; x < 14; x += 3) t.rect(x, 2, 1, 3, [40, 26, 20]);
+    t.rect(4, 8, 8, 5, [26, 20, 18], 4);            // vent
+    t.blot(5, 10, 6, 2, [196, 92, 34], 5);
+  },
+
   cable: (t) => {
     t.fill([52, 48, 56], 5).patches(8, [42, 38, 46], 6, 3).posterize(12);
     t.rect(0, 6, TILE, 4, [168, 118, 54], 6);   // copper run across the block

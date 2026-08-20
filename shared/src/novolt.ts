@@ -60,6 +60,11 @@ const DEMAND: Partial<Record<Block, Demand>> = {
   [Block.Sawmill]: { draw: 20, minimum: 30 },
   [Block.Compressor]: { draw: 25, minimum: 35 },
   [Block.Quarry]: { draw: 40, minimum: 60 },
+  // Cheap to run, because its job is to unblock a jammed line and a disposal
+  // you cannot afford to run is not a disposal. Splitters, filters and tubes
+  // draw nothing at all -- they only decide where cargo goes, and charging
+  // for that would tax building a tidy base.
+  [Block.Incinerator]: { draw: 10, minimum: 15 },
 };
 
 export function demandOf(block: number): Demand | null {
@@ -85,7 +90,10 @@ export function isConsumer(block: number): boolean {
 export function requiresNoVolt(block: number): boolean {
   return block === Block.Crusher || block === Block.StoneGenerator ||
     block === Block.ElectricFurnace || block === Block.Sawmill ||
-    block === Block.Compressor || block === Block.Quarry;
+    block === Block.Compressor || block === Block.Quarry ||
+    // Throwing things away should cost something, or it becomes the answer
+    // to every mildly inconvenient surplus.
+    block === Block.Incinerator;
 }
 
 /** Seconds each NoVolt-only machine takes per operation, before boost. */

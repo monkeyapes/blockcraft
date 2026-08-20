@@ -9,7 +9,7 @@
  * make a furnace smelt faster or a miner dig quicker.
  */
 
-import { Block, blockDef, isOpaque } from '@shared/blocks.js';
+import { Block, blockDef, isSolid } from '@shared/blocks.js';
 import { blockDrop, smeltResult, fuelValue } from '@shared/items.js';
 import {
   CONVEYOR_FACING, CONVEYOR_SPEED, COLLECTOR_RANGE, MACHINE_HZ, MINER_PERIOD,
@@ -23,6 +23,7 @@ import {
   boostAt, demandOf, isConduit, isConsumer, pressureAt, requiresNoVolt,
 } from '@shared/novolt.js';
 import { findRecipe } from '@shared/recipes.js';
+import { CONVEYOR_HEIGHT, shapeOf } from '@shared/shapes.js';
 import type { ClientWorld } from './world.js';
 
 /** Six-neighbour offsets, for power and item routing. */
@@ -38,6 +39,17 @@ const PICKUP_RANGE = 1.4;
 /** Ceiling on live entities; oldest go first. */
 const MAX_ITEMS = 400;
 
+/** Every way out of a tube. */
+const TUBE_DIRS: ReadonlyArray<readonly [number, number, number]> = [
+  [1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0],
+];
+
+/**
+ * How fast cargo travels inside a tube. Faster than a belt: a pipe costs more
+ * to build and cannot be walked on, so it should be worth the trade.
+ */
+const TUBE_SPEED = 4.5;
+
 export interface DroppedItem {
   x: number; y: number; z: number;
   vx: number; vy: number; vz: number;
@@ -46,6 +58,27 @@ export interface DroppedItem {
   age: number;
   /** Brief delay before the player can pick it up, so drops do not snap back. */
   pickupDelay: number;
+  /**
+   * The last direction this cargo was actually travelling, as a unit step.
+   *
+   * Velocity alone is not enough to answer "which way was it going?", because
+   * an item that has just landed on a belt has none -- and both a filter
+   * deciding what "straight on" means and a tube deciding which way to carry
+   * something need that answer at exactly that moment. Without it they fall
+   * back on whichever neighbour happens to be listed first, which looks like
+   * a routing bug and is really an amnesia bug.
+   */
+  hx: number; hy: number; hz: number;
+  /**
+   * The cell of the last splitter or filter that routed this cargo, packed.
+   *
+   * Routing is a decision made once as something passes, not a force applied
+   * continuously. Re-deciding every frame makes a filter flip its answer
+   * thirty times a second -- it turns the item aside, sees it now heading
+   * aside, decides *that* is the way on, turns it back, and the cargo
+   * shivers in place on the belt instead of going anywhere.
+   */
+  routedAt: number;
 }
 
 /** A machine's stored contents, keyed by packed block position. */
@@ -58,10 +91,16 @@ interface MachineState {
   /** Miner: seconds until the next dig. */
   timer: number;
   /**
-   * Sorter: what it diverts. Kept apart from `buffer` because these are a
-   * pattern, not cargo -- a sorter must never consume its own filter.
+   * Sorter and filter: what it acts on. Kept apart from `buffer` because
+   * these are a pattern, not cargo -- it must never consume its own filter.
    */
   filter: Array<{ id: number; count: number }>;
+  /**
+   * Splitter: which output went last. Round-robin rather than random, so a
+   * line feeding two furnaces splits evenly instead of merely on average --
+   * over a short run, random is visibly lopsided and reads as broken.
+   */
+  turn: number;
 }
 
 /**
@@ -152,7 +191,7 @@ export class MachineWorld {
     const key = packKey(x, y, z);
     let s = this.state.get(key);
     if (!s) {
-      s = { buffer: [], burn: 0, cook: 0, timer: 0, filter: [] };
+      s = { buffer: [], burn: 0, cook: 0, timer: 0, filter: [], turn: 0 };
       this.state.set(key, s);
     }
     return s;
@@ -172,6 +211,7 @@ export class MachineWorld {
       vy: 1.8,
       vz: (Math.random() - 0.5) * 1.4,
       id, count, age: 0, pickupDelay: delay,
+      hx: 0, hy: 0, hz: 0, routedAt: -1,
     });
     if (this.items.length > MAX_ITEMS) this.items.splice(0, this.items.length - MAX_ITEMS);
   }
@@ -219,6 +259,16 @@ export class MachineWorld {
       const it = this.items[i];
       it.age += dt;
       it.pickupDelay = Math.max(0, it.pickupDelay - dt);
+
+      // Remember which way it is going while it still is, so machines can ask
+      // later, when it has stopped on their belt.
+      const sp = Math.hypot(it.vx, it.vy, it.vz);
+      if (sp > 0.4) {
+        const ax = Math.abs(it.vx), ay = Math.abs(it.vy), az = Math.abs(it.vz);
+        if (ax >= ay && ax >= az) { it.hx = Math.sign(it.vx); it.hy = 0; it.hz = 0; }
+        else if (ay >= az) { it.hx = 0; it.hy = Math.sign(it.vy); it.hz = 0; }
+        else { it.hx = 0; it.hy = 0; it.hz = Math.sign(it.vz); }
+      }
       if (it.age > DESPAWN_S) {
         this.items.splice(i, 1);
         continue;
@@ -244,6 +294,24 @@ export class MachineWorld {
         continue;
       }
 
+      // A tube carries its cargo inside it, in any direction including up,
+      // and holds it against gravity while it travels. That is the whole
+      // point: conveyors need a floor and cannot cross their own lines, so
+      // without a pipe there is no way to route over or under anything.
+      if (inside === Block.Tube) {
+        this.driveThroughTube(dt, world, it);
+        if (this.attract(dt, i, it)) continue;
+        continue;
+      }
+
+      // A splitter or filter under the item steers it before the belt logic
+      // below gets a say, since both exist to override where a line goes.
+      const under = world.getBlock(
+        Math.floor(it.x), Math.floor(it.y - 0.12), Math.floor(it.z));
+      if (under === Block.Splitter || under === Block.Filter) {
+        this.steer(world, under, it);
+      }
+
       // A conveyor under the item drives it along its facing; otherwise
       // horizontal motion just bleeds off.
       const below = world.getBlock(
@@ -264,16 +332,20 @@ export class MachineWorld {
       const nz = it.z + it.vz * dt;
 
       // Cheap axis-separated collision: enough for something this small.
-      if (!isOpaque(world.getBlock(Math.floor(nx), Math.floor(it.y), Math.floor(it.z)))) {
+      if (!this.blocked(world, nx, it.y, it.z)) {
         it.x = nx;
       } else it.vx = 0;
-      if (!isOpaque(world.getBlock(Math.floor(it.x), Math.floor(it.y), Math.floor(nz)))) {
+      if (!this.blocked(world, it.x, it.y, nz)) {
         it.z = nz;
       } else it.vz = 0;
-      if (!isOpaque(world.getBlock(Math.floor(it.x), Math.floor(ny), Math.floor(it.z)))) {
+      // Vertical rest has to follow the block's shape, not its cell. Belts
+      // are a 3/16 slab now, so resting cargo on the cell above would leave
+      // every item on a conveyor hovering thirteen sixteenths in the air.
+      const landing = it.vy < 0 ? this.restHeight(world, it.x, it.y, ny, it.z) : null;
+      if (landing === null) {
         it.y = ny;
       } else {
-        if (it.vy < 0) it.y = Math.floor(it.y) + (it.vy < -0.01 ? 0.02 : 0);
+        it.y = landing;
         it.vy = 0;
       }
 
@@ -302,6 +374,216 @@ export class MachineWorld {
    * third of a block short and can never arrive. Gathering on the top face
    * is both reachable and how a hopper reads.
    */
+  /**
+   * Moves an item along a tube run.
+   *
+   * The rule is "keep going if you can, otherwise take the only other way
+   * out". Preferring the current heading is what makes a straight pipe
+   * straight; without it an item entering a corner has two neighbours to
+   * choose from and oscillates between them forever.
+   *
+   * Gravity is suspended while inside, so a tube can climb. Cargo is also
+   * pulled to the bore, or it scrapes a wall and stalls.
+   */
+  private driveThroughTube(dt: number, world: ClientWorld, it: DroppedItem): void {
+    const bx = Math.floor(it.x);
+    const by = Math.floor(it.y);
+    const bz = Math.floor(it.z);
+
+    const connects = (dx: number, dy: number, dz: number): boolean => {
+      const b = world.getBlock(bx + dx, by + dy, bz + dz);
+      return b === Block.Tube || acceptsItems(b) || isConveyor(b);
+    };
+
+    // The heading it already had, remembered rather than read off a velocity
+    // that this very method overwrote last frame.
+    let dir: [number, number, number] | null =
+      it.hx || it.hy || it.hz ? [it.hx, it.hy, it.hz] : null;
+
+    if (!dir || !connects(dir[0], dir[1], dir[2])) {
+      // Look for any exit that is not the way we came in.
+      const back = dir ? [-dir[0], -dir[1], -dir[2]] : null;
+      dir = null;
+      for (const [dx, dy, dz] of TUBE_DIRS) {
+        if (back && dx === back[0] && dy === back[1] && dz === back[2]) continue;
+        if (connects(dx, dy, dz)) { dir = [dx, dy, dz]; break; }
+      }
+    }
+
+    if (!dir) {
+      // A capped tube. Hold the cargo still rather than letting it drop out
+      // through the floor of a pipe it is supposed to be inside.
+      it.vx = 0; it.vy = 0; it.vz = 0;
+    } else {
+      it.vx = dir[0] * TUBE_SPEED;
+      it.vy = dir[1] * TUBE_SPEED;
+      it.vz = dir[2] * TUBE_SPEED;
+      it.hx = dir[0]; it.hy = dir[1]; it.hz = dir[2];
+
+      // Centre it on the two axes it is not travelling along.
+      const pull = Math.min(1, dt * 14);
+      if (dir[0] === 0) it.x += (bx + 0.5 - it.x) * pull;
+      if (dir[1] === 0) it.y += (by + 0.5 - it.y) * pull;
+      if (dir[2] === 0) it.z += (bz + 0.5 - it.z) * pull;
+    }
+
+    it.x += it.vx * dt;
+    it.y += it.vy * dt;
+    it.z += it.vz * dt;
+  }
+
+  /**
+   * A splitter or a filter deciding where a passing item goes.
+   *
+   * Both nudge velocity rather than teleporting the item, so cargo still
+   * looks like it is being carried rather than snapping between cells.
+   */
+  private steer(world: ClientWorld, kind: number, it: DroppedItem): void {
+    const bx = Math.floor(it.x);
+    const by = Math.floor(it.y - 0.12);
+    const bz = Math.floor(it.z);
+
+    // Wait until the cargo is actually riding the belt. Deciding while it is
+    // still falling through the airspace above spends the decision early:
+    // there is no belt under it yet to hold the new heading, so drag bleeds
+    // the push away before it lands, and it arrives going nowhere.
+    if (it.y > by + CONVEYOR_HEIGHT + 0.2) return;
+
+    // One decision per machine per item. See DroppedItem.routedAt.
+    const cell = (bx & 0xffff) * 0x1000000 + (by & 0xfff) * 0x1000 + (bz & 0xfff);
+    if (it.routedAt === cell) return;
+    it.routedAt = cell;
+
+    const s = this.stateAt(bx, by, bz);
+
+    // Where could this thing go? Any belt, tube or machine beside it.
+    const exits: Array<[number, number]> = [];
+    for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const b = world.getBlock(bx + dx, by, bz + dz);
+      const above = world.getBlock(bx + dx, by + 1, bz + dz);
+      if (isConveyor(b) || b === Block.Splitter || b === Block.Filter ||
+          above === Block.Tube || acceptsItems(b)) {
+        exits.push([dx, dz]);
+      }
+    }
+    if (exits.length === 0) return;
+
+    let pick: [number, number];
+    if (kind === Block.Filter) {
+      // A filter is a gate, not a router: matching cargo carries straight on
+      // and everything else is turned aside. An empty filter passes all of
+      // it, which is the same rule a sorter uses.
+      const matches = s.filter.length === 0 || sorterAccepts(s.filter, it.id);
+      const ahead = this.throughLine(world, bx, by, bz, it);
+      if (matches && ahead && exits.some(([dx, dz]) => dx === ahead[0] && dz === ahead[1])) {
+        pick = ahead;
+      } else {
+        // Rejects go sideways, never backwards. "Anything but straight on"
+        // includes the way the cargo arrived from, and returning it up its own
+        // input belt just sends it round again -- the line would knot itself
+        // at the first item the filter did not want.
+        const aside = ahead
+          ? exits.find(([dx, dz]) => dx * ahead[0] + dz * ahead[1] === 0)
+          : exits[0];
+        // Nowhere to put it: better to let it ride on than to bounce it back.
+        if (!aside) return;
+        pick = aside;
+      }
+    } else {
+      // Round-robin, so two outputs really do get half each.
+      pick = exits[s.turn % exits.length];
+      s.turn = (s.turn + 1) % exits.length;
+    }
+
+    it.vx = pick[0] * CONVEYOR_SPEED;
+    it.vz = pick[1] * CONVEYOR_SPEED;
+    it.hx = pick[0]; it.hy = 0; it.hz = pick[1];
+  }
+
+  /**
+   * Which way "straight on" runs through this cell.
+   *
+   * Taken from the belt feeding the machine rather than from the item, and
+   * for a good reason: cargo falling onto a filter has spent the drop with
+   * its heading pointing down, so by the time it lands it no longer knows
+   * which way it came from. The line itself does know.
+   *
+   * Falls back to whatever the cargo remembers, for a filter fed by hand or
+   * by a machine rather than by a belt.
+   */
+  private throughLine(
+    world: ClientWorld, bx: number, by: number, bz: number, it: DroppedItem,
+  ): [number, number] | null {
+    for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const facing = CONVEYOR_FACING[world.getBlock(bx - dx, by, bz - dz) as Block];
+      // A belt one step back, pointing this way, is the line coming in.
+      if (facing && facing[0] === dx && facing[1] === dz) return [dx, dz];
+    }
+    return this.headingOf(it);
+  }
+
+  /** The way this cargo was last travelling on the horizontal plane. */
+  private headingOf(it: DroppedItem): [number, number] | null {
+    if (it.hx === 0 && it.hz === 0) return null;
+    return [it.hx, it.hz];
+  }
+
+  /**
+   * Is cargo at this position inside something solid?
+   *
+   * Shapes, not cells. Belts are opaque full cubes as far as light is
+   * concerned, but they only occupy the bottom 3/16 of their cell -- so an
+   * item resting on one sits *inside* that cell, and a cell-level test says
+   * it is embedded in a wall and refuses to let it move along the line at
+   * all. Which is to say: the belt would stop the very cargo it carries.
+   */
+  private blocked(world: ClientWorld, x: number, y: number, z: number): boolean {
+    const bx = Math.floor(x);
+    const by = Math.floor(y);
+    const bz = Math.floor(z);
+    const id = world.getBlock(bx, by, bz);
+    if (!isSolid(id)) return false;
+    for (const box of shapeOf(id)) {
+      // A hair above the surface counts as clear, so cargo resting exactly
+      // on a belt is not read as being inside it.
+      if (y >= by + box.y0 + 1e-3 && y < by + box.y1 - 1e-3) return true;
+    }
+    return false;
+  }
+
+  /**
+   * The surface a falling item lands on this step, or null if it lands on
+   * nothing.
+   *
+   * It needs both ends of the move, not just the destination: landing means
+   * crossing a surface, so the box top has to be at or below where the item
+   * started and at or above where it is going. Testing only the destination
+   * skips every floor the item has not reached yet -- which is all of them,
+   * and the cargo falls out of the world.
+   *
+   * Shapes rather than cells, so cargo rests on a belt at belt height.
+   */
+  private restHeight(
+    world: ClientWorld, x: number, fromY: number, toY: number, z: number,
+  ): number | null {
+    const bx = Math.floor(x);
+    const bz = Math.floor(z);
+    let best: number | null = null;
+    // Every cell the move passes through, plus the one below it: a shallow
+    // slab can be crossed entirely within a single step.
+    for (let by = Math.floor(fromY) + 1; by >= Math.floor(toY) - 1; by--) {
+      const id = world.getBlock(bx, by, bz);
+      if (!isSolid(id)) continue;
+      for (const box of shapeOf(id)) {
+        const top = by + box.y1;
+        if (top > fromY + 1e-6) continue;   // started below it: not a floor
+        if (top < toY - 1e-6) continue;     // never reached it this step
+        if (best === null || top > best) best = top;
+      }
+    }
+    return best;
+  }
+
   private attract(dt: number, index: number, it: DroppedItem): boolean {
     for (const [x, y, z] of this.collectors) {
       const dx = x + 0.5 - it.x;
@@ -499,6 +781,7 @@ export class MachineWorld {
       else if (block === Block.Sawmill) this.tickSawmill(dt, x, y, z, s);
       else if (block === Block.Compressor) this.tickCompressor(dt, x, y, z, s);
       else if (block === Block.Quarry) this.tickQuarry(dt, world, x, y, z, s);
+      else if (block === Block.Incinerator) this.tickIncinerator(x, y, z);
     }
 
     // Collectors and miners have to run even before anything is stored in
@@ -511,7 +794,8 @@ export class MachineWorld {
         for (let dz = -2; dz <= 2; dz++) {
           for (let dx = -2; dx <= 2; dx++) {
             const b = world.getBlock(bx + dx, by + dy, bz + dz);
-            if (b === Block.Collector || b === Block.Sorter) {
+            if (b === Block.Collector || b === Block.Sorter ||
+                b === Block.Incinerator || b === Block.Splitter || b === Block.Filter) {
               this.stateAt(bx + dx, by + dy, bz + dz);
             }
           }
@@ -613,7 +897,10 @@ export class MachineWorld {
         const it = this.items[i];
         // Only items passing directly over this block.
         if (Math.floor(it.x) !== x || Math.floor(it.z) !== z) continue;
-        if (it.y < y + 0.6 || it.y > y + 2.2) continue;
+        // Cargo rests on the belt at 3/16, not a whole block up: belts are
+        // slabs now, and the old window started above everything a sorter is
+        // meant to see.
+        if (it.y < y - 0.1 || it.y > y + 2.2) continue;
         if (!sorterAccepts(s.filter, it.id)) continue;
         this.store(s, it.id, it.count);
         this.items.splice(i, 1);
@@ -640,6 +927,27 @@ export class MachineWorld {
    * anything is drawing on it -- a generator with fuel is "on", and the
    * network decides who benefits.
    */
+  /**
+   * Burns whatever is dropped into it.
+   *
+   * An automated base makes things nobody asked for -- cobble from a quarry,
+   * dirt from a miner -- and without somewhere for the surplus to go, a
+   * backed-up line stalls everything upstream of it. This is that somewhere.
+   *
+   * It needs NoVolt, so throwing away is a decision with a cost rather than
+   * the obvious default for anything mildly inconvenient.
+   */
+  private tickIncinerator(x: number, y: number, z: number): void {
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      const it = this.items[i];
+      if (Math.floor(it.x) !== x || Math.floor(it.z) !== z) continue;
+      // The mouth is the top of the block and a little above it, so cargo
+      // riding a belt into the side is not silently eaten.
+      if (it.y < y + 0.5 || it.y > y + 1.6) continue;
+      this.items.splice(i, 1);
+    }
+  }
+
   private tickGenerator(dt: number, s: MachineState): void {
     if (s.burn > 0) {
       s.burn -= dt;

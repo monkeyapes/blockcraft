@@ -33,7 +33,9 @@ export function conveyorForYaw(yaw: number): Block {
 /** Blocks that hold an inventory a machine can push items into. */
 export function acceptsItems(block: number): boolean {
   return block === Block.Chest || block === Block.Furnace ||
-    block === Block.Collector || block === Block.Sorter;
+    block === Block.Collector || block === Block.Sorter ||
+    // An incinerator takes anything, which is the point of it.
+    block === Block.Incinerator;
 }
 
 /**

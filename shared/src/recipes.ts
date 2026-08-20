@@ -178,6 +178,37 @@ export const RECIPES: Recipe[] = [
     pattern: ['III', 'ICI', 'III'],
     key: { I, C },
   },
+
+  // --- logistics ---------------------------------------------------------
+  //
+  // Priced under the machines they serve. Routing is what makes a factory
+  // worth building, and a splitter that costs as much as the furnace it feeds
+  // just persuades people to build two furnaces instead.
+
+  {
+    // One belt in, three out -- so the recipe is a belt and a junction.
+    result: { id: Block.Splitter, count: 1 },
+    pattern: [' I ', 'ICI', ' I '],
+    key: { I, C },
+  },
+  {
+    // Glass around a copper spine: you can see the cargo travelling.
+    result: { id: Block.Tube, count: 8 },
+    pattern: ['GGG', 'I I', 'GGG'],
+    key: { G: Block.Glass, I },
+  },
+  {
+    result: { id: Block.Filter, count: 1 },
+    pattern: ['III', 'CCC', 'III'],
+    key: { I, C },
+  },
+  {
+    // Cobble and iron around a furnace: it burns, and burning is what a
+    // furnace already knows how to do.
+    result: { id: Block.Incinerator, count: 1 },
+    pattern: ['CIC', 'CFC', 'CCC'],
+    key: { C, I, F: Block.Furnace },
+  },
   { result: { id: Item.IronIngot, count: 9 }, shapeless: [Block.IronBlock] },
   {
     result: { id: Block.Bricks, count: 1 },
