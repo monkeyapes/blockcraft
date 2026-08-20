@@ -211,6 +211,19 @@ h2 {
 
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
 @media (max-width: 780px) { .split { grid-template-columns: 1fr; } }
+
+/*
+ * Touch targets.
+ *
+ * A text link is only as tall as its line box -- 16 to 22px here, against the
+ * ~44px a thumb needs to hit reliably. Padding them out is scoped to coarse
+ * pointers so the desktop typography stays tight, and applied vertically only
+ * so nothing reflows sideways.
+ */
+@media (pointer: coarse) {
+  .bar nav a { display: inline-block; padding: 12px 6px; }
+  p > a:not(.btn) { display: inline-block; padding: 11px 0; }
+}
 .split img { border: 2px solid var(--keyline); }
 
 .alt { background: rgba(255, 255, 255, 0.022); border-block: 2px solid var(--keyline); }
