@@ -1,0 +1,12 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1040, "h": 660, "title": "Launcher — Play" },
+    { "file": "Multiplayer.dc.html", "x": 1120, "y": 0, "w": 1040, "h": 660, "title": "Launcher — Multiplayer" },
+    { "file": "Buttons.dc.html", "x": 0, "y": 740, "w": 900, "h": 700, "title": "Stone button system" }
+  ],
+  "annotations": [
+    { "id": "why", "x": 2240, "y": 0, "w": 300, "text": "What changed from the build you have:\n\n• Gradients removed. The old PLAY button was a green gradient — the single most generic thing on the screen. Now flat colour with a hard bevel.\n\n• Corners squared. 8px radii softened everything; the game is made of cubes.\n\n• Buttons carry the real stone texture from the atlas, pixel-crisp.\n\n• Archivo instead of Segoe UI — sturdier, more character, same metrics family." },
+    { "id": "press", "x": 940, "y": 740, "w": 280, "text": "The press is the whole trick: the bevel inverts and the face drops 4px, so the light that was on top is suddenly underneath. That reads as a physical push in a way a colour change never does." }
+  ],
+  "launch": { "view": "canvas" }
+}

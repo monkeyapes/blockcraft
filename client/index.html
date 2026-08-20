@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0d13" />
+    <title>Blockcraft</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="gl"></canvas>
+
+    <div id="hud" hidden>
+      <div id="crosshair"></div>
+      <div id="debug"></div>
+      <div id="chat-log"></div>
+      <input id="chat-input" type="text" maxlength="256" placeholder="Say something..." hidden />
+      <div id="mining" hidden><div id="mining-bar"></div></div>
+      <div id="boss" hidden>
+        <div id="boss-name"></div>
+        <div id="boss-track"><div id="boss-bar"></div></div>
+      </div>
+      <div id="vitals">
+        <div id="air" hidden></div>
+        <div id="health"></div>
+        <div id="food"></div>
+      </div>
+      <div id="hotbar"></div>
+      <div id="toast"></div>
+    </div>
+
+    <div id="loading" hidden>
+      <div class="spinner"></div>
+      <p id="loading-text">Building the world...</p>
+    </div>
+
+    <div id="victory" class="overlay" hidden>
+      <h2>The Dragon Falls</h2>
+      <p id="victory-text"></p>
+      <button id="victory-close" class="btn btn-primary">Continue Playing</button>
+    </div>
+
+    <div id="crash" class="overlay" hidden>
+      <h2>Something broke</h2>
+      <p id="crash-message"></p>
+      <pre id="crash-detail"></pre>
+      <button id="crash-reload" class="btn btn-primary">Reload</button>
+    </div>
+
+    <div id="death" class="overlay" hidden>
+      <h2>You Died</h2>
+      <p id="death-cause"></p>
+      <button id="respawn" class="btn btn-primary">Respawn</button>
+    </div>
+
+    <div id="pause" class="overlay" hidden>
+      <h2>Paused</h2>
+      <div class="card">
+        <button id="resume" class="btn btn-primary">Resume</button>
+        <button id="open-settings" class="btn">Settings</button>
+        <button id="quit" class="btn">Quit to Title</button>
+      </div>
+    </div>
+
+    <div id="settings" class="overlay" hidden>
+      <h2>Settings</h2>
+      <div class="card">
+        <label class="field">
+          Render distance
+          <input id="set-distance" type="range" min="3" max="16" step="1" />
+          <span class="value" id="val-distance"></span>
+        </label>
+        <label class="field">
+          Field of view
+          <input id="set-fov" type="range" min="55" max="110" step="1" />
+          <span class="value" id="val-fov"></span>
+        </label>
+        <label class="field">
+          Mouse sensitivity
+          <input id="set-sens" type="range" min="2" max="40" step="1" />
+          <span class="value" id="val-sens"></span>
+        </label>
+        <label class="field">
+          Volume
+          <input id="set-volume" type="range" min="0" max="100" step="1" />
+          <span class="value" id="val-volume"></span>
+        </label>
+        <div class="divider"></div>
+        <label class="field">
+          Texture resolution
+          <select id="set-texres">
+            <option value="16">16&times;16 (built-in)</option>
+            <option value="32">32&times;32</option>
+            <option value="64">64&times;64</option>
+            <option value="128">128&times;128</option>
+          </select>
+        </label>
+        <div class="field pack-row">
+          <span>Resource pack</span>
+          <span class="value" id="pack-name">Built-in</span>
+        </div>
+        <div class="buttons">
+          <button id="pack-choose" class="btn">Choose pack&hellip;</button>
+          <button id="pack-clear" class="btn">Use built-in</button>
+        </div>
+        <input id="pack-file" type="file" accept=".zip" hidden />
+        <p class="note" id="pack-note">
+          Load any Minecraft-style resource pack you have. It stays on your
+          machine and is never bundled with the game.
+        </p>
+        <div class="divider"></div>
+        <button id="close-settings" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+
+    <!--
+      Touch build. A separate, much lighter entry than the desktop launcher:
+      one screen, one action, no installation list -- a phone visit is almost
+      always "let me try this", not "manage my saves".
+    -->
+    <div id="mobile-entry" hidden>
+      <div class="me-card">
+        <div class="me-brand">
+          <span class="me-cube"></span>
+          <span>Blockcraft</span>
+        </div>
+        <h1>Build. Mine. Fly.</h1>
+        <p class="me-sub">A voxel sandbox that runs in your browser. Tap play and you are in.</p>
+
+        <button id="me-play" class="btn btn-primary">Play</button>
+
+        <div class="me-modes">
+          <button class="me-mode active" data-mode="creative">Creative</button>
+          <button class="me-mode" data-mode="survival">Survival</button>
+        </div>
+
+        <p class="me-note">
+          Runs at a shorter view distance on a phone so it stays smooth.
+          The desktop app draws further and has the full launcher.
+        </p>
+        <a id="me-desktop" href="#">Get the desktop version</a>
+      </div>
+    </div>
+
+    <!-- On-screen controls, only shown on the touch build. -->
+    <div id="touch-ui" hidden>
+      <div id="tc-stick"><span id="tc-knob"></span></div>
+      <div class="tc-right">
+        <button class="tc-btn tc-jump" id="tc-jump" aria-label="Jump">&#9650;</button>
+        <button class="tc-btn tc-place" id="tc-place" aria-label="Place block">Place</button>
+      </div>
+      <div class="tc-left">
+        <button class="tc-btn tc-small" id="tc-sneak" aria-label="Sneak">Sneak</button>
+        <button class="tc-btn tc-small" id="tc-fly" aria-label="Fly">Fly</button>
+      </div>
+      <button class="tc-btn tc-small tc-inv" id="tc-inv" aria-label="Inventory">Items</button>
+    </div>
+
+    <div id="menu">
+      <div class="lx">
+        <aside class="lx-side">
+          <div class="lx-brand">
+            <span class="lx-cube"></span>
+            <span>Blockcraft</span>
+          </div>
+          <nav id="launcher-tabs">
+            <button class="lt active" data-pane="worlds"><span class="lt-dot"></span>Play</button>
+            <button class="lt" data-pane="multiplayer"><span class="lt-dot"></span>Multiplayer</button>
+            <button class="lt" data-pane="controls"><span class="lt-dot"></span>Controls</button>
+            <button class="lt" data-pane="credits"><span class="lt-dot"></span>About</button>
+          </nav>
+          <div class="lx-version">v0.1.0</div>
+        </aside>
+
+        <main class="lx-main">
+          <div class="lx-hero">
+            <h1>Blockcraft</h1>
+            <p>Build, mine, fly, survive &mdash; then go and beat the dragon.</p>
+          </div>
+
+          <div class="lx-body">
+
+        <div data-pane-body="worlds" class="pane">
+          <h3 class="pane-title">Your worlds</h3>
+          <div id="world-list" class="world-list"></div>
+          <details class="new-world-box">
+            <summary>Create a new world</summary>
+            <div class="new-world">
+              <label class="field">
+                Name
+                <input id="world-name" type="text" maxlength="28" placeholder="New World" />
+              </label>
+              <div class="row">
+                <label class="field">
+                  Seed
+                  <input id="world-seed" type="text" maxlength="24" placeholder="random" />
+                </label>
+                <label class="field">
+                  Mode
+                  <select id="mode">
+                    <option value="survival">Survival</option>
+                    <option value="creative">Creative</option>
+                  </select>
+                </label>
+              </div>
+              <button id="create-world" class="btn btn-primary">Create world</button>
+            </div>
+          </details>
+        </div>
+
+        <div data-pane-body="multiplayer" class="pane" hidden>
+          <label class="field">
+            Your name
+            <input id="name" type="text" maxlength="16" placeholder="Steve" />
+          </label>
+          <label class="field">
+            Server address
+            <input id="server" type="text" placeholder="localhost:8787" />
+          </label>
+          <button id="play-multi" class="btn btn-secondary">Join Server</button>
+          <p class="note">
+            Leave the address blank to join a server running on this machine.
+          </p>
+        </div>
+
+        <div data-pane-body="credits" class="pane" hidden>
+          <div class="credits">
+            <h3>About</h3>
+            <p>
+              <b>Blockcraft</b> is an original voxel sandbox, heavily inspired by
+              <b>Minecraft</b> by Mojang Studios. It is not affiliated with,
+              endorsed by, or connected to Mojang or Microsoft in any way, and
+              shares no code or artwork with it. Everything here &mdash; the
+              terrain generation, the renderer, the physics, and every built-in
+              texture &mdash; was written from scratch.
+            </p>
+
+            <h3>Resource packs</h3>
+            <p>
+              Textures you load are the work of their authors and stay on your
+              machine &mdash; the game reads them at runtime and never
+              redistributes them. Please respect each pack's licence.
+            </p>
+            <ul class="credit-list">
+              <li>
+                <b>Faithful</b> &mdash; the Faithful Resource Pack team.
+                Used under the Faithful Licence v3.
+              </li>
+              <li>
+                <b>Fresh Food</b> &mdash; Cyber, Ben, Hellay &amp; Pato.
+              </li>
+              <li id="credit-active" hidden></li>
+            </ul>
+            <p class="note">
+              Using a pack not listed here? Its creators deserve the credit
+              too &mdash; the pack name is shown in Settings.
+            </p>
+
+            <h3>Built with</h3>
+            <p class="note">
+              TypeScript, WebGL2 and Tauri. No game engine, no asset packs, no
+              third-party art.
+            </p>
+          </div>
+        </div>
+
+        <div data-pane-body="controls" class="pane" hidden>
+          <ul class="controls">
+            <li><b>WASD</b> move &middot; <b>Space</b> jump &middot; <b>Shift</b> sneak &middot; <b>Ctrl</b> sprint</li>
+            <li><b>Left click</b> mine &middot; <b>Right click</b> place or use &middot; <b>1-9</b> / wheel select</li>
+            <li><b>E</b> inventory &middot; right-click a <b>crafting table</b> for 3&times;3</li>
+            <li>Right-click a <b>vehicle</b> to ride &middot; <b>Q</b> to get off &middot; <b>V</b> camera</li>
+            <li>Flying: <b>W/S</b> throttle, <b>mouse</b> to steer &middot; heli: <b>Space</b>/<b>Shift</b> up &amp; down</li>
+            <li><b>T</b> chat &middot; <b>L</b> advancements &middot; <b>F</b> fly (creative) &middot; <b>F3</b> debug &middot; <b>Esc</b> pause</li>
+            <li>Right-click a <b>chest</b>, <b>furnace</b> or <b>sorter</b> to open it &middot; <b>ladders</b> climb &middot; <b>beds</b> skip the night</li>
+            <li>NoVolt: a <b>generator</b> feeds <b>conduit</b>; pressure drops with distance, and a <b>booster</b> restores it</li>
+          </ul>
+        </div>
+
+          </div>
+
+          <div class="lx-play">
+            <div class="lx-play-info">
+              <span class="lx-play-label">Ready to play</span>
+              <span class="lx-play-world" id="selected-world">No world selected</span>
+              <span id="status"></span>
+            </div>
+            <button id="play-now" class="btn-play">Play</button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

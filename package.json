@@ -1,0 +1,29 @@
+{
+  "name": "blockcraft",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c cyan,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev --workspace @bc/server",
+    "dev:client": "npm run dev --workspace @bc/client",
+    "build": "npm run build --workspace @bc/client && npm run build --workspace @bc/server",
+    "typecheck": "tsc -p client/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit",
+    "test": "tsx tests/terrain.ts && tsx tests/crafting.ts && tsx tests/vehicles.ts && tsx tests/physics.ts && tsx tests/portals.ts && tsx tests/launcher.ts && tsx tests/structures.ts && tsx tests/mobs.ts && tsx tests/resourcepack.ts && tsx tests/lighting.ts && tsx tests/feedback.ts && tsx tests/itemart.ts && tsx tests/blockart.ts && tsx tests/machines.ts && tsx tests/machines2.ts && tsx tests/power.ts && tsx tests/power2.ts && tsx tests/advancements.ts && tsx tests/pointerlock.ts",
+    "test:mp": "node tests/multiplayer.mjs && node tests/dimensions.mjs",
+    "start": "node server/dist/server.js",
+    "desktop:dev": "cd desktop/src-tauri && tauri dev",
+    "desktop:build": "cd desktop/src-tauri && tauri build",
+    "desktop:icon": "node desktop/make-icon.mjs && cd desktop/src-tauri && tauri icon app-icon.png"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "concurrently": "^9.1.2",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Archivo', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #c9a227; text-decoration: none; }
+    a:hover { color: #e6b64c; }
+    .tex { image-rendering: pixelated; background-repeat: repeat; }
+    .lbl {
+      font: 700 10.5px ui-monospace, Consolas, monospace;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: rgba(238,241,246,0.40);
+    }
+    .spec { font: 500 11px ui-monospace, Consolas, monospace; color: rgba(238,241,246,0.52); line-height: 1.7; }
+  </style>
+</helmet>
+
+<div style="width: 900px; min-height: 700px; padding: 34px 36px; background: #0a0d13; color: #eef1f6; box-sizing: border-box; border: 2px solid #101216;">
+
+  <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.4px;">Stone buttons</div>
+  <p style="margin: 8px 0 30px; font-size: 13px; font-weight: 500; color: rgba(238,241,246,0.60); max-width: 62ch; text-wrap: pretty;">
+    A hard two-tone bevel over the game&rsquo;s own stone texture. No gradients, no rounded corners
+    &mdash; depth comes from the light and dark edges, which is why the press reads as a physical push.
+  </p>
+
+  <!-- STATES ------------------------------------------------------------- -->
+  <div class="lbl">States</div>
+  <div style="display: flex; gap: 16px; align-items: flex-start; margin: 12px 0 34px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 34px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.20), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Rest</div>
+      <span class="spec">default</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 34px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: #ffffff; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); filter: brightness(1.16); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.20), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Hover</div>
+      <span class="spec">brightness 1.16</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div style="height: 4px;"></div>
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 34px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset -3px -3px 0 rgba(255,255,255,0.14), inset 3px 3px 0 rgba(0,0,0,0.52);">Pressed</div>
+      <span class="spec">bevel flips, drops 4px</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 34px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: rgba(242,244,248,0.42); font-weight: 700; font-size: 14px; opacity: 0.45; box-shadow: inset 3px 3px 0 rgba(255,255,255,0.10), inset -3px -3px 0 rgba(0,0,0,0.35), 0 4px 0 #0b0d11;">Disabled</div>
+      <span class="spec">opacity 0.45</span>
+    </div>
+  </div>
+
+  <!-- VARIANTS ----------------------------------------------------------- -->
+  <div class="lbl">Variants</div>
+  <div style="display: flex; gap: 16px; align-items: flex-start; margin: 12px 0 34px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 15px 46px; background-color: #5f9e46; background-image: url(./stone.png); background-size: 48px 48px; background-blend-mode: soft-light; border: 2px solid #101216; color: #f4fbf1; font-weight: 800; font-size: 15px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 2px 0 rgba(0,0,0,0.5); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.22), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Play</div>
+      <span class="spec">primary &middot; grass over stone</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 30px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.20), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Secondary</div>
+      <span class="spec">stone</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 30px; background-color: #7d7d80; background-image: url(./cobble.png); background-size: 44px 44px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.20), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Cobble</div>
+      <span class="spec">rougher grain, more texture</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 30px; background-color: #96322f; background-image: url(./stone.png); background-size: 44px 44px; background-blend-mode: soft-light; border: 2px solid #101216; color: #fdeceb; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.5); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.18), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Delete world</div>
+      <span class="spec">destructive &middot; used sparingly</span>
+    </div>
+  </div>
+
+  <!-- SIZES -------------------------------------------------------------- -->
+  <div class="lbl">Sizes</div>
+  <div style="display: flex; gap: 16px; align-items: center; margin: 12px 0 34px;">
+    <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 40px 40px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 12px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 2px 2px 0 rgba(255,255,255,0.20), inset -2px -2px 0 rgba(0,0,0,0.52), 0 3px 0 #0b0d11;">Small 32</div>
+    <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 13px 30px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 44px 44px; border: 2px solid #101216; color: #f2f4f8; font-weight: 700; font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 3px 3px 0 rgba(255,255,255,0.20), inset -3px -3px 0 rgba(0,0,0,0.52), 0 4px 0 #0b0d11;">Medium 46</div>
+    <div class="tex" style="display: inline-flex; align-items: center; justify-content: center; padding: 17px 44px; background-color: #6d6d70; background-image: url(./stone.png); background-size: 52px 52px; border: 2px solid #101216; color: #f2f4f8; font-weight: 800; font-size: 16px; letter-spacing: 1px; text-shadow: 0 2px 0 rgba(0,0,0,0.55); box-shadow: inset 4px 4px 0 rgba(255,255,255,0.20), inset -4px -4px 0 rgba(0,0,0,0.52), 0 5px 0 #0b0d11;">Large 56</div>
+  </div>
+
+  <!-- THE RECIPE --------------------------------------------------------- -->
+  <div class="lbl">The recipe</div>
+  <div style="display: flex; gap: 22px; margin-top: 12px; align-items: flex-start;">
+    <div class="tex" style="width: 190px; height: 108px; flex: none; background-color: #6d6d70; background-image: url(./stone.png); background-size: 54px 54px; border: 2px solid #101216; box-shadow: inset 5px 5px 0 rgba(255,255,255,0.22), inset -5px -5px 0 rgba(0,0,0,0.52), 0 5px 0 #0b0d11; position: relative;">
+      <span style="position: absolute; left: 8px; top: 6px; font: 700 9.5px ui-monospace, Consolas, monospace; color: rgba(255,255,255,0.72);">LIGHT</span>
+      <span style="position: absolute; right: 8px; bottom: 6px; font: 700 9.5px ui-monospace, Consolas, monospace; color: rgba(0,0,0,0.62);">DARK</span>
+    </div>
+    <div class="spec" style="max-width: 46ch;">
+      border: 2px solid #101216<br>
+      inset&nbsp;&nbsp;3px&nbsp;&nbsp;3px 0 rgba(255,255,255,0.20)<br>
+      inset -3px -3px 0 rgba(0,0,0,0.52)<br>
+      drop&nbsp;&nbsp;&nbsp;0 4px 0 #0b0d11<br>
+      background: stone.png, image-rendering: pixelated<br>
+      radius: 0 &mdash; corners stay square
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":900,"height":700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

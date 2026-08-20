@@ -1,0 +1,22 @@
+{
+  "name": "@bc/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/server.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/server.js --banner:js=\"import{createRequire as __cr}from'node:module';const require=__cr(import.meta.url);\""
+  },
+  "dependencies": {
+    "@bc/shared": "*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.2"
+  }
+}

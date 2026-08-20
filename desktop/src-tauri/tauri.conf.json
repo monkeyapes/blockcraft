@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Blockcraft",
+  "version": "0.1.0",
+  "identifier": "com.blockcraft.game",
+  "build": {
+    "frontendDist": "../../client/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": {
+      "cwd": "../..",
+      "script": "npm run dev:client"
+    },
+    "beforeBuildCommand": {
+      "cwd": "../..",
+      "script": "npm run build --workspace @bc/client"
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Blockcraft",
+        "width": 1280,
+        "height": 760,
+        "minWidth": 800,
+        "minHeight": 500,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

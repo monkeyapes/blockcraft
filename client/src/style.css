@@ -1,0 +1,1556 @@
+/* ==========================================================================
+   Blockcraft UI
+
+   Design language: crisp, slightly chunky panels that echo the voxel world.
+   Flat fills, hard 1px light edges, deep shadows for separation. No gloss.
+   Everything is driven by the tokens below so the whole UI moves together.
+   ========================================================================== */
+
+/*
+ * Archivo, bundled rather than linked: the desktop build has no network, and
+ * a webfont fetched from a CDN would silently fall back there. One variable
+ * file covers every weight the UI uses.
+ */
+@font-face {
+  font-family: 'Archivo';
+  src: url('./fonts/archivo.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Type */
+  --ui: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Surfaces */
+  --bg-deep: #0a0d13;
+  --panel: rgba(18, 22, 30, 0.94);
+  --panel-soft: rgba(255, 255, 255, 0.06);
+  --panel-hover: rgba(255, 255, 255, 0.13);
+  --edge: rgba(255, 255, 255, 0.14);
+  --edge-strong: rgba(255, 255, 255, 0.3);
+
+  /* Ink */
+  --ink: #eef1f6;
+  --ink-dim: rgba(238, 241, 246, 0.62);
+  --ink-faint: rgba(238, 241, 246, 0.38);
+
+  /* Accents */
+  --grass: #6bbf4f;
+  --grass-deep: #3f8a2c;
+  --sky: #5b9fd6;
+  --sky-deep: #35648c;
+  --danger: #e2474d;
+  --danger-deep: #8f2226;
+  --gold: #e6b64c;
+
+  /* Geometry */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.4);
+
+  /*
+   * The stone-button recipe.
+   *
+   * Depth here comes from a hard two-tone bevel -- light along the top and
+   * left, dark along the bottom and right -- rather than from a gradient.
+   * Pressing inverts the bevel and drops the face, so the light that was on
+   * top ends up underneath: that reads as a physical push in a way a colour
+   * change never does. Corners stay square; the game is made of cubes.
+   */
+  --keyline: #101216;
+  --bevel-lit: rgba(255, 255, 255, 0.20);
+  --bevel-dark: rgba(0, 0, 0, 0.52);
+  --bevel:
+    inset 3px 3px 0 var(--bevel-lit),
+    inset -3px -3px 0 var(--bevel-dark),
+    0 4px 0 #0b0d11;
+  --bevel-pressed:
+    inset -3px -3px 0 rgba(255, 255, 255, 0.14),
+    inset 3px 3px 0 var(--bevel-dark);
+}
+
+* { box-sizing: border-box; }
+
+/*
+ * Links. Without this every anchor renders browser-default blue and
+ * underlined, which reads as an unfinished page rather than part of the UI.
+ */
+a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(230, 182, 76, 0.35);
+}
+a:hover { color: #f2cd6b; border-bottom-color: rgba(242, 205, 107, 0.7); }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-deep);
+  color: var(--ink);
+  font-family: var(--ui);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#gl { display: block; width: 100vw; height: 100vh; }
+
+/* --------------------------------------------------------------- controls */
+
+/*
+ * Stone buttons. The block texture behind them is painted by skin.ts as
+ * --tex-stone; the flat colour underneath is what survives if that could
+ * not be generated, so the button is never invisible.
+ */
+.btn {
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 12px 28px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #6d6d70;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 44px 44px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  color: var(--ink);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  box-shadow: var(--bevel);
+  transition: filter 0.09s;
+}
+
+.btn:hover { filter: brightness(1.16); }
+.btn:active { transform: translateY(4px); box-shadow: var(--bevel-pressed); }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  filter: none;
+  box-shadow: var(--bevel);
+}
+
+/* The one saturated control on screen: flat colour blended into the grain. */
+.btn-primary {
+  background-color: #5f9e46;
+  background-blend-mode: soft-light;
+  color: #f4fbf1;
+}
+
+.btn-secondary {
+  background-color: #4a7fa8;
+  background-blend-mode: soft-light;
+  color: #eef6fc;
+}
+
+/* Destructive, deliberately muted: it sits beside Play on every world row. */
+.btn.danger, .world-delete.danger {
+  background-color: #96322f;
+  background-blend-mode: soft-light;
+  color: #fdeceb;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  width: 100%;
+}
+
+/*
+ * Inputs invert the button bevel -- sunk into the panel rather than standing
+ * off it, which is how a field reads as somewhere to type instead of
+ * something to press.
+ */
+.field input[type='text'],
+.field select {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 12px;
+  flex: 1;
+  min-width: 0;
+  border-radius: 0;
+  border: 2px solid var(--keyline);
+  background: #0d1016;
+  box-shadow:
+    inset 3px 3px 0 rgba(0, 0, 0, 0.55),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+  outline: none;
+}
+
+.field input[type='text']:focus,
+.field select:focus { border-color: var(--gold); }
+
+.field input[type='range'] {
+  flex: 1;
+  accent-color: var(--grass);
+  min-width: 0;
+}
+
+.field .value {
+  font: 12px var(--mono);
+  color: var(--ink);
+  min-width: 4.5ch;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------------- menu */
+
+#menu {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    radial-gradient(130% 90% at 50% -10%, #2f4f74 0%, #1a2537 48%, var(--bg-deep) 100%);
+}
+
+#menu[hidden], #pause[hidden], #settings[hidden] { display: none; }
+
+.brand { margin-bottom: 6px; }
+
+.brand h1 {
+  margin: 0;
+  font-size: clamp(40px, 9vw, 78px);
+  font-weight: 800;
+  letter-spacing: 3px;
+  line-height: 1;
+  /* Layered offset shadow reads as an extruded, blocky title. */
+  text-shadow:
+    0 3px 0 #1d2a3d, 0 6px 0 #16202f, 0 10px 26px rgba(0, 0, 0, 0.6);
+}
+
+.brand p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--ink-dim);
+}
+
+.card {
+  width: min(420px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.card .buttons { display: flex; gap: 10px; }
+.card .buttons .btn { flex: 1; padding: 12px 16px; }
+
+.divider {
+  height: 1px;
+  background: var(--edge);
+  margin: 2px 0;
+}
+
+#status {
+  min-height: 18px;
+  margin: 0;
+  font: 12px var(--mono);
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- launcher */
+
+/*
+ * Launcher shell: a fixed nav rail on the left, a hero and content column on
+ * the right, and a persistent action bar pinned to the bottom. The play
+ * button is the loudest thing on screen because it is the only thing most
+ * visits are here to press.
+ */
+.lx {
+  display: grid;
+  grid-template-columns: 208px 1fr;
+  width: min(1040px, 96vw);
+  height: min(660px, 92vh);
+  /* Square, with the same keyline the buttons use: the shell is a block too. */
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(12, 15, 21, 0.96);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+/*
+ * Chrome built from the game's own blocks.
+ *
+ * The textures come in as CSS variables painted by skin.ts at startup; each
+ * surface layers a dark wash over its tile so text stays readable, and every
+ * rule keeps a plain colour underneath for the case where the tiles could
+ * not be generated.
+ */
+.lx-side {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px;
+  background-color: rgba(8, 10, 15, 0.92);
+  background-image:
+    linear-gradient(rgba(8, 10, 15, 0.82), rgba(8, 10, 15, 0.88)),
+    var(--tex-dirt, none);
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  border-right: 1px solid var(--edge);
+}
+
+.lx-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 18px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+}
+
+/* A small isometric-ish block, echoing the app icon. */
+.lx-cube {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background: linear-gradient(160deg, var(--grass) 0 52%, #6b4a2f 52% 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+#launcher-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  padding: 11px 12px;
+  border: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color 0.12s, background-color 0.12s;
+}
+
+.lt-dot {
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.12s;
+}
+
+.lt:hover { color: var(--ink); background-color: rgba(255, 255, 255, 0.06); }
+.lt.active {
+  color: var(--ink);
+  font-weight: 700;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+  background-color: #6d6d70;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 44px 44px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  border-color: var(--keyline);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.18),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.45);
+}
+/* Gold marker rather than a tinted pill: it reads at a glance. */
+.lt.active .lt-dot { background: var(--gold); width: 4px; }
+
+.lx-version {
+  margin-top: auto;
+  padding: 8px;
+  font: 11px var(--mono);
+  color: var(--ink-faint);
+}
+
+.lx-main { display: flex; flex-direction: column; min-width: 0; }
+
+/*
+ * Hero: a stone wall with a strip of turf along its bottom edge, which is
+ * the game's own landscape in the only two textures a header has room for.
+ */
+.lx-hero {
+  position: relative;
+  padding: 26px 28px 30px;
+  border-bottom: 1px solid var(--edge);
+  background-color: #16202e;
+  background-image:
+    linear-gradient(rgba(14, 20, 30, 0.74), rgba(14, 20, 30, 0.88)),
+    radial-gradient(120% 150% at 12% 0%, rgba(107, 191, 79, 0.20), transparent 60%),
+    var(--tex-stone, none);
+  background-repeat: repeat;
+  image-rendering: pixelated;
+}
+
+/* The turf strip, sitting on the hero's bottom edge like a ground line. */
+.lx-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background-color: var(--grass);
+  background-image: var(--tex-grass, none);
+  background-repeat: repeat-x;
+  image-rendering: pixelated;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.lx-hero h1 {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-shadow: 0 3px 0 #101823;
+}
+
+.lx-hero p { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-dim); }
+
+.lx-body { flex: 1; overflow-y: auto; padding: 20px 28px; min-height: 0; }
+.lx-body::-webkit-scrollbar { width: 9px; }
+.lx-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+}
+
+.pane-title {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* Bottom action bar ----------------------------------------------------- */
+
+.lx-play {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--edge);
+  background: rgba(8, 10, 15, 0.9);
+}
+
+.lx-play-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.lx-play-label {
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.lx-play-world {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-play {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  padding: 15px 58px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #5f9e46;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 48px 48px;
+  background-repeat: repeat;
+  background-blend-mode: soft-light;
+  image-rendering: pixelated;
+  color: #f4fbf1;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  box-shadow: var(--bevel);
+  transition: filter 0.09s;
+}
+
+.btn-play:hover { filter: brightness(1.16); }
+.btn-play:active { transform: translateY(4px); box-shadow: var(--bevel-pressed); }
+.btn-play:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+  filter: none;
+  box-shadow: var(--bevel);
+}
+
+/* A cut plank strip, so "create" reads as an action rather than a world. */
+.new-world-box {
+  margin-top: 14px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #3a2c1c;
+  background-image:
+    linear-gradient(rgba(18, 12, 6, 0.62), rgba(18, 12, 6, 0.72)),
+    var(--tex-planks, none);
+  background-size: auto, 48px 48px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+}
+
+.new-world-box summary {
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ink-dim);
+}
+
+.new-world-box summary:hover { color: var(--ink); }
+.new-world-box[open] summary { border-bottom: 1px solid var(--edge); }
+.new-world-box .new-world { padding: 14px; }
+
+/* Credits --------------------------------------------------------------- */
+
+.credits h3 {
+  margin: 18px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--grass);
+}
+
+.credits h3:first-child { margin-top: 0; }
+.credits p { margin: 0 0 8px; font-size: 13px; line-height: 1.65; color: var(--ink-dim); }
+.credits b { color: var(--ink); }
+
+.credit-list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-dim);
+}
+
+.pane { display: flex; flex-direction: column; gap: 12px; }
+.pane[hidden] { display: none; }
+
+.world-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.world-list::-webkit-scrollbar { width: 8px; }
+.world-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+
+.world {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.world:hover { background: rgba(255, 255, 255, 0.055); border-color: var(--edge-strong); }
+.world.selected { border-color: var(--gold); background: rgba(255, 255, 255, 0.055); }
+
+/*
+ * The installation tile. Square, hard-edged and pixel-perfect: it is a block
+ * face, so smoothing it into a rounded avatar would fight the whole look.
+ */
+.world-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-size: cover;
+  background-color: var(--panel-hover);
+  image-rendering: pixelated;
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.20),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.world-info { flex: 1; min-width: 0; }
+.world-name {
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.world-meta { font: 11.5px var(--mono); color: var(--ink-faint); margin-top: 2px; }
+
+.world-play { padding: 8px 22px; }
+.world-delete { padding: 8px 14px; font-size: 12px; }
+.world-delete.danger {
+  border-color: var(--danger);
+  color: #ffd6d6;
+  background: rgba(226, 71, 77, 0.18);
+}
+
+.empty { margin: 10px 2px; font-size: 13px; color: var(--ink-faint); }
+
+.new-world { display: flex; flex-direction: column; gap: 10px; }
+.new-world .row { display: flex; gap: 10px; }
+.new-world .row .field { flex: 1; }
+
+.note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--ink-faint); }
+
+.controls {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  font-size: 12.5px;
+  line-height: 2;
+  color: var(--ink-faint);
+  max-width: 560px;
+}
+
+.controls b { color: var(--ink-dim); font-weight: 600; }
+
+/* -------------------------------------------------------------------- hud */
+
+#hud { position: fixed; inset: 0; pointer-events: none; }
+#hud[hidden] { display: none; }
+
+#crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  background:
+    linear-gradient(#fff, #fff) center/2px 18px no-repeat,
+    linear-gradient(#fff, #fff) center/18px 2px no-repeat;
+  opacity: 0.8;
+  mix-blend-mode: difference;
+}
+
+#debug {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  padding: 8px 11px;
+  border-radius: var(--r-sm);
+  background: rgba(6, 9, 14, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  white-space: pre;
+  color: var(--ink-dim);
+}
+
+#debug[hidden] { display: none; }
+
+/* Hotbar --------------------------------------------------------------- */
+
+#hotbar {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--edge);
+  background: rgba(10, 13, 19, 0.72);
+  box-shadow: var(--shadow-sm);
+}
+
+.slot {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border: 2px solid transparent;
+  border-radius: var(--r-sm);
+  background-color: rgba(255, 255, 255, 0.05);
+  background-size: 38px 38px;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transition: border-color 0.1s, background-color 0.1s;
+}
+
+.slot.active {
+  border-color: #fff;
+  background-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 14px rgba(255, 255, 255, 0.25);
+}
+
+.slot .key {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  font: 9px var(--mono);
+  color: var(--ink-faint);
+}
+
+.slot .count {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font: bold 11px var(--mono);
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+}
+
+/* Vitals --------------------------------------------------------------- */
+
+#vitals {
+  position: absolute;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#health, #air, #food { display: flex; gap: 3px; }
+#health[hidden], #air[hidden], #food[hidden] { display: none; }
+
+/* Hunger, shown as drumsticks. Same footprint as a heart so the two rows
+   line up, and the shape is distinct enough to read at a glance. */
+.drumstick {
+  width: 12px;
+  height: 12px;
+  background: #2c1e10;
+  clip-path: polygon(58% 0%, 100% 22%, 96% 52%, 62% 62%, 30% 96%, 4% 100%, 12% 72%, 40% 40%);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.9));
+}
+.drumstick.full { background: #c98a3e; }
+.drumstick.half { background: linear-gradient(90deg, #c98a3e 50%, #2c1e10 50%); }
+
+.heart, .bubble {
+  width: 12px;
+  height: 12px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.9));
+}
+
+.heart {
+  background: #3a1418;
+  clip-path: polygon(50% 100%, 0% 38%, 0% 15%, 25% 0%, 50% 18%, 75% 0%, 100% 15%, 100% 38%);
+}
+
+.heart.full { background: var(--danger); }
+.heart.half { background: linear-gradient(90deg, var(--danger) 50%, #3a1418 50%); }
+
+.bubble {
+  background: radial-gradient(circle at 35% 32%, #d6f0ff 0%, #79c8ee 55%, #4a9ac4 100%);
+  border-radius: 50%;
+}
+
+/* Mining --------------------------------------------------------------- */
+
+#mining {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 28px);
+  transform: translateX(-50%);
+  width: 96px;
+  height: 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+#mining[hidden] { display: none; }
+
+#mining-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #cfd4dc, #ffffff);
+}
+
+/* Boss bar -------------------------------------------------------------- */
+
+#boss {
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  transform: translateX(-50%);
+  width: min(520px, 70vw);
+  text-align: center;
+}
+
+#boss[hidden] { display: none; }
+
+#boss-name {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #e6d5f5;
+  text-shadow: 0 2px 6px #000;
+  margin-bottom: 5px;
+}
+
+#boss-track {
+  height: 11px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+#boss-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #6d2ec8, #c05cf0);
+  transition: width 0.2s;
+}
+
+#victory {
+  background: radial-gradient(80% 70% at 50% 40%, rgba(78, 30, 122, 0.85), rgba(6, 6, 14, 0.95));
+}
+
+#victory h2 {
+  color: #efdcff;
+  text-shadow: 0 3px 0 #2c0f4a, 0 0 34px rgba(192, 92, 240, 0.65);
+}
+
+#victory p { max-width: 46ch; text-align: center; line-height: 1.7; }
+
+/* Chat and toast -------------------------------------------------------- */
+
+#chat-log {
+  position: absolute;
+  left: 12px;
+  bottom: 92px;
+  max-width: min(52ch, 60vw);
+  font-size: 13px;
+  line-height: 1.55;
+  text-shadow: 0 1px 3px #000;
+}
+
+#chat-log div { margin-top: 2px; }
+#chat-log .sys { color: var(--ink-faint); font-style: italic; }
+
+#chat-input {
+  position: absolute;
+  left: 12px;
+  bottom: 62px;
+  width: min(52ch, 60vw);
+  pointer-events: auto;
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 11px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--edge-strong);
+  background: rgba(6, 9, 14, 0.85);
+  color: var(--ink);
+  outline: none;
+}
+
+#chat-input[hidden] { display: none; }
+
+#toast {
+  position: absolute;
+  left: 50%;
+  bottom: 110px;
+  transform: translateX(-50%) translateY(6px);
+  font-size: 13.5px;
+  padding: 7px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--edge);
+  background: rgba(10, 13, 19, 0.86);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ------------------------------------------------------------- overlays */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  z-index: 20;
+  background: rgba(6, 9, 14, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.overlay[hidden] { display: none; }
+.overlay h2 { margin: 0; font-size: clamp(26px, 5vw, 40px); letter-spacing: 1px; }
+.overlay p { margin: 0; color: var(--ink-dim); font-size: 14px; }
+
+#death {
+  background: rgba(78, 12, 14, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+#death h2 { color: #ffd9d9; text-shadow: 0 3px 0 #3d0708; }
+
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 25;
+  background: var(--bg-deep);
+  color: var(--ink-dim);
+  font-size: 14px;
+}
+
+#loading[hidden] { display: none; }
+
+#crash { background: rgba(30, 8, 8, 0.86); z-index: 40; }
+#crash h2 { color: #ffd0d0; }
+#crash p { max-width: 60ch; text-align: center; line-height: 1.6; }
+
+#crash pre {
+  max-width: min(80ch, 90vw);
+  max-height: 34vh;
+  overflow: auto;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.5);
+  font: 11.5px/1.5 var(--mono);
+  color: var(--ink-dim);
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+#crash pre:empty { display: none; }
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 3px;
+  background: var(--grass);
+  animation: tumble 1.1s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+
+@keyframes tumble {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(0.72); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* ----------------------------------------------------------- inventory */
+
+#inventory {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 9, 14, 0.66);
+  backdrop-filter: blur(3px);
+  z-index: 15;
+}
+
+#inventory[hidden] { display: none; }
+
+#inventory .panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px 16px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+#inventory .title {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.6px;
+}
+
+#inventory .crafting {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+#inventory .craft-grid { display: grid; gap: 4px; }
+#inventory .arrow { color: var(--ink-faint); font-size: 22px; }
+
+#inventory .result .islot {
+  width: 50px;
+  height: 50px;
+  background-size: 40px 40px;
+  border-color: var(--gold);
+  background-color: rgba(230, 182, 76, 0.12);
+}
+
+#inventory .storage,
+#inventory .container,
+#inventory .inv-hotbar {
+  display: grid;
+  grid-template-columns: repeat(9, 44px);
+  gap: 4px;
+}
+
+/* An open machine's storage, separated from the player's own by a rule so
+   it is obvious which half is yours. */
+#inventory .container-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--edge);
+}
+#inventory .container-wrap[hidden] { display: none; }
+#inventory .container-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+#inventory .inv-hotbar {
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+}
+
+.islot {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--r-sm);
+  background-color: rgba(255, 255, 255, 0.05);
+  background-size: 34px 34px;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  cursor: pointer;
+  font: bold 11px var(--mono);
+  text-align: right;
+  padding: 28px 4px 0 0;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+  transition: background-color 0.1s;
+}
+
+.islot:hover { background-color: var(--panel-hover); }
+.islot[hidden] { display: none; }
+
+#inventory .hint { margin: 0; font-size: 11px; color: var(--ink-faint); }
+
+#inventory .columns { display: flex; gap: 18px; align-items: flex-start; }
+#inventory .left { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+/* Recipe book ---------------------------------------------------------- */
+
+.book {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 232px;
+  align-self: stretch;
+  padding: 12px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.book-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-dim);
+}
+
+.book-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+
+.book-toggle input { accent-color: var(--grass); margin: 0; }
+
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  max-height: 330px;
+  padding-right: 4px;
+}
+
+.book-list::-webkit-scrollbar { width: 8px; }
+.book-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+
+.book-entry {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: var(--panel-soft);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.book-entry:hover:not(:disabled) {
+  background: var(--panel-hover);
+  border-color: var(--grass);
+}
+
+.book-entry.locked { opacity: 0.34; cursor: default; }
+
+.book-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.book-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.book-hint { margin: 0; font-size: 10.5px; color: var(--ink-faint); }
+
+/* ------------------------------------------------------- creative menu */
+
+#creative {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 9, 14, 0.68);
+  backdrop-filter: blur(3px);
+  z-index: 16;
+}
+
+#creative[hidden] { display: none; }
+
+#creative .panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(760px, 94vw);
+  padding: 18px 20px 16px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+#creative .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#creative .title { font-weight: 700; font-size: 15px; letter-spacing: 0.6px; }
+
+#creative .search {
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  width: 260px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--edge);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--ink);
+  outline: none;
+}
+
+#creative .search:focus { border-color: var(--grass); }
+
+#creative .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.cr-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px 6px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: var(--panel-soft);
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+
+.cr-tab:hover { background: var(--panel-hover); color: var(--ink); }
+
+.cr-tab.active {
+  color: var(--ink);
+  border-color: var(--grass);
+  background: rgba(107, 191, 79, 0.16);
+}
+
+.cr-tab-icon {
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+#creative .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 4px;
+  min-height: 220px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  align-content: start;
+}
+
+#creative .grid::-webkit-scrollbar { width: 8px; }
+#creative .grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+
+.cr-cell { padding: 0; }
+.cr-cell.picked { border-color: var(--grass); box-shadow: 0 0 0 1px var(--grass); }
+
+.cr-empty { grid-column: 1 / -1; margin: 12px 2px; color: var(--ink-faint); font-size: 12.5px; }
+
+#creative .foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+}
+
+#creative .hint { font-size: 11px; color: var(--ink-faint); }
+#creative .cr-hotbar { display: flex; gap: 4px; }
+
+/* ------------------------------------------------------------ equipment */
+
+#inventory .equipment {
+  display: grid;
+  grid-template-columns: repeat(2, 44px);
+  gap: 4px;
+  align-content: start;
+}
+
+#inventory .equip-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+#inventory .equip-label {
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.islot.equip {
+  border-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.islot.equip.offhand { border-color: rgba(107, 191, 79, 0.5); }
+
+.book-empty {
+  margin: 8px 2px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+#cursor-stack {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  pointer-events: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  z-index: 30;
+  font: bold 11px var(--mono);
+  text-align: right;
+  padding-top: 24px;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+#cursor-stack[hidden] { display: none; }
+
+/* ------------------------------------------------------------- settings */
+
+#settings .card { gap: 14px; }
+#settings .card .btn { width: 100%; }
+
+/* ================================================================ touch build
+
+   The phone version is deliberately a different shape from the desktop
+   launcher: one card, one action. Someone opening this on a phone is almost
+   always trying the game, not managing saves, so the installation list and
+   the settings rail would be furniture in the way.
+   ========================================================================= */
+
+#mobile-entry {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #2f4f74 0%, #1a2537 46%, var(--bg-deep) 100%);
+  z-index: 40;
+}
+#mobile-entry[hidden] { display: none; }
+
+.me-card {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 22px 22px;
+  border: 2px solid var(--keyline);
+  background-color: rgba(12, 15, 21, 0.96);
+  background-image:
+    linear-gradient(rgba(10, 12, 18, 0.86), rgba(10, 12, 18, 0.92)),
+    var(--tex-stone, none);
+  background-size: auto, 72px 72px;
+  image-rendering: pixelated;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.me-brand { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 800; }
+.me-cube {
+  width: 18px; height: 18px;
+  background: linear-gradient(160deg, var(--grass) 0 52%, #6b4a2f 52% 100%);
+  border: 2px solid var(--keyline);
+}
+.me-card h1 {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  line-height: 1.1;
+  text-shadow: 0 3px 0 #0d1119;
+}
+.me-sub { margin: 0; font-size: 14px; color: var(--ink-dim); }
+.me-note { margin: 2px 0 0; font-size: 12px; color: var(--ink-faint); line-height: 1.5; }
+#me-desktop { font-size: 12.5px; font-weight: 600; }
+
+/* 52px, comfortably past the 44px minimum for a thumb. */
+#me-play { padding: 17px 24px; font-size: 17px; letter-spacing: 1.4px; text-transform: uppercase; }
+
+.me-modes { display: flex; gap: 8px; }
+.me-mode {
+  flex: 1;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 13px 10px;
+  min-height: 46px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #4a4a4e;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 44px 44px;
+  image-rendering: pixelated;
+  color: var(--ink-dim);
+  box-shadow: var(--bevel);
+}
+.me-mode.active { color: var(--ink); border-color: var(--gold); }
+
+/* ---------------------------------------------------------- on-screen pads */
+
+/*
+   The pads sit over the game but must never swallow a look drag, so the
+   container is transparent to pointer events and only the controls
+   themselves take them back.
+*/
+#touch-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#touch-ui[hidden] { display: none; }
+
+/* The stick is drawn where the thumb landed, not at a fixed spot. */
+#tc-stick {
+  position: absolute;
+  width: 116px;
+  height: 116px;
+  margin: -58px 0 0 -58px;
+  border: 2px solid rgba(255, 255, 255, 0.20);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+#tc-stick.on { opacity: 1; }
+#tc-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border: 2px solid var(--keyline);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.tc-btn {
+  pointer-events: auto;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 62px;
+  min-height: 62px;
+  padding: 10px;
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #6d6d70;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 44px 44px;
+  image-rendering: pixelated;
+  color: var(--ink);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  box-shadow: var(--bevel);
+  opacity: 0.9;
+}
+.tc-btn:active { transform: translateY(4px); box-shadow: var(--bevel-pressed); }
+.tc-btn.on { border-color: var(--gold); }
+.tc-small { min-width: 56px; min-height: 46px; font-size: 12px; }
+
+/*
+ * The pads clear the hotbar rather than sitting on top of it. The hotbar is
+ * bottom: 20px and 52px tall on touch, so anything lower than ~90px lands on
+ * the slots -- which is exactly where a thumb already is.
+ */
+.tc-right {
+  position: absolute;
+  right: 18px;
+  bottom: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+.tc-jump { min-width: 74px; min-height: 74px; font-size: 18px; }
+.tc-place { min-width: 74px; }
+
+.tc-left {
+  position: absolute;
+  left: 18px;
+  bottom: 96px;
+  display: flex;
+  gap: 10px;
+}
+
+.tc-inv { position: absolute; right: 18px; top: 18px; }
+
+/*
+   Phone layout for the in-game HUD: the desktop hotbar is too small for a
+   thumb and the debug overlay eats a phone screen, so both are re-tuned
+   rather than merely scaled.
+*/
+@media (pointer: coarse) and (hover: none) {
+  /*
+   * Nine slots have to fit a phone's width: at the desktop's 52px they came
+   * to 512px and ran off both edges of a 375px screen. Sized to fit instead,
+   * which is the one place the 44px touch minimum gives -- the row is a
+   * strip of nine and cannot be anything else.
+   */
+  #hotbar { gap: 3px; bottom: 20px; padding: 4px; }
+  #hotbar .slot { width: 36px; height: 36px; }
+  #hotbar .slot img { width: 28px; height: 28px; }
+  #debug { font-size: 10px; max-width: 46vw; }
+  /* Chat sits above the left-hand pads rather than behind them. */
+  /* The element is #chat-log, not #chat -- the earlier rule matched nothing
+     and chat kept rendering behind the left-hand pads. */
+  #chat-log { max-width: 58vw; bottom: 150px; font-size: 12px; }
+}

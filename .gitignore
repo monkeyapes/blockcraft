@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+target/
+*.tsbuildinfo
+
+# The web build is copied into the site at deploy time, and the installer is
+# published as a release asset -- neither belongs in the history.
+site/play/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/
+
+# Python virtualenv left over from the legacy prototype
+.venv/
+
+# Local junk
+*.log
+*.exe
+.DS_Store
+Thumbs.db

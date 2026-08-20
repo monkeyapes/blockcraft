@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Blockcraft — an original voxel sandbox</title>
+<meta name="description" content="Build, mine, fly and automate in an original voxel sandbox. Free Windows download, or play it in your browser." />
+<meta property="og:title" content="Blockcraft" />
+<meta property="og:description" content="An original voxel sandbox. Build, mine, fly, automate — then go and beat the dragon." />
+<meta property="og:image" content="img/gameplay-1.jpg" />
+<meta property="og:type" content="website" />
+<link rel="icon" href="img/grass_top.png" />
+<style>
+/*
+ * The site shares the game's design language rather than inventing a second
+ * one: the same Archivo, the same hard two-tone bevel on every button, square
+ * corners, and chrome built from the game's own block textures. If the page
+ * and the game looked like different products, one of them would be lying.
+ */
+@font-face {
+  font-family: 'Archivo';
+  src: url('fonts/archivo.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #0a0d13;
+  --ink: #eef1f6;
+  --ink-dim: rgba(238, 241, 246, 0.64);
+  --ink-faint: rgba(238, 241, 246, 0.40);
+  --grass: #5f9e46;
+  --gold: #e6b64c;
+  --keyline: #101216;
+  --edge: rgba(255, 255, 255, 0.10);
+  --bevel:
+    inset 3px 3px 0 rgba(255, 255, 255, 0.20),
+    inset -3px -3px 0 rgba(0, 0, 0, 0.52),
+    0 4px 0 #0b0d11;
+  --bevel-pressed:
+    inset -3px -3px 0 rgba(255, 255, 255, 0.14),
+    inset 3px 3px 0 rgba(0, 0, 0, 0.52);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(230, 182, 76, 0.34); }
+a:hover { color: #f2cd6b; border-bottom-color: rgba(242, 205, 107, 0.72); }
+
+.wrap { width: min(1080px, 100% - 40px); margin-inline: auto; }
+
+/* --- the stone button, same recipe as the game ------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 34px;
+  min-height: 56px;
+  font: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  border: 2px solid var(--keyline);
+  border-radius: 0;
+  background-color: #6d6d70;
+  background-image: url('img/stone.png');
+  background-size: 44px 44px;
+  image-rendering: pixelated;
+  box-shadow: var(--bevel);
+  cursor: pointer;
+  transition: filter 0.09s;
+}
+.btn:hover { filter: brightness(1.16); color: var(--ink); border-bottom-color: var(--keyline); }
+.btn:active { transform: translateY(4px); box-shadow: var(--bevel-pressed); }
+.btn-primary {
+  background-color: var(--grass);
+  background-blend-mode: soft-light;
+  color: #f4fbf1;
+}
+
+/* --- header ----------------------------------------------------------- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(10, 13, 19, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--keyline);
+}
+.bar { display: flex; align-items: center; gap: 14px; padding: 14px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: 0.5px; }
+.brand span.cube {
+  width: 22px; height: 22px;
+  background: url('img/grass_top.png') center/cover;
+  border: 2px solid var(--keyline);
+  image-rendering: pixelated;
+}
+.bar nav { margin-left: auto; display: flex; gap: 20px; align-items: center; }
+.bar nav a { color: var(--ink-dim); border: 0; font-size: 14px; font-weight: 600; }
+.bar nav a:hover { color: var(--ink); }
+@media (max-width: 640px) { .bar nav a.hide-sm { display: none; } }
+
+/* --- hero ------------------------------------------------------------- */
+.hero {
+  position: relative;
+  padding: 74px 0 0;
+  background-color: #16202e;
+  background-image:
+    linear-gradient(rgba(12, 17, 26, 0.82), rgba(10, 13, 19, 0.94)),
+    url('img/stone.png');
+  background-size: auto, 84px 84px;
+  image-rendering: pixelated;
+  border-bottom: 2px solid var(--keyline);
+  text-align: center;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(42px, 8vw, 76px);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  line-height: 1.02;
+  text-shadow: 0 4px 0 #0d1119, 0 7px 0 rgba(0, 0, 0, 0.32);
+}
+.hero p.lede {
+  margin: 18px auto 0;
+  max-width: 56ch;
+  font-size: clamp(15px, 2.4vw, 18px);
+  color: var(--ink-dim);
+  text-wrap: pretty;
+}
+.cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 32px; }
+.cta small { display: block; width: 100%; color: var(--ink-faint); font-size: 12.5px; letter-spacing: 0.2px; }
+
+/*
+ * A screenshot is photographic, so it scales smoothly -- `pixelated` belongs
+ * on the block textures used as chrome, not here. Cropped to a banner
+ * because the capture is nearly square and would otherwise push the whole
+ * page below the fold.
+ */
+.shot {
+  width: 100%;
+  max-width: 940px;
+  height: clamp(220px, 42vw, 420px);
+  object-fit: cover;
+  object-position: 50% 62%;
+  margin: 52px auto 0;
+  border: 2px solid var(--keyline);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.turf {
+  height: 10px;
+  background: var(--grass) url('img/grass_top.png') repeat-x;
+  background-size: 20px 20px;
+  image-rendering: pixelated;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.3);
+  margin-top: 52px;
+}
+
+/* --- sections --------------------------------------------------------- */
+section { padding: 76px 0; }
+h2 {
+  margin: 0 0 10px;
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+.sub { margin: 0 0 36px; color: var(--ink-dim); max-width: 62ch; text-wrap: pretty; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+.card {
+  padding: 22px;
+  border: 2px solid var(--keyline);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+.card h3 { margin: 0 0 8px; font-size: 17px; font-weight: 800; letter-spacing: 0.3px; }
+.card p { margin: 0; color: var(--ink-dim); font-size: 14.5px; }
+.card .chip {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 9px;
+  font: 700 10.5px ui-monospace, Consolas, monospace;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: #0b0d11;
+  background: var(--gold);
+}
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+@media (max-width: 780px) { .split { grid-template-columns: 1fr; } }
+.split img { border: 2px solid var(--keyline); }
+
+.alt { background: rgba(255, 255, 255, 0.022); border-block: 2px solid var(--keyline); }
+
+/* --- download --------------------------------------------------------- */
+.dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  padding: 26px;
+  border: 2px solid var(--keyline);
+  background-color: #17181c;
+  background-image:
+    linear-gradient(rgba(8, 10, 14, 0.88), rgba(8, 10, 14, 0.93)),
+    url('img/stone.png');
+  background-size: auto, 56px 56px;
+  image-rendering: pixelated;
+}
+.dl .meta { flex: 1; min-width: 220px; }
+.dl .meta strong { display: block; font-size: 17px; }
+.dl .meta span { color: var(--ink-faint); font: 500 12.5px ui-monospace, Consolas, monospace; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--edge); }
+th { color: var(--ink-faint); font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
+td.k { color: var(--ink-dim); width: 40%; }
+
+/* --- footer ----------------------------------------------------------- */
+footer {
+  padding: 44px 0 60px;
+  border-top: 2px solid var(--keyline);
+  background-color: #0a0d13;
+  background-image:
+    linear-gradient(rgba(8, 6, 5, 0.86), rgba(8, 6, 5, 0.92)),
+    url('img/dirt.png');
+  background-size: auto, 64px 64px;
+  image-rendering: pixelated;
+  color: var(--ink-faint);
+  font-size: 13.5px;
+}
+footer p { margin: 0 0 10px; max-width: 70ch; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="cube"></span>Blockcraft</div>
+    <nav>
+      <a href="#features" class="hide-sm">Features</a>
+      <a href="#novolt" class="hide-sm">NoVolt</a>
+      <a href="#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Blockcraft</h1>
+    <p class="lede">
+      An original voxel sandbox. Dig a world that generates itself, wire a base that
+      runs without you, then go through the Nether and finish it against the dragon.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#download">Download for Windows</a>
+      <a class="btn" href="play/">Play in browser</a>
+      <small>Free · 1.2&nbsp;MB installer · Windows 10 and 11 · no account needed</small>
+    </div>
+    <img class="shot" src="img/gameplay-1.jpg" width="1200" height="1157"
+         alt="A forested hillside of grass and dirt blocks, terraced down toward the camera, with blocky trees overhead." />
+  </div>
+  <div class="turf"></div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>What is in it</h2>
+    <p class="sub">
+      Everything below is in the build you can download today. Nothing here is a plan.
+    </p>
+    <div class="grid">
+      <div class="card">
+        <span class="chip">World</span>
+        <h3>Terrain that costs nothing to share</h3>
+        <p>
+          The world is a pure function of its seed, so every player generates the same
+          landscape independently. Only the blocks you actually change travel over the
+          network — which is why multiplayer works on a home connection.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip">Survival</span>
+        <h3>Mine, craft, eat, build</h3>
+        <p>
+          Tools and armour across four tiers, a crafting grid with a recipe book,
+          hunger that gates healing, and mobs that come out after dark. Sleep in a bed
+          to skip the night and move where you respawn.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip">Dimensions</span>
+        <h3>Nether, End, and an ending</h3>
+        <p>
+          Light a portal, collect blaze rods and ender pearls, combine them into eyes of
+          ender, and open the way to the End. There is a dragon at the other side and a
+          real credit roll after it.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip">Vehicles</span>
+        <h3>Six ways to get around</h3>
+        <p>
+          A skateboard, car, truck, boat, plane and helicopter, each with its own
+          handling. The boat floats properly, so water stops being a wall.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip">Packs</span>
+        <h3>Your own textures</h3>
+        <p>
+          The built-in art is generated from code — the game ships with no image files at
+          all. Drop in any Minecraft-style resource pack and it loads at its own
+          resolution, up to 128&nbsp;px.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip">Anywhere</span>
+        <h3>Desktop app or browser</h3>
+        <p>
+          The Windows build is the full version and runs offline. The browser build plays
+          the same game at a shorter view distance, with touch controls on a phone.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="novolt" class="alt">
+  <div class="wrap">
+    <h2>NoVolt</h2>
+    <p class="sub">
+      The automation layer, and the part that is genuinely ours rather than borrowed.
+      Energy here has <em>pressure</em>, and pressure is spatial.
+    </p>
+    <div class="split">
+      <div>
+        <p style="color: var(--ink-dim); margin-top: 0;">
+          A generator pushes NoVolt into a conduit run. Every block of conduit bleeds a
+          little of it away, and every machine drawing on the network pulls it down
+          further. So a generator on the far side of your base really does power a
+          machine worse than one standing next to it — layout is a decision, not
+          decoration.
+        </p>
+        <p style="color: var(--ink-dim);">
+          And it degrades instead of tripping. One machine too many does not black the
+          base out; everything slows down, which tells you what is happening while you
+          can still fix it. Boosters buy pressure back over distance. Solar panels and
+          water wheels run without fuel, batteries carry the night, and rain halves what
+          the panels manage.
+        </p>
+        <p style="margin-bottom: 0;">
+          <a href="#download">Get the build and wire something up →</a>
+        </p>
+      </div>
+      <div>
+        <table>
+          <tr><th colspan="2">A few machines</th></tr>
+          <tr><td class="k">Miner</td><td>Digs a shaft to bedrock</td></tr>
+          <tr><td class="k">Quarry</td><td>Clears nine columns at once</td></tr>
+          <tr><td class="k">Crusher</td><td>Doubles your ore</td></tr>
+          <tr><td class="k">Stone generator</td><td>Cobblestone from nothing</td></tr>
+          <tr><td class="k">Sawmill</td><td>Six planks a log, against four</td></tr>
+          <tr><td class="k">Compressor</td><td>Nine of a thing into its block</td></tr>
+          <tr><td class="k">Conveyor · Elevator</td><td>Move items across and up</td></tr>
+          <tr><td class="k">Sorter</td><td>Splits one line into several</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>In motion</h2>
+    <p class="sub">Captured from the current build, not a mock-up.</p>
+    <img src="img/gameplay-2.jpg" width="1000" height="964"
+         style="border: 2px solid var(--keyline); width: 100%; height: auto;"
+         alt="Standing in a forest clearing, a grass and dirt bank ahead, the hotbar along the bottom of the screen." />
+  </div>
+</section>
+
+<section id="download" class="alt">
+  <div class="wrap">
+    <h2>Download</h2>
+    <p class="sub">
+      The Windows build is the full version: longer view distance, the whole launcher,
+      and it runs with no network at all.
+    </p>
+
+    <div class="dl">
+      <div class="meta">
+        <strong>Blockcraft for Windows</strong>
+        <span id="dl-meta">v0.1.0 · 1.2 MB installer · Windows 10/11 64-bit</span>
+      </div>
+      <a class="btn btn-primary" id="dl-btn"
+         href="https://github.com/YOUR-USERNAME/blockcraft/releases/latest">Download</a>
+      <a class="btn" href="play/">Play in browser</a>
+    </div>
+
+    <p style="color: var(--ink-faint); font-size: 13px; margin-top: 18px;">
+      The installer is unsigned, so Windows SmartScreen will warn the first time you run
+      it — choose <b>More info</b> then <b>Run anyway</b>. Code signing costs money this
+      project does not have.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <b>Blockcraft</b> is an original voxel sandbox, heavily inspired by <b>Minecraft</b>
+      by Mojang Studios. It is not affiliated with, endorsed by, or connected to Mojang or
+      Microsoft in any way, and shares no code or artwork with it. The terrain generation,
+      the renderer, the physics and every built-in texture were written from scratch.
+    </p>
+    <p>
+      Resource packs you load are the work of their authors, stay on your machine, and are
+      never redistributed here. Please respect each pack's licence.
+    </p>
+    <p style="margin-top: 20px;">
+      <a href="https://github.com/YOUR-USERNAME/blockcraft">Source on GitHub</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
