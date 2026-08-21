@@ -6,6 +6,8 @@
  * creative build going side by side.
  */
 
+import { displayAddress, parseAddress, resolveAddress } from '@shared/address.js';
+import { getRegistry } from '../registry.js';
 import type { GameMode } from '../survival.js';
 import {
   createWorld, deleteWorld, describeWorld, listWorlds, type WorldEntry,
@@ -25,6 +27,7 @@ export class Launcher {
   private seedEl = document.getElementById('world-seed') as HTMLInputElement;
   private modeEl = document.getElementById('mode') as HTMLSelectElement;
   private serverEl = document.getElementById('server') as HTMLInputElement;
+  private serverStatusEl = document.getElementById('server-status') as HTMLParagraphElement;
   private createBtn = document.getElementById('create-world') as HTMLButtonElement;
   private multiBtn = document.getElementById('play-multi') as HTMLButtonElement;
   private tabsEl = document.getElementById('launcher-tabs') as HTMLDivElement;
@@ -52,9 +55,20 @@ export class Launcher {
       this.refresh();
     });
 
+    // Resolve as they type. Waiting until Join means a typo is reported as a
+    // failed connection, and a failed connection is something a player blames
+    // on the server rather than on the address.
+    this.serverEl.addEventListener('input', () => { void this.showAddress(); });
+    void this.showAddress();
+
     this.createBtn.addEventListener('click', () => this.create());
     this.multiBtn.addEventListener('click', () => {
-      this.onLaunch({ multiplayer: true, serverAddress: this.serverEl.value.trim() });
+      void (async () => {
+        const resolved = await this.resolveServer(this.serverEl.value.trim());
+        // A null means the message on screen already explains why.
+        if (resolved === null) return;
+        this.onLaunch({ multiplayer: true, serverAddress: resolved });
+      })();
     });
 
     // The play bar launches whatever is selected, or makes a world if there
@@ -94,6 +108,70 @@ export class Launcher {
     this.seedEl.value = '';
     this.refresh();
     this.onLaunch({ multiplayer: false, world: entry });
+  }
+
+  /**
+   * Reports what the typed address resolves to, before the player commits.
+   *
+   * The three ways this can go wrong -- a malformed address, a name nobody
+   * has registered, and a registry that cannot be reached -- have three
+   * different fixes, so they get three different messages rather than one
+   * "could not connect" that sends the player to ask the host.
+   */
+  private async showAddress(): Promise<void> {
+    const raw = this.serverEl.value.trim();
+    if (!raw) {
+      this.serverStatusEl.textContent = '';
+      return;
+    }
+
+    const addr = parseAddress(raw);
+    if (addr.kind === 'invalid') {
+      this.serverStatusEl.textContent = addr.reason;
+      this.serverStatusEl.dataset.state = 'bad';
+      return;
+    }
+    if (addr.kind === 'direct') {
+      this.serverStatusEl.textContent = `Connecting to ${addr.host}:${addr.port}`;
+      this.serverStatusEl.dataset.state = 'ok';
+      return;
+    }
+
+    this.serverStatusEl.textContent = `Looking up ${displayAddress(addr)}...`;
+    this.serverStatusEl.dataset.state = 'busy';
+
+    const registry = await getRegistry();
+    // They may have kept typing while the fetch was in flight; if so this
+    // answer is about an address they have already moved on from.
+    if (this.serverEl.value.trim() !== raw) return;
+
+    const found = resolveAddress(addr, registry);
+    if (found.ok) {
+      this.serverStatusEl.textContent =
+        `${found.title ?? displayAddress(addr)} - ${found.host}:${found.port}`;
+      this.serverStatusEl.dataset.state = 'ok';
+    } else {
+      this.serverStatusEl.textContent = found.reason;
+      this.serverStatusEl.dataset.state = 'bad';
+    }
+  }
+
+  /** Turns whatever is in the address box into something to connect to. */
+  private async resolveServer(raw: string): Promise<string | null> {
+    if (!raw) return '';                       // blank means "this machine"
+    const addr = parseAddress(raw);
+    if (addr.kind === 'invalid') {
+      this.serverStatusEl.textContent = addr.reason;
+      this.serverStatusEl.dataset.state = 'bad';
+      return null;
+    }
+    const found = resolveAddress(addr, addr.kind === 'name' ? await getRegistry() : null);
+    if (!found.ok) {
+      this.serverStatusEl.textContent = found.reason;
+      this.serverStatusEl.dataset.state = 'bad';
+      return null;
+    }
+    return `${found.host}:${found.port}`;
   }
 
   /** Keeps the play bar in step with the selection. */

@@ -649,6 +649,13 @@ html, body {
 .lx-picker:focus { border-color: var(--gold); }
 .lx-picker:disabled { opacity: 0.5; }
 
+/* Address feedback in the multiplayer pane. Three states, three colours,
+   because the three failures behind them have three different fixes. */
+#server-status { min-height: 1.2em; margin: 2px 0 0; font-size: 12px; }
+#server-status[data-state='ok'] { color: var(--grass); }
+#server-status[data-state='bad'] { color: var(--danger); }
+#server-status[data-state='busy'] { color: var(--ink-faint); }
+
 .lx-play {
   display: flex;
   align-items: center;

@@ -112,6 +112,54 @@ export interface RegistryEntry {
 
 export type Registry = Record<string, RegistryEntry>;
 
+/**
+ * The published file's shape.
+ *
+ * Versioned because the file is fetched by clients that may be older than it
+ * is. A client that does not understand the version must say so rather than
+ * reading it optimistically and resolving names to whatever it manages to
+ * make of the fields.
+ */
+export const REGISTRY_VERSION = 1;
+
+export interface RegistryFile {
+  version: number;
+  servers: Registry;
+}
+
+/**
+ * Validates a fetched registry.
+ *
+ * Returns null for anything it cannot trust, and the caller treats that
+ * exactly like an unreachable registry -- because a half-read file is worse
+ * than no file: it resolves some names, fails others, and gives no clue which
+ * is which. Entries that are individually malformed are dropped rather than
+ * poisoning the whole file, so one bad line in a shared list does not take
+ * everybody else's server offline.
+ */
+export function parseRegistry(raw: unknown): Registry | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const file = raw as Partial<RegistryFile>;
+  if (file.version !== REGISTRY_VERSION) return null;
+  if (!file.servers || typeof file.servers !== 'object') return null;
+
+  const out: Registry = {};
+  for (const [name, entry] of Object.entries(file.servers)) {
+    if (!isValidName(name) || RESERVED.has(name)) continue;
+    if (!entry || typeof entry !== 'object') continue;
+    const e = entry as Partial<RegistryEntry>;
+    if (typeof e.host !== 'string' || !e.host) continue;
+    const port = e.port === undefined ? DEFAULT_PORT : e.port;
+    if (!Number.isInteger(port) || port < 1 || port > 65535) continue;
+    out[name] = {
+      host: e.host,
+      port,
+      ...(typeof e.title === 'string' && e.title ? { title: e.title.slice(0, 48) } : {}),
+    };
+  }
+  return out;
+}
+
 /** What a lookup produced, or why it did not. */
 export type Resolved =
   | { ok: true; host: string; port: number; title?: string }

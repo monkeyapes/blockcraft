@@ -259,12 +259,19 @@
             <input id="name" type="text" maxlength="16" placeholder="Steve" />
           </label>
           <label class="field">
-            Server address
-            <input id="server" type="text" placeholder="localhost:8787" />
+            Server
+            <input id="server" type="text" placeholder="donutsmp.bc" />
           </label>
+          <!--
+            Says what the address resolved to before the player commits to it.
+            A name that cannot be found otherwise looks exactly like a server
+            that is down, and they would go and ask the host about it.
+          -->
+          <p class="note" id="server-status"></p>
           <button id="play-multi" class="btn btn-secondary">Join Server</button>
           <p class="note">
-            Leave the address blank to join a server running on this machine.
+            A <b>.bc</b> name like <code>donutsmp.bc</code>, or a plain
+            <code>host:port</code>. Blank joins a server on this machine.
           </p>
         </div>
 

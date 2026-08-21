@@ -44,6 +44,44 @@ npm run desktop:build
 
 The installer lands in `desktop/src-tauri/target/release/bundle/nsis/`.
 
+## Server addresses
+
+Servers are reached by a name -- `donutsmp.bc` -- rather than an IP, because
+nobody shares an IP in a chat message and expects their friends to still have
+it tomorrow.
+
+**`.bc` is not a real top-level domain.** It resolves inside Blockcraft and
+nowhere else: it will not ping, it will not open in a browser, and no DNS
+server has heard of it. The game does the lookup itself, against
+[`site/registry.json`](site/registry.json), which is published as a static
+file on GitHub Pages -- free, and with no server that has to stay running.
+
+A plain `host:port` always works too. The naming layer sits on top of
+addressing and is never a dependency of it, so a registry outage cannot take
+every server offline at once.
+
+### Claiming a name
+
+Open a pull request adding one entry to `site/registry.json`:
+
+```json
+{
+  "version": 1,
+  "servers": {
+    "donutsmp": { "host": "82.14.203.11", "port": 8787, "title": "Donut SMP" }
+  }
+}
+```
+
+- 3 to 24 characters, `a-z`, `0-9` and hyphens; no leading, trailing or
+  doubled hyphens.
+- `port` defaults to 8787 and `title` is optional.
+- A handful of names are reserved so that nobody can register the one a
+  newcomer would assume is official.
+
+Malformed entries are dropped individually rather than rejecting the whole
+file, so one bad line cannot take everyone else's server down.
+
 ## Debug parameters
 
 The browser build takes two query parameters, which exist so a rendering
