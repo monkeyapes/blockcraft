@@ -36,6 +36,7 @@ fn start_server(
     state: State<'_, ServerProcess>,
     port: u16,
     seed: String,
+    token: String,
 ) -> Result<(), String> {
     let mut slot = state.0.lock().map_err(|_| "server state is poisoned")?;
     if slot.is_some() {
@@ -53,6 +54,12 @@ fn start_server(
         .stderr(Stdio::piped());
     if !seed.trim().is_empty() {
         cmd.env("SEED", seed.trim());
+    }
+    // The admin surface only exists when this is set, and the window mints a
+    // fresh one per launch. Passed as an environment variable rather than an
+    // argument so it never appears in a process list.
+    if !token.trim().is_empty() {
+        cmd.env("ADMIN_TOKEN", token.trim());
     }
 
     // Without this a console window flashes up behind the app on every start,

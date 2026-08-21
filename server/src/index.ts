@@ -10,6 +10,7 @@ import { Block } from '@shared/blocks.js';
 import { Dimension, SEA_LEVEL, dimChunkKey } from '@shared/constants.js';
 import { travelThroughPortal, useItemOnWorld } from '@shared/portal.js';
 import { columnHeight, surfaceY } from '@shared/terrain.js';
+import { adminEnabled, handleAdmin, type AdminHooks } from './admin.js';
 import {
   DEFAULT_PORT, PROTOCOL_VERSION, TICK_HZ,
   type ClientMessage, type PlayerSnapshot, type ServerMessage,
@@ -130,7 +131,47 @@ function serveStatic(req: IncomingMessage, res: ServerResponse): void {
   createReadStream(file).pipe(res);
 }
 
-const http = createServer(serveStatic);
+const STARTED_AT = Date.now();
+
+/**
+ * What the admin routes are allowed to do. Passed in rather than reached for,
+ * so admin.ts never touches the world or the socket map directly and the
+ * surface it can affect is visible in one place.
+ */
+const adminHooks: AdminHooks = {
+  players: () => [...players.values()].map((p) => ({
+    id: p.id, name: p.name, dim: p.dim,
+    x: Math.round(p.x), y: Math.round(p.y), z: Math.round(p.z),
+  })),
+  kick: (id, reason) => {
+    const p = players.get(id);
+    if (!p) return false;
+    // Tell them why before closing, or it looks like a crash from their side.
+    if (p.socket.readyState === p.socket.OPEN) {
+      p.socket.send(JSON.stringify({ t: 'chat', id: -1, name: 'Server', text: reason }));
+      p.socket.close(4000, reason);
+    }
+    console.log(`[net] ${p.name} was kicked (${reason})`);
+    return true;
+  },
+  say: (text) => {
+    broadcast({ t: 'chat', id: -1, name: 'Server', text });
+    console.log(`[server] say: ${text}`);
+  },
+  save: () => {
+    world.save();
+    console.log('[world] saved on request');
+  },
+  get seed() { return world.seed; },
+  edits: () => world.editCount,
+  startedAt: STARTED_AT,
+};
+
+const http = createServer((req, res) => {
+  void handleAdmin(req, res, adminHooks).then((handled) => {
+    if (!handled) serveStatic(req, res);
+  });
+});
 const wss = new WebSocketServer({ server: http });
 
 // ------------------------------------------------------------------ sessions
@@ -386,6 +427,9 @@ http.listen(PORT, () => {
   // Say what is actually true. The hosting app runs this with no client
   // build beside it -- players bring their own -- and a line claiming to
   // serve from a directory that is not there reads as a broken install.
+  console.log(adminEnabled()
+    ? '[admin] control surface on, loopback only'
+    : '[admin] off (no ADMIN_TOKEN)');
   console.log(existsSync(CLIENT_DIR)
     ? `[server] serving client from ${CLIENT_DIR}`
     : '[server] no client build here; players connect with their own game');

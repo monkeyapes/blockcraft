@@ -8,20 +8,81 @@
 </head>
 <body>
 
+<!--
+  A console, not a settings dialog. The previous version could start and stop
+  a server and nothing else, so the window was four fields and a log: there
+  was no reason to keep looking at it. Everything here is either something you
+  can act on or something that changes while you watch.
+-->
 <header class="bar">
   <div class="brand"><span class="cube"></span>Blockcraft Server</div>
   <span class="pill" id="state-pill" data-state="stopped">Stopped</span>
+  <button id="power" class="btn btn-go">Start</button>
 </header>
 
-<main class="wrap">
+<main class="grid">
 
-  <!--
-    Settings first, because they cannot be changed while it runs and finding
-    that out after starting is annoying.
-  -->
-  <section class="panel">
-    <h2>Server</h2>
-    <div class="row">
+  <!-- Left: the things you do. -->
+  <div class="col main">
+
+    <section class="card address" id="address-card">
+      <div class="card-head">
+        <h2>Address</h2>
+        <span class="reach" id="reach"></span>
+      </div>
+      <div class="primary" id="primary-address">
+        <code id="primary-code">not running</code>
+        <button id="copy-primary" class="btn btn-small" disabled>Copy</button>
+      </div>
+      <p class="who" id="primary-who">Press Start and an address will appear here.</p>
+      <details id="other-addresses" class="more">
+        <summary>Other addresses</summary>
+        <div id="addresses"></div>
+      </details>
+    </section>
+
+    <section class="card players">
+      <div class="card-head">
+        <h2>Players</h2>
+        <span class="count" id="player-count">0</span>
+      </div>
+      <!-- The thing that was missing: people you can actually act on. -->
+      <div id="player-list" class="player-list">
+        <p class="empty">Nobody is connected.</p>
+      </div>
+    </section>
+
+    <section class="card console">
+      <div class="card-head">
+        <h2>Console</h2>
+        <button id="save-now" class="btn btn-small" disabled>Save world</button>
+      </div>
+      <div id="log" class="log" role="log" aria-live="polite"></div>
+      <div class="prompt">
+        <span class="chevron">&gt;</span>
+        <input id="command" type="text" autocomplete="off" spellcheck="false"
+               placeholder="Say something, or /help" disabled />
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Right: the things you watch. -->
+  <aside class="col side">
+
+    <section class="card stats">
+      <h2>Server</h2>
+      <dl class="figures">
+        <div><dt>Online</dt><dd id="s-players">—</dd></div>
+        <div><dt>Uptime</dt><dd id="s-uptime">—</dd></div>
+        <div><dt>Seed</dt><dd id="s-seed">—</dd></div>
+        <div><dt>Edits</dt><dd id="s-edits">—</dd></div>
+        <div><dt>Memory</dt><dd id="s-memory">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="card">
+      <h2>Settings</h2>
       <label class="field">
         <span>Port</span>
         <input id="port" type="text" inputmode="numeric" value="8787" />
@@ -30,80 +91,38 @@
         <span>World seed</span>
         <input id="seed" type="text" placeholder="random" />
       </label>
-    </div>
-    <p class="err" id="settings-err"></p>
-    <div class="actions">
-      <button id="start" class="btn btn-go">Start server</button>
-      <button id="stop" class="btn" disabled>Stop</button>
-      <span class="stat"><b id="players">0</b> online</span>
-      <span class="stat">up <b id="uptime">—</b></span>
-    </div>
-  </section>
+      <label class="field">
+        <span>Public address</span>
+        <input id="public-host" type="text" placeholder="from a tunnel, optional" />
+      </label>
+      <label class="field">
+        <span>Name</span>
+        <div class="suffixed">
+          <input id="bc-name" type="text" placeholder="donutsmp" maxlength="24" />
+          <span class="suffix">.bc</span>
+        </div>
+      </label>
+      <p class="err" id="settings-err"></p>
+      <p class="hint" id="name-help"></p>
+    </section>
 
-  <!--
-    The question the whole app exists to answer. A naive hosting tool shows a
-    LAN address as though it reached the internet, and the host only finds out
-    when a friend cannot join.
-  -->
-  <section class="panel">
-    <h2>Address to share</h2>
-    <p class="advice" id="advice">Start the server to get an address to share.</p>
-    <div id="addresses" class="addresses"></div>
-  </section>
+    <section class="card" id="reach-help" hidden>
+      <h2>Letting friends in</h2>
+      <p class="hint">
+        Your computer is behind a router, so nobody outside your own network
+        can reach this yet. Both fixes are free:
+      </p>
+      <p class="hint">
+        <b>Forward the port</b> on your router to this machine — nothing to
+        keep running, but you need router access.
+      </p>
+      <p class="hint">
+        <b>Or run a tunnel</b>, which needs no router access, and paste the
+        address it gives you into <b>Public address</b> above.
+      </p>
+    </section>
 
-  <section class="panel" id="reach-help" hidden>
-    <h2>Letting friends in</h2>
-    <p class="note">
-      Your computer sits behind a router, so a server running here is not
-      reachable from outside your own network until you do one of these. Both
-      are free.
-    </p>
-    <div class="choices">
-      <article class="choice">
-        <h3>Forward the port</h3>
-        <p>
-          Tell your router to send traffic on your port to this computer. No
-          third party involved, and nothing to keep running — but you need
-          access to the router, and some connections cannot do it at all.
-        </p>
-      </article>
-      <article class="choice">
-        <h3>Use a tunnel</h3>
-        <p>
-          A tunnel gives you a public address without touching the router.
-          Free tiers exist that are enough for a small server. Paste the
-          address it gives you below and the app will share that instead.
-        </p>
-        <label class="field">
-          <span>Public address</span>
-          <input id="public-host" type="text" placeholder="abc123.tunnel.example:31245" />
-        </label>
-      </article>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>Name</h2>
-    <p class="note">
-      A <b>.bc</b> name is what people actually remember. It resolves inside
-      Blockcraft only — it is not a real domain, so it will not ping and will
-      not open in a browser.
-    </p>
-    <label class="field wide">
-      <span>Your name</span>
-      <div class="suffixed">
-        <input id="bc-name" type="text" placeholder="donutsmp" maxlength="24" />
-        <span class="suffix">.bc</span>
-      </div>
-    </label>
-    <p class="err" id="name-err"></p>
-    <p class="note" id="name-help"></p>
-  </section>
-
-  <section class="panel grow">
-    <h2>Log</h2>
-    <div id="log" class="log" role="log" aria-live="polite"></div>
-  </section>
+  </aside>
 
 </main>
 

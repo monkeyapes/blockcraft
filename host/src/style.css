@@ -1,9 +1,13 @@
 /*
  * The hosting window.
  *
- * Same materials as the game -- Archivo, the hard bevel, square-ish corners,
- * one loud button -- because they are the same product and a tool that looked
- * like a different application would feel like somebody else's.
+ * A console, not a settings dialog. The previous version stacked five
+ * identical grey panels and gave the log -- the only thing that moved -- the
+ * smallest box on screen, while an optional name field got the largest. Now
+ * the left column is what you act on, the right column is what you watch, and
+ * the whole thing fits without scrolling.
+ *
+ * Same materials as the game: Archivo, the hard bevel, near-square corners.
  */
 
 @font-face {
@@ -16,67 +20,67 @@
 
 :root {
   --bg: #0a0d13;
-  --panel: rgba(255, 255, 255, 0.035);
+  --card: #10141c;
   --ink: #eef1f6;
-  --ink-dim: rgba(238, 241, 246, 0.64);
-  --ink-faint: rgba(238, 241, 246, 0.40);
+  --ink-dim: rgba(238, 241, 246, 0.62);
+  --ink-faint: rgba(238, 241, 246, 0.38);
   --grass: #5f9e46;
   --gold: #e6b64c;
   --sky: #4a7fa8;
   --danger: #c9483f;
-  --keyline: #101216;
-  --edge: rgba(255, 255, 255, 0.10);
+  --keyline: #0a0c11;
+  --edge: rgba(255, 255, 255, 0.08);
   --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --round: 3px;
   --bevel:
-    inset 3px 3px 0 rgba(255, 255, 255, 0.20),
-    inset -3px -3px 0 rgba(0, 0, 0, 0.52),
-    0 4px 0 #0b0d11;
+    inset 2px 2px 0 rgba(255, 255, 255, 0.18),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    0 3px 0 #070a0e;
   --sunk:
     inset 3px 3px 0 rgba(0, 0, 0, 0.55),
-    inset -2px -2px 0 rgba(255, 255, 255, 0.06);
+    inset -2px -2px 0 rgba(255, 255, 255, 0.05);
 }
 
 * { box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
   margin: 0;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;                 /* the window is the frame; nothing scrolls but the log */
   background: var(--bg);
   color: var(--ink);
-  font: 500 14px/1.55 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  font: 500 13.5px/1.5 'Archivo', 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- header --------------------------------------------------------------- */
+/* --- top bar -------------------------------------------------------------- */
 .bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 18px;
+  padding: 10px 14px;
   border-bottom: 2px solid var(--keyline);
-  background: rgba(10, 13, 19, 0.9);
+  background: #0c0f16;
 }
-.brand { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: 0.4px; }
+.brand { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: 0.3px; }
 .brand .cube {
   width: 18px; height: 18px;
   background: var(--grass);
   border: 2px solid var(--keyline);
-  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.22);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.24);
 }
-
-/* State is the first thing a host looks for, so it gets a colour of its own. */
 .pill {
   margin-left: auto;
-  padding: 5px 12px;
-  font: 800 10.5px var(--mono);
+  padding: 5px 11px;
+  font: 800 10px var(--mono);
   letter-spacing: 1.3px;
   text-transform: uppercase;
   border: 2px solid var(--keyline);
   border-radius: var(--round);
-  background: #1b2029;
+  background: #1a1f28;
   color: var(--ink-faint);
 }
 .pill[data-state='running'] { background: var(--grass); color: #f2fbef; }
@@ -84,149 +88,142 @@ body {
 .pill[data-state='starting'], .pill[data-state='stopping'] { background: var(--gold); color: #14100a; }
 
 /* --- layout --------------------------------------------------------------- */
-.wrap {
+.grid {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  width: min(920px, 100%);
-  margin-inline: auto;
-  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 268px;
+  gap: 10px;
+  padding: 10px;
+  min-height: 0;                    /* lets the console column actually shrink */
 }
+.col { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.side { overflow-y: auto; }
 
-.panel {
-  padding: 16px 18px;
+.card {
+  padding: 12px 14px;
   border: 2px solid var(--keyline);
   border-radius: var(--round);
-  background: var(--panel);
-  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.05);
+  background: var(--card);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.03);
 }
-.panel.grow { flex: 1; display: flex; flex-direction: column; min-height: 160px; }
-.panel h2 {
-  margin: 0 0 12px;
-  font-size: 11px;
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.6px;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
-.panel h3 { margin: 0 0 6px; font-size: 14px; font-weight: 800; }
+.card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.card-head h2 { margin: 0; }
 
-.note { margin: 0 0 10px; font-size: 12.5px; color: var(--ink-dim); }
-.err { margin: 6px 0 0; min-height: 1.1em; font-size: 12.5px; color: var(--danger); }
+.hint { margin: 0 0 8px; font-size: 12px; color: var(--ink-dim); }
+.err { margin: 6px 0 0; min-height: 1em; font-size: 12px; color: var(--danger); }
+.empty { margin: 0; padding: 14px 0; text-align: center; font-size: 12.5px; color: var(--ink-faint); }
 
-/* --- fields --------------------------------------------------------------- */
-.row { display: flex; gap: 12px; flex-wrap: wrap; }
-.field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 150px; }
-.field.wide { max-width: 320px; }
-.field > span {
-  font-size: 10.5px;
-  font-weight: 700;
+/* --- address -------------------------------------------------------------- */
+.reach {
+  margin-left: auto;
+  font: 700 9.5px var(--mono);
   letter-spacing: 1.1px;
   text-transform: uppercase;
-  color: var(--ink-faint);
 }
-.field input {
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  padding: 9px 10px;
-  color: var(--ink);
-  background: #0d1016;
-  border: 2px solid var(--keyline);
-  border-radius: var(--round);
-  box-shadow: var(--sunk);
-  outline: none;
-}
-.field input:focus { border-color: var(--gold); }
-.field input:disabled { opacity: 0.5; }
+.reach[data-reach='yes'] { color: var(--grass); }
+.reach[data-reach='no'] { color: var(--gold); }
 
-/* A name is always shown with its suffix, so nobody types ".bc" into it. */
-.suffixed { display: flex; align-items: stretch; }
-.suffixed input { flex: 1; border-right-width: 0; border-radius: var(--round) 0 0 var(--round); }
-.suffix {
-  display: grid;
-  place-items: center;
-  padding: 0 10px;
-  font: 700 13px var(--mono);
-  color: var(--ink-faint);
-  background: #14181f;
-  border: 2px solid var(--keyline);
-  border-radius: 0 var(--round) var(--round) 0;
-}
-
-/* --- buttons -------------------------------------------------------------- */
-.actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-.btn {
-  font: inherit;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-  padding: 11px 20px;
-  color: var(--ink);
-  background: #6d6d70;
-  border: 2px solid var(--keyline);
-  border-radius: var(--round);
-  box-shadow: var(--bevel);
-  cursor: pointer;
-  transition: filter 0.09s;
-}
-.btn:hover:not(:disabled) { filter: brightness(1.15); }
-.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: var(--sunk); }
-.btn:disabled { opacity: 0.4; cursor: default; }
-.btn-go { background: var(--grass); color: #f4fbf1; }
-.btn-small { padding: 6px 12px; font-size: 11px; letter-spacing: 0.9px; }
-
-.stat { font-size: 12.5px; color: var(--ink-faint); }
-.stat b { color: var(--ink); font-size: 14px; }
-
-/* --- addresses ------------------------------------------------------------ */
-.advice { margin: 0 0 12px; font-size: 13px; }
-.advice[data-reach='yes'] { color: var(--grass); }
-.advice[data-reach='no'] { color: var(--gold); }
-
-.addresses { display: flex; flex-direction: column; gap: 6px; }
-.addr {
+/* The address is the thing people came for, so it gets the biggest type on
+   screen and a colour bar saying how far it actually reaches. */
+.primary {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
+  gap: 10px;
+  padding: 10px 12px;
   border: 2px solid var(--keyline);
   border-radius: var(--round);
-  background: #0d1016;
+  background: #0a0d13;
 }
-/*
- * A colour per reach, so "works for anyone" and "works on your sofa" never
- * look alike at a glance. That confusion is the failure this app is for.
- */
-.addr::before {
+.primary::before {
   content: '';
   width: 4px;
   align-self: stretch;
-  background: var(--tier, var(--ink-faint));
+  background: var(--tier, rgba(238, 241, 246, 0.2));
 }
-.addr[data-tier='name'] { --tier: var(--gold); }
+.primary[data-tier='name'] { --tier: var(--gold); }
+.primary[data-tier='internet'] { --tier: var(--grass); }
+.primary[data-tier='lan'] { --tier: var(--sky); }
+.primary code { flex: 1; font: 800 18px var(--mono); letter-spacing: 0.4px; }
+.address .who { display: block; margin: 7px 0 0; font-size: 12px; color: var(--ink-faint); }
+
+.more { margin-top: 8px; }
+.more summary {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  list-style: none;
+}
+.more summary::-webkit-details-marker { display: none; }
+.more summary::before { content: '+ '; font-family: var(--mono); }
+.more[open] summary::before { content: '– '; }
+
+.addr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 7px 10px;
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+  background: #0a0d13;
+}
+.addr::before { content: ''; width: 3px; align-self: stretch; background: var(--tier, var(--ink-faint)); }
 .addr[data-tier='internet'] { --tier: var(--grass); }
 .addr[data-tier='lan'] { --tier: var(--sky); }
-.addr[data-tier='local'] { --tier: rgba(238, 241, 246, 0.25); }
-.addr code { font: 700 14px var(--mono); }
-.addr .who { flex: 1; font-size: 12px; color: var(--ink-faint); }
+.addr[data-tier='local'] { --tier: rgba(238, 241, 246, 0.22); }
+.addr code { font: 700 12.5px var(--mono); }
+.addr .who { flex: 1; font-size: 11.5px; color: var(--ink-faint); }
 
-.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.choice { padding: 12px 14px; border: 2px solid var(--keyline); border-radius: var(--round); background: #0d1016; }
-.choice p { margin: 0 0 10px; font-size: 12.5px; color: var(--ink-dim); }
+/* --- players -------------------------------------------------------------- */
+.players { flex: 0 0 auto; max-height: 210px; display: flex; flex-direction: column; }
+.count {
+  margin-left: auto;
+  padding: 2px 8px;
+  font: 800 11px var(--mono);
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+  background: #0a0d13;
+}
+.player-list { overflow-y: auto; min-height: 0; }
 
-/* --- log ------------------------------------------------------------------ */
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--edge);
+}
+.player:last-child { border-bottom: 0; }
+.avatar {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  font: 800 12px 'Archivo', sans-serif;
+  color: #fff;
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+}
+.player .who { flex: 1; display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.player .who b { font-size: 13px; }
+.player .who span { font: 500 11px var(--mono); color: var(--ink-faint); }
+
+/* --- console -------------------------------------------------------------- */
+.console { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .log {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 10px 12px;
-  font: 500 12px/1.6 var(--mono);
+  padding: 9px 11px;
+  font: 500 11.5px/1.65 var(--mono);
   color: var(--ink-dim);
-  background: #070a0f;
+  background: #06080c;
   border: 2px solid var(--keyline);
   border-radius: var(--round);
   box-shadow: var(--sunk);
@@ -236,5 +233,115 @@ body {
 .log .line.join { color: var(--grass); }
 .log .line.leave { color: var(--sky); }
 .log .line.error { color: var(--danger); }
-.log::-webkit-scrollbar { width: 9px; }
-.log::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 5px; }
+.log .line.you { color: var(--gold); }
+.log::-webkit-scrollbar, .player-list::-webkit-scrollbar, .side::-webkit-scrollbar { width: 8px; }
+.log::-webkit-scrollbar-thumb,
+.player-list::-webkit-scrollbar-thumb,
+.side::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.13); border-radius: 4px; }
+
+/* A prompt, so the console is something you type into rather than only read. */
+.prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 0 10px;
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+  background: #06080c;
+  box-shadow: var(--sunk);
+}
+.prompt .chevron { font: 800 13px var(--mono); color: var(--grass); }
+.prompt input {
+  flex: 1;
+  padding: 9px 0;
+  font: 500 12.5px var(--mono);
+  color: var(--ink);
+  background: none;
+  border: 0;
+  outline: none;
+}
+.prompt input::placeholder { color: rgba(238, 241, 246, 0.3); }
+.prompt input:disabled { opacity: 0.45; }
+
+/* --- figures -------------------------------------------------------------- */
+.figures { margin: 0; display: flex; flex-direction: column; gap: 1px; }
+.figures div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--edge);
+}
+.figures div:last-child { border-bottom: 0; }
+.figures dt { font-size: 11.5px; color: var(--ink-faint); }
+.figures dd { margin: 0; font: 700 13px var(--mono); }
+
+/* --- fields --------------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 9px; }
+.field > span {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.field input {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 9px;
+  color: var(--ink);
+  background: #06080c;
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+  box-shadow: var(--sunk);
+  outline: none;
+  min-width: 0;
+}
+.field input:focus { border-color: var(--gold); }
+.field input:disabled { opacity: 0.45; }
+
+.suffixed { display: flex; }
+.suffixed input { flex: 1; border-right-width: 0; border-radius: var(--round) 0 0 var(--round); }
+.suffix {
+  display: grid;
+  place-items: center;
+  padding: 0 8px;
+  font: 700 12px var(--mono);
+  color: var(--ink-faint);
+  background: #12161d;
+  border: 2px solid var(--keyline);
+  border-radius: 0 var(--round) var(--round) 0;
+}
+
+/* --- buttons -------------------------------------------------------------- */
+.btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  color: var(--ink);
+  background: #6d6d70;
+  border: 2px solid var(--keyline);
+  border-radius: var(--round);
+  box-shadow: var(--bevel);
+  cursor: pointer;
+  transition: filter 0.09s;
+}
+.btn:hover:not(:disabled) { filter: brightness(1.16); }
+.btn:active:not(:disabled) { transform: translateY(2px); box-shadow: var(--sunk); }
+.btn:disabled { opacity: 0.38; cursor: default; }
+.btn-go { background: var(--grass); color: #f4fbf1; }
+.btn-stop { background: var(--danger); color: #fff; }
+.btn-danger { background: #7d3630; color: #fdeceb; }
+.btn-small { padding: 5px 11px; font-size: 10.5px; letter-spacing: 0.9px; }
+
+/* --- narrow --------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .grid { grid-template-columns: 1fr; }
+  .side { flex-direction: row; flex-wrap: wrap; overflow: visible; }
+  .side .card { flex: 1 1 220px; }
+}

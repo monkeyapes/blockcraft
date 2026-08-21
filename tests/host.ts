@@ -13,6 +13,9 @@ import {
   type HostStatus, applyToPlayers, classify, emptyStatus, explainFailure,
   reachability, shareAddresses, uptime, validatePort,
 } from '../host/src/hostlogic.js';
+import {
+  dimensionName, findPlayer, mintToken, parseCommand,
+} from '../host/src/adminclient.js';
 
 let failures = 0;
 function check(label: string, ok: boolean, extra = ''): void {
@@ -133,6 +136,80 @@ check('uptime with no start time is a dash', uptime(null) === '—');
 check('seconds read as seconds', uptime(Date.now() - 12_000) === '12s');
 check('minutes read as minutes', uptime(Date.now() - 125_000).startsWith('2m'));
 check('hours read as hours', uptime(Date.now() - 7_400_000).startsWith('2h'));
+
+// --- the console -----------------------------------------------------------
+//
+// Guessing wrong about whether something is a command or a message is
+// annoying in both directions: a message read as a command does nothing, and
+// a command broadcast as chat tells everyone what you were trying to do.
+
+check('plain text is a message', (() => {
+  const c = parseCommand('back in five');
+  return c?.kind === 'say' && c.text === 'back in five';
+})());
+check('a slash makes it a command', parseCommand('/save')?.kind === 'save');
+check('an empty line does nothing at all', parseCommand('   ') === null);
+
+check('/say takes the rest of the line, spaces and all', (() => {
+  const c = parseCommand('/say back  in five');
+  return c?.kind === 'say' && c.text === 'back  in five';
+})());
+check('/say with nothing to say explains itself',
+  parseCommand('/say')?.kind === 'error');
+
+check('/kick takes a name', (() => {
+  const c = parseCommand('/kick Ada');
+  return c?.kind === 'kick' && c.who === 'Ada';
+})());
+check('and a reason after it', (() => {
+  const c = parseCommand('/kick Ada being rude');
+  return c?.kind === 'kick' && c.reason === 'being rude';
+})());
+check('with a default reason when none is given, so nobody is kicked silently',
+  (() => {
+    const c = parseCommand('/kick Ada');
+    return c?.kind === 'kick' && c.reason.length > 0;
+  })());
+check('/kick with no name explains itself', parseCommand('/kick')?.kind === 'error');
+
+check('commands are case-insensitive, because nobody holds shift for /SAY',
+  parseCommand('/SAVE')?.kind === 'save');
+check('an unknown command names itself and points at help', (() => {
+  const c = parseCommand('/frobnicate');
+  return c?.kind === 'error' && c.message.includes('frobnicate') && /help/i.test(c.message);
+})());
+check('/help and /? are the same thing',
+  parseCommand('/help')?.kind === 'help' && parseCommand('/?')?.kind === 'help');
+
+// --- finding who was meant --------------------------------------------------
+
+const roster = [
+  { id: 1, name: 'Ada', dim: 0, x: 0, y: 0, z: 0 },
+  { id: 2, name: 'Adam', dim: 0, x: 0, y: 0, z: 0 },
+  { id: 3, name: 'Bob', dim: 0, x: 0, y: 0, z: 0 },
+];
+
+check('an exact name wins even when it is a prefix of another',
+  findPlayer(roster, 'Ada')?.id === 1, JSON.stringify(findPlayer(roster, 'Ada')));
+check('case does not matter', findPlayer(roster, 'bob')?.id === 3);
+check('a unique prefix is enough, so nobody types a whole name',
+  findPlayer(roster, 'Bo')?.id === 3);
+check('an ambiguous prefix matches nobody rather than guessing',
+  findPlayer(roster, 'Ad') === null);
+check('a name nobody has matches nobody', findPlayer(roster, 'Zed') === null);
+
+check('dimensions read as names, not numbers',
+  dimensionName(0) === 'Overworld' && dimensionName(1) === 'Nether');
+check('and an unknown dimension still says something sensible',
+  dimensionName(9).includes('9'));
+
+// A token has to be unguessable and long enough for the server to accept it.
+{
+  const a = mintToken();
+  const b = mintToken();
+  check('a minted token is 32 hex characters', /^[0-9a-f]{32}$/.test(a), a);
+  check('and two of them differ', a !== b);
+}
 
 console.log(failures === 0 ? '\nall checks passed' : `\n${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);
