@@ -79,8 +79,24 @@ export interface CUseItem {
   item: number;
 }
 
+/**
+ * The player died. `by` names the killer when it was another player.
+ *
+ * Combat is simulated on the client, so the server has to be told. That does
+ * mean trusting the client about who killed whom, which is worth being honest
+ * about: on a server where money changes hands on a kill, a modified client
+ * could claim kills it did not make. The cooldown and the cap bound how much
+ * that is worth, and a server that cared more would have to move combat
+ * server-side -- a much bigger change than this one.
+ */
+export interface CDeath {
+  t: 'death';
+  by?: number;
+}
+
 export type ClientMessage =
-  | CHello | CSub | CUnsub | CSetBlock | CMove | CChat | CPortal | CUseItem;
+  | CHello | CSub | CUnsub | CSetBlock | CMove | CChat | CPortal | CUseItem
+  | CDeath;
 
 // ----------------------------------------------------------------- server -> client
 
@@ -154,9 +170,16 @@ export interface SConsume {
   count: number;
 }
 
+/** The server put something in the player's inventory. */
+export interface SGrant {
+  t: 'grant';
+  item: number;
+  count: number;
+}
+
 export type ServerMessage =
   | SWelcome | SChunk | SSetBlock | SPlayers | SJoin | SLeave | SChat | SReject
-  | SDimension | SConsume;
+  | SDimension | SConsume | SGrant;
 
 export function encode(msg: ClientMessage | ServerMessage): string {
   return JSON.stringify(msg);

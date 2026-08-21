@@ -205,7 +205,10 @@ export function runCommand(text: string, ctx: CommandContext): boolean {
     }
 
     default:
-      say(`Unknown command "${name}". Try /help`, true);
-      return true;
+      // Not one of ours. Return false so the caller sends it on: a
+      // multiplayer server has commands of its own -- /bal, /shop, /pay --
+      // and answering for it here would make every one of them look broken.
+      // In single-player nothing is listening, so the caller says so instead.
+      return false;
   }
 }

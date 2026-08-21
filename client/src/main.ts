@@ -384,6 +384,13 @@ async function start(
       inventory.remove(msg.item, msg.count);
       hud.refreshHotbar();
     },
+    grant: (msg) => {
+      // Bought from the server's shop. Creative already has everything, so
+      // handing it more would only clutter the bar.
+      if (survival.creative) return;
+      inventory.add(msg.item, msg.count);
+      hud.refreshHotbar();
+    },
     join: (msg) => hud.addChat(`${msg.player.name} joined`, true),
     leave: (msg) => hud.addChat(`Player ${msg.id} left`, true),
     chat: (msg) => hud.addChat(`<${msg.name}> ${msg.text}`),
@@ -401,6 +408,9 @@ async function start(
   };
   survival.onDeath = (cause) => {
     sound.death();
+    // Tell the server, so an SMP can settle who gets what. The killer's id
+    // comes from whoever last hit us; without one this is just a death.
+    net.send({ t: 'death', by: survival.lastAttacker ?? undefined });
     releasePointer();
     hud.showDeath(cause, () => {
       survival.reset();
@@ -525,12 +535,23 @@ async function start(
   hud.onChatKey((action) => {
     const text = hud.closeChat();
     if (action === 'send' && text) {
-      // Slash commands are handled here and never reach the server.
+      // The client answers the commands it owns. Anything else goes to the
+      // server, which has its own -- /bal, /shop, /pay on an SMP. Answering
+      // "unknown command" here would make every server command look broken.
       const handled = runCommand(text, {
         player, survival, seed, dimension, mobs,
         say: (line, system) => hud.addChat(line, system),
       });
-      if (!handled) net.send({ t: 'chat', text });
+      if (!handled) {
+        if (!multiplayer && text.startsWith('/')) {
+          // Nothing is listening in a local world, so say so rather than
+          // letting the command disappear.
+          hud.addChat(
+            `Unknown command "${text.split(/\s/)[0].slice(1)}". Try /help`, true);
+        } else {
+          net.send({ t: 'chat', text });
+        }
+      }
     }
     grabPointer();
   });

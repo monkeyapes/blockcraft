@@ -11,6 +11,7 @@ import { Dimension, SEA_LEVEL, dimChunkKey } from '@shared/constants.js';
 import { travelThroughPortal, useItemOnWorld } from '@shared/portal.js';
 import { columnHeight, surfaceY } from '@shared/terrain.js';
 import { adminEnabled, handleAdmin, type AdminHooks } from './admin.js';
+import { Economy, type EconomyHooks } from './economy.js';
 import {
   DEFAULT_PORT, PROTOCOL_VERSION, TICK_HZ,
   type ClientMessage, type PlayerSnapshot, type ServerMessage,
@@ -134,6 +135,53 @@ function serveStatic(req: IncomingMessage, res: ServerResponse): void {
 const STARTED_AT = Date.now();
 
 /**
+ * The SMP layer.
+ *
+ * Balances live beside the world save, so a world and its economy travel
+ * together -- copying one without the other would leave players rich in a
+ * world they had never touched, or broke in one they had built.
+ */
+function tellPlayer(name: string, text: string): void {
+  for (const p of players.values()) {
+    if (p.name.toLowerCase() !== name.toLowerCase()) continue;
+    if (p.socket.readyState === p.socket.OPEN) {
+      p.socket.send(JSON.stringify({ t: 'chat', id: -1, name: 'Server', text }));
+    }
+  }
+}
+
+const economyHooks: EconomyHooks = {
+  onlineNames: () => [...players.values()].map((p) => p.name),
+  tell: tellPlayer,
+  grant: (name, item, count) => {
+    let sent = false;
+    for (const p of players.values()) {
+      if (p.name.toLowerCase() !== name.toLowerCase()) continue;
+      if (p.socket.readyState !== p.socket.OPEN) continue;
+      p.socket.send(JSON.stringify({ t: 'grant', item, count }));
+      sent = true;
+    }
+    return sent;
+  },
+  // Selling is a client-side deduction: the server has no inventory to take
+  // from. It asks, and trusts the same client that already owns the
+  // inventory -- consistent with how the rest of the game is arranged.
+  take: (name, item, count) => {
+    let taken = 0;
+    for (const p of players.values()) {
+      if (p.name.toLowerCase() !== name.toLowerCase()) continue;
+      if (p.socket.readyState !== p.socket.OPEN) continue;
+      p.socket.send(JSON.stringify({ t: 'consume', item, count }));
+      taken = count;
+    }
+    return taken;
+  },
+};
+
+const economy = new Economy(
+  defaultSavePath().replace(/\.json$/, '') + '.economy.json', economyHooks);
+
+/**
  * What the admin routes are allowed to do. Passed in rather than reached for,
  * so admin.ts never touches the world or the socket map directly and the
  * surface it can affect is visible in one place.
@@ -160,6 +208,7 @@ const adminHooks: AdminHooks = {
   },
   save: () => {
     world.save();
+    economy.save();
     console.log('[world] saved on request');
   },
   get seed() { return world.seed; },
@@ -355,7 +404,19 @@ function handle(player: Player, msg: ClientMessage): void {
     case 'chat': {
       const text = String(msg.text ?? '').trim().slice(0, 256);
       if (!text) return;
+      // Commands are answered privately and never broadcast: publishing
+      // somebody's mistyped /pay to the whole server tells everyone both what
+      // they meant to do and that they fumbled it.
+      if (economy.handleChat(player.name, text)) return;
       broadcast({ t: 'chat', id: player.id, name: player.name, text });
+      return;
+    }
+    case 'death': {
+      const by = Number((msg as { by?: number }).by);
+      if (!Number.isInteger(by)) return;
+      const killer = players.get(by);
+      if (!killer || killer.id === player.id) return;
+      economy.recordKill(killer.name, player.name);
       return;
     }
   }
@@ -412,11 +473,12 @@ setInterval(() => {
   }
 }, 1000 / TICK_HZ);
 
-setInterval(() => world.save(), SAVE_INTERVAL_MS);
+setInterval(() => { world.save(); economy.save(); }, SAVE_INTERVAL_MS);
 
 function shutdown(): void {
   console.log('\n[server] saving and shutting down');
   world.save();
+  economy.save();
   process.exit(0);
 }
 process.on('SIGINT', shutdown);

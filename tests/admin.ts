@@ -196,11 +196,17 @@ check('the surface is on when a token is configured', adminEnabled());
   check('save forces a world save', r.status === 200 && saves === 1);
 }
 
-// Drop keep-alive sockets before closing. fetch holds them open, so close()
-// alone waits forever and exiting mid-close trips a libuv assertion that
-// looks like a test failure to anyone reading the output.
+// Drop keep-alive sockets, which fetch holds open, then let the process end
+// on its own.
+//
+// NOT process.exit(). Calling it aborts while a handle is still closing,
+// which trips a libuv assertion and takes the process down with exit code
+// 127 -- and since npm test chains suites with &&, that silently stopped
+// the three after this one from running at all. Nothing printed FAIL, the
+// run still ended on "all checks passed", and 129 checks quietly never
+// happened.
 server.closeAllConnections?.();
 await new Promise<void>((r) => server.close(() => r()));
 
 console.log(failures === 0 ? '\nall checks passed' : `\n${failures} check(s) failed`);
-process.exit(failures === 0 ? 0 : 1);
+process.exitCode = failures === 0 ? 0 : 1;

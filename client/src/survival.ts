@@ -23,6 +23,14 @@ export interface DamageEvent {
   cause: string;
 }
 
+/**
+ * How long a hit still counts toward a kill, in milliseconds.
+ *
+ * Long enough to cover a chase, short enough that an unrelated death later is
+ * nobody's kill.
+ */
+const ATTACKER_MEMORY_MS = 15_000;
+
 export class Survival {
   mode: GameMode = 'survival';
   health = MAX_HEALTH;
@@ -47,6 +55,28 @@ export class Survival {
   private drownTimer = 0;
 
   onDamage: (event: DamageEvent) => void = () => {};
+
+  /**
+   * Who last hurt us, and when, for settling a kill on an SMP.
+   *
+   * It expires, so somebody who was punched, escaped, and drowned ten minutes
+   * later does not count as that player's kill -- which would otherwise make
+   * "hit everyone once and wait" a strategy.
+   */
+  private attacker: number | null = null;
+  private attackedAt = 0;
+
+  /** The player who gets credit if we die now, if there is one. */
+  get lastAttacker(): number | null {
+    if (this.attacker === null) return null;
+    return Date.now() - this.attackedAt < ATTACKER_MEMORY_MS ? this.attacker : null;
+  }
+
+  /** Records a hit from another player. */
+  hitBy(playerId: number): void {
+    this.attacker = playerId;
+    this.attackedAt = Date.now();
+  }
   onDeath: (cause: string) => void = () => {};
 
   get creative(): boolean {
