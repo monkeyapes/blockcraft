@@ -23,7 +23,7 @@
     "desktop:icon": "node desktop/make-icon.mjs && cd desktop/src-tauri && tauri icon app-icon.png",
     "host:dev": "npm run dev --workspace @bc/host",
     "host:build": "npm run build --workspace @bc/host",
-    "host:package": "npm run build --workspace @bc/host && tauri build --config host/src-tauri/tauri.conf.json"
+    "host:package": "cd host/src-tauri && tauri build"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.4",

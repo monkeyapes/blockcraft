@@ -383,5 +383,10 @@ process.on('SIGTERM', shutdown);
 
 http.listen(PORT, () => {
   console.log(`[server] Blockcraft on http://localhost:${PORT}  (seed ${world.seed})`);
-  console.log(`[server] serving client from ${CLIENT_DIR}`);
+  // Say what is actually true. The hosting app runs this with no client
+  // build beside it -- players bring their own -- and a line claiming to
+  // serve from a directory that is not there reads as a broken install.
+  console.log(existsSync(CLIENT_DIR)
+    ? `[server] serving client from ${CLIENT_DIR}`
+    : '[server] no client build here; players connect with their own game');
 });
