@@ -48,6 +48,32 @@ The host app should detect which situation the user is in and offer the
 matching path, because "why can nobody join my server" is the question that
 kills self-hosting.
 
+## Open: the hosting app's Start button, in a packaged install
+
+Everything under it is verified. The bundled Node runtime runs the bundled
+server, a real client connects to it, and a multiplayer session works end to
+end -- server log `[net] Tester joined (1 online)`, client HUD `players 1
+online`, matching seeds on both sides. The window's own lifecycle, address
+ranking, port validation and log handling are covered against a fake backend.
+
+What is **not** verified is the one seam between them: clicking Start in the
+packaged app, and the Tauri event plumbing that carries the server's output
+back to the window.
+
+Two things block automating it, and neither is the app's fault:
+
+- Screen automation resolves applications through the Start menu, so it
+  cannot see an app running out of `target/release`.
+- Installing it first stalls: the NSIS installer raises a UAC prompt, and
+  Windows blocks input to elevated processes from anything lower, so a
+  silent install cannot be completed unattended either.
+
+**To close it:** install `Blockcraft Server_0.2.0_x64-setup.exe`, open it,
+press Start. Expected: the pill turns green, the log fills with the same
+lines the server printed above, and an address appears marked as reachable on
+your network only. If the pill stays on "Starting…" the resource paths are
+wrong; if it flips to "Failed" the log will say why.
+
 ## Open: horizontal lines on block faces
 
 Still unsolved. This session eliminated most of the field, including the
