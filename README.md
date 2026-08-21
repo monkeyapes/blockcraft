@@ -97,6 +97,30 @@ question can be reproduced from a link instead of by flying there and hoping:
 Same world, same camera, every time. Time of day still advances, so two runs
 differ in brightness -- compare geometry, not absolute pixels.
 
+## Hosting a server
+
+`Blockcraft Server` is a separate, optional download that runs a server on
+your own machine. It is a window over the same server the project already
+has -- nothing is reimplemented, so the world a server generates can never
+drift from the world a client expects.
+
+```bash
+npm run host:dev       # the window, against a fake server
+npm run host:package   # the installer
+```
+
+`host/prepare.mjs` stages the two things the app ships that are not its own
+code: the server bundled to a single file, and a copy of the Node runtime
+taken from whatever Node is building the project. Neither is committed -- an
+80 MB binary in the repository would cost every clone for the benefit of the
+one person building an installer.
+
+**The thing to know before hosting:** your computer is behind a router, so a
+server running on it is not reachable from outside your own network until you
+either forward the port or run a tunnel. Both are free, and the app says so
+rather than letting you find out when a friend cannot join. It will not show
+you a LAN address as though it reached the internet.
+
 ## Layout
 
 | Path | What it is |

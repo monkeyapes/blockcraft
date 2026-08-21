@@ -1,0 +1,19 @@
+{
+  "name": "@bc/host",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:server": "node prepare.mjs",
+    "dev": "vite",
+    "build": "npm run prepare:server && vite build"
+  },
+  "dependencies": {
+    "@bc/shared": "*",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-shell": "^2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

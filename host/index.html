@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blockcraft Server</title>
+<link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand"><span class="cube"></span>Blockcraft Server</div>
+  <span class="pill" id="state-pill" data-state="stopped">Stopped</span>
+</header>
+
+<main class="wrap">
+
+  <!--
+    Settings first, because they cannot be changed while it runs and finding
+    that out after starting is annoying.
+  -->
+  <section class="panel">
+    <h2>Server</h2>
+    <div class="row">
+      <label class="field">
+        <span>Port</span>
+        <input id="port" type="text" inputmode="numeric" value="8787" />
+      </label>
+      <label class="field">
+        <span>World seed</span>
+        <input id="seed" type="text" placeholder="random" />
+      </label>
+    </div>
+    <p class="err" id="settings-err"></p>
+    <div class="actions">
+      <button id="start" class="btn btn-go">Start server</button>
+      <button id="stop" class="btn" disabled>Stop</button>
+      <span class="stat"><b id="players">0</b> online</span>
+      <span class="stat">up <b id="uptime">—</b></span>
+    </div>
+  </section>
+
+  <!--
+    The question the whole app exists to answer. A naive hosting tool shows a
+    LAN address as though it reached the internet, and the host only finds out
+    when a friend cannot join.
+  -->
+  <section class="panel">
+    <h2>Address to share</h2>
+    <p class="advice" id="advice">Start the server to get an address to share.</p>
+    <div id="addresses" class="addresses"></div>
+  </section>
+
+  <section class="panel" id="reach-help" hidden>
+    <h2>Letting friends in</h2>
+    <p class="note">
+      Your computer sits behind a router, so a server running here is not
+      reachable from outside your own network until you do one of these. Both
+      are free.
+    </p>
+    <div class="choices">
+      <article class="choice">
+        <h3>Forward the port</h3>
+        <p>
+          Tell your router to send traffic on your port to this computer. No
+          third party involved, and nothing to keep running — but you need
+          access to the router, and some connections cannot do it at all.
+        </p>
+      </article>
+      <article class="choice">
+        <h3>Use a tunnel</h3>
+        <p>
+          A tunnel gives you a public address without touching the router.
+          Free tiers exist that are enough for a small server. Paste the
+          address it gives you below and the app will share that instead.
+        </p>
+        <label class="field">
+          <span>Public address</span>
+          <input id="public-host" type="text" placeholder="abc123.tunnel.example:31245" />
+        </label>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Name</h2>
+    <p class="note">
+      A <b>.bc</b> name is what people actually remember. It resolves inside
+      Blockcraft only — it is not a real domain, so it will not ping and will
+      not open in a browser.
+    </p>
+    <label class="field wide">
+      <span>Your name</span>
+      <div class="suffixed">
+        <input id="bc-name" type="text" placeholder="donutsmp" maxlength="24" />
+        <span class="suffix">.bc</span>
+      </div>
+    </label>
+    <p class="err" id="name-err"></p>
+    <p class="note" id="name-help"></p>
+  </section>
+
+  <section class="panel grow">
+    <h2>Log</h2>
+    <div id="log" class="log" role="log" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

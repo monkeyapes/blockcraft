@@ -20,3 +20,10 @@ desktop/src-tauri/gen/
 *.exe
 .DS_Store
 Thumbs.db
+
+# Staged by host/prepare.mjs: a copy of the Node runtime and the bundled
+# server. Both are build outputs; committing an 80 MB binary would bloat
+# every clone for the one person building an installer.
+host/src-tauri/bin/
+host/src-tauri/target/
+host/dist/
