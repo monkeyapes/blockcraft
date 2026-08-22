@@ -27,6 +27,7 @@ import { meshSection } from './mesher.js';
 import { Connection, defaultServerUrl } from './net.js';
 import { EYE_HEIGHT, Player, type InputState } from './player.js';
 import { runCommand } from './commands.js';
+import { PanelUI } from './ui/panel.js';
 import { DayNight } from './daynight.js';
 import { dimensionLook, submergedSky } from './dimension.js';
 import {
@@ -256,6 +257,15 @@ async function start(
   unlockAudio = () => sound.unlock();
   const particles = new ParticleSystem();
   // Keyed per world, so a returning player is not re-taught the game.
+  /**
+   * The server-driven window. On a single-player world nothing answers, so
+   * the key simply does nothing there rather than opening an empty frame.
+   */
+  const panelUI = new PanelUI(atlas);
+  panelUI.onOpen = (id, arg) => net.send({ t: 'panel', id, arg });
+  panelUI.onAction = (id, action, arg) => net.send({ t: 'panelact', id, action, arg });
+  panelUI.onClose = () => { grabPointer(); };
+
   const advancements = new Advancements(multiplayer ? 'server' : name);
   advancements.onEarned = (a) => {
     hud.addChat(`Advancement: ${a.title} — ${a.description}`, true);
@@ -384,6 +394,7 @@ async function start(
       inventory.remove(msg.item, msg.count);
       hud.refreshHotbar();
     },
+    panel: (msg) => panelUI.show(msg),
     grant: (msg) => {
       // Bought from the server's shop. Creative already has everything, so
       // handing it more would only clutter the bar.
@@ -522,7 +533,8 @@ async function start(
 
   /** Any full-screen panel that should freeze the world and the controls. */
   function anyPanelOpen(): boolean {
-    return invUI.open || creativeUI.open || hud.deathVisible || hud.victoryVisible || menus.paused;
+    return invUI.open || creativeUI.open || panelUI.open ||
+      hud.deathVisible || hud.victoryVisible || menus.paused;
   }
 
   function closeCreative(): void {
@@ -584,6 +596,14 @@ async function start(
     }
     if (menus.paused) return;
 
+    // Escape closes this window first, so it does not also open the pause
+    // menu behind it.
+    if (e.code === 'Escape' && panelUI.open) {
+      e.preventDefault();
+      panelUI.hide();
+      return;
+    }
+
     if (e.code === 'KeyE' || (e.code === 'Escape' && invUI.open)) {
       e.preventDefault();
       // Creative gets the catalogue; survival gets the 2x2 grid. The 3x3
@@ -601,6 +621,20 @@ async function start(
       return;
     }
     if (anyPanelOpen()) return;
+
+    // B for the shop. Only on a server -- nothing answers in a local world,
+    // and a window that never fills is worse than no window.
+    if (e.code === 'KeyB') {
+      e.preventDefault();
+      if (panelUI.open) panelUI.hide();
+      else if (multiplayer) {
+        releasePointer();
+        panelUI.request('shop');
+      } else {
+        hud.toast('The shop is a server feature');
+      }
+      return;
+    }
 
     if (e.code === 'KeyT') {
       e.preventDefault();

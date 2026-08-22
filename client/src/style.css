@@ -557,6 +557,129 @@ html, body {
 
 /* Bottom action bar ----------------------------------------------------- */
 
+/* ------------------------------------------------------------------ panel */
+/*
+ * The server-driven window. Same materials as the rest of the UI, and sized
+ * so it covers the middle of the screen without hiding the hotbar -- you are
+ * often buying something to put straight in it.
+ */
+#panel {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(6, 8, 12, 0.62);
+  backdrop-filter: blur(3px);
+}
+#panel[hidden] { display: none; }
+
+.panel-box {
+  width: min(560px, 92vw);
+  max-height: min(620px, 82vh);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--keyline);
+  border-radius: var(--edge-round);
+  background-color: rgba(16, 20, 28, 0.98);
+  background-image: linear-gradient(rgba(12, 15, 21, 0.9), rgba(12, 15, 21, 0.96)), var(--tex-stone, none);
+  background-size: auto, 96px 96px;
+  image-rendering: pixelated;
+  box-shadow: var(--shadow);
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 2px solid var(--keyline);
+}
+.panel-head h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: 0.3px; }
+.panel-head p { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+#panel-close { margin-left: auto; }
+
+#panel-tabs { display: flex; gap: 2px; padding: 10px 14px 0; }
+#panel-tabs[hidden] { display: none; }
+.panel-tab {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 8px 14px;
+  color: var(--ink-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--keyline);
+  border-bottom: 0;
+  border-radius: var(--edge-round) var(--edge-round) 0 0;
+  cursor: pointer;
+}
+.panel-tab:hover { color: var(--ink); background: rgba(255, 255, 255, 0.09); }
+.panel-tab.active { color: var(--ink); background: rgba(255, 255, 255, 0.11); }
+
+#panel-notice {
+  margin: 10px 16px 0;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: rgba(95, 158, 70, 0.16);
+  border-left: 3px solid var(--grass);
+}
+#panel-notice[hidden] { display: none; }
+
+#panel-rows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 14px 16px;
+}
+#panel-rows::-webkit-scrollbar { width: 9px; }
+#panel-rows::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 5px; }
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--edge);
+}
+.panel-row:last-child { border-bottom: 0; }
+.panel-row:hover { background: rgba(255, 255, 255, 0.04); }
+/* Still legible, so a price you cannot afford is information not a blank. */
+.panel-row[data-disabled] { opacity: 0.55; }
+
+.panel-icon {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  background-size: cover;
+  image-rendering: pixelated;
+  border: 2px solid var(--keyline);
+}
+.panel-label { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; }
+.panel-detail { font: 700 13px var(--mono); color: var(--gold); white-space: nowrap; }
+.panel-actions { display: flex; gap: 6px; }
+
+.panel-btn {
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  padding: 7px 12px;
+  color: var(--ink);
+  background-color: #6d6d70;
+  background-image: var(--tex-stone-btn, none);
+  background-size: 40px 40px;
+  image-rendering: pixelated;
+  border: 2px solid var(--keyline);
+  border-radius: var(--edge-round);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.16), inset -2px -2px 0 rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.panel-btn:hover:not(:disabled) { filter: brightness(1.18); }
+.panel-btn:active:not(:disabled) { transform: translateY(2px); }
+.panel-btn:disabled { opacity: 0.4; cursor: default; }
+
 /* ------------------------------------------------------------------ shelf */
 /*
  * The row of cards under the world list. A launcher that only lists saves

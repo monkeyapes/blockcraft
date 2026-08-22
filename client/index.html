@@ -26,6 +26,26 @@
         <div id="food"></div>
       </div>
       <div id="hotbar"></div>
+
+      <!--
+        The server-driven panel: shop, sell, leaderboard, and whatever a
+        plugin adds. Every word in it arrives over the wire; the client only
+        lays it out.
+      -->
+      <div id="panel" hidden>
+        <div class="panel-box">
+          <div class="panel-head">
+            <div>
+              <h2 id="panel-title"></h2>
+              <p id="panel-subtitle"></p>
+            </div>
+            <button id="panel-close" class="panel-btn" title="Close">Close</button>
+          </div>
+          <div id="panel-tabs"></div>
+          <p id="panel-notice" hidden></p>
+          <div id="panel-rows"></div>
+        </div>
+      </div>
       <div id="toast"></div>
     </div>
 

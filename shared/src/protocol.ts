@@ -94,9 +94,32 @@ export interface CDeath {
   by?: number;
 }
 
+/**
+ * Asking the server to open a panel, or acting on one.
+ *
+ * Deliberately generic. The shop, the balance sheet and the leaderboard all
+ * travel through this, and so does anything a plugin adds later -- otherwise
+ * every feature that wants a window would need its own message type, and the
+ * protocol would grow a wart per plugin.
+ */
+export interface CPanel {
+  t: 'panel';
+  /** Which panel: 'shop', 'baltop', 'me', or whatever a plugin registered. */
+  id: string;
+  /** Optional page or filter. */
+  arg?: string;
+}
+export interface CPanelAction {
+  t: 'panelact';
+  id: string;
+  action: string;
+  arg?: string;
+  count?: number;
+}
+
 export type ClientMessage =
   | CHello | CSub | CUnsub | CSetBlock | CMove | CChat | CPortal | CUseItem
-  | CDeath;
+  | CDeath | CPanel | CPanelAction;
 
 // ----------------------------------------------------------------- server -> client
 
@@ -177,9 +200,44 @@ export interface SGrant {
   count: number;
 }
 
+/** One line in a panel: an item to trade, a player on a board, a heading. */
+export interface PanelRow {
+  /** Item or block id, when the row is something tradeable. */
+  item?: number;
+  label: string;
+  /** Right-aligned detail: a price, a balance, a rank. */
+  detail?: string;
+  /** Buttons this row offers, e.g. ['buy', 'sell']. */
+  actions?: string[];
+  /** Greyed out, with a reason -- cannot afford it, none to sell. */
+  disabled?: string;
+}
+
+/**
+ * A panel to draw.
+ *
+ * The server decides what a panel contains and the client only lays it out.
+ * That way a plugin can add a whole screen without shipping any client code,
+ * which is the difference between a plugin system and a patch.
+ */
+export interface SPanel {
+  t: 'panel';
+  id: string;
+  title: string;
+  /** Shown under the title: a balance, a hint, a page marker. */
+  subtitle?: string;
+  rows: PanelRow[];
+  /** Tabs across the top, as [id, label] pairs. */
+  tabs?: Array<[string, string]>;
+  /** Which tab is showing. */
+  active?: string;
+  /** A line of feedback from the last action. */
+  notice?: string;
+}
+
 export type ServerMessage =
   | SWelcome | SChunk | SSetBlock | SPlayers | SJoin | SLeave | SChat | SReject
-  | SDimension | SConsume | SGrant;
+  | SDimension | SConsume | SGrant | SPanel;
 
 export function encode(msg: ClientMessage | ServerMessage): string {
   return JSON.stringify(msg);

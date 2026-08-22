@@ -12,6 +12,7 @@ import { travelThroughPortal, useItemOnWorld } from '@shared/portal.js';
 import { columnHeight, surfaceY } from '@shared/terrain.js';
 import { adminEnabled, handleAdmin, type AdminHooks } from './admin.js';
 import { Economy, type EconomyHooks } from './economy.js';
+import { PluginHost, type PluginPlayer } from './plugins.js';
 import {
   DEFAULT_PORT, PROTOCOL_VERSION, TICK_HZ,
   type ClientMessage, type PlayerSnapshot, type ServerMessage,
@@ -178,6 +179,12 @@ const economyHooks: EconomyHooks = {
   },
 };
 
+/**
+ * What the server calls itself. Shown in panels and by plugins, so a host can
+ * brand their server without touching any code.
+ */
+const SERVER_NAME = process.env.SERVER_NAME?.trim() || 'Blockcraft Server';
+
 const economy = new Economy(
   defaultSavePath().replace(/\.json$/, '') + '.economy.json', economyHooks);
 
@@ -215,6 +222,48 @@ const adminHooks: AdminHooks = {
   edits: () => world.editCount,
   startedAt: STARTED_AT,
 };
+
+/** A connected player as plugins and panels see them. */
+function asPluginPlayer(p: { id: number; name: string; dim: Dimension; x: number; y: number; z: number }): PluginPlayer {
+  return { id: p.id, name: p.name, dim: p.dim, x: Math.round(p.x), y: Math.round(p.y), z: Math.round(p.z) };
+}
+
+const plugins = new PluginHost({
+  serverName: SERVER_NAME,
+  tell: tellPlayer,
+  broadcast: (text) => broadcast({ t: 'chat', id: -1, name: SERVER_NAME, text }),
+  players: () => [...players.values()].map(asPluginPlayer),
+  grant: economyHooks.grant,
+  take: economyHooks.take,
+  storagePath: (file) => join(dirname(defaultSavePath()), file),
+});
+
+/**
+ * The economy, registered through the same plugin API a third party would
+ * use.
+ *
+ * This is the point of doing it this way: an extension API that the project's
+ * own features bypass grows gaps exactly where the interesting work is,
+ * because the interesting work never had to use it.
+ */
+plugins.registerBuiltin('economy', (ctx) => {
+  const forName = (p: PluginPlayer) => p.name;
+
+  ctx.command('bal', 'what you have', (p, args) => { economy.handleChat(forName(p), `/bal ${args}`.trim()); });
+  ctx.command('pay', 'send money', (p, args) => { economy.handleChat(forName(p), `/pay ${args}`); });
+  ctx.command('baltop', 'the richest players', (p) => { economy.handleChat(forName(p), '/baltop'); });
+  ctx.command('shop', 'what is for sale', (p, args) => { economy.handleChat(forName(p), `/shop ${args}`.trim()); });
+  ctx.command('buy', 'buy from the shop', (p, args) => { economy.handleChat(forName(p), `/buy ${args}`); });
+  ctx.command('sell', 'sell to the shop', (p, args) => { economy.handleChat(forName(p), `/sell ${args}`); });
+
+  for (const id of ['shop', 'sell', 'baltop', 'me']) {
+    ctx.panel(id, (p, arg, notice) => economy.panel(forName(p), id, arg, notice));
+    ctx.panelAction(id, (p, action, arg, count) =>
+      economy.panelAction(forName(p), id, action, arg, count));
+  }
+
+  ctx.on('kill', (killer, victim) => { economy.recordKill(killer.name, victim.name); });
+});
 
 const http = createServer((req, res) => {
   void handleAdmin(req, res, adminHooks).then((handled) => {
@@ -281,6 +330,7 @@ wss.on('connection', (socket) => {
     players.delete(player.id);
     broadcast({ t: 'leave', id: player.id });
     console.log(`[net] ${player.name} left (${players.size} online)`);
+    plugins.emit('leave', asPluginPlayer(player));
   });
 
   socket.on('error', () => socket.terminate());
@@ -308,6 +358,7 @@ function handle(player: Player, msg: ClientMessage): void {
       });
       broadcast({ t: 'join', player: snapshot(player) }, player.id);
       console.log(`[net] ${player.name} joined (${players.size} online)`);
+      plugins.emit('join', asPluginPlayer(player));
       return;
     }
 
@@ -407,8 +458,30 @@ function handle(player: Player, msg: ClientMessage): void {
       // Commands are answered privately and never broadcast: publishing
       // somebody's mistyped /pay to the whole server tells everyone both what
       // they meant to do and that they fumbled it.
+      // Plugins first, then the economy's own parsing (which still handles
+      // aliases like /money and /rich), then it is just chat.
+      if (plugins.runCommand(asPluginPlayer(player), text)) return;
       if (economy.handleChat(player.name, text)) return;
+      plugins.emit('chat', asPluginPlayer(player), text);
       broadcast({ t: 'chat', id: player.id, name: player.name, text });
+      return;
+    }
+    case 'panel': {
+      const id = String((msg as { id?: string }).id ?? '');
+      const arg = (msg as { arg?: string }).arg;
+      const built = plugins.buildPanel(asPluginPlayer(player), id, arg);
+      if (built && player.socket.readyState === player.socket.OPEN) {
+        player.socket.send(JSON.stringify(built));
+      }
+      return;
+    }
+    case 'panelact': {
+      const m = msg as { id?: string; action?: string; arg?: string; count?: number };
+      const built = plugins.runPanelAction(
+        asPluginPlayer(player), String(m.id ?? ''), String(m.action ?? ''), m.arg, m.count);
+      if (built && player.socket.readyState === player.socket.OPEN) {
+        player.socket.send(JSON.stringify(built));
+      }
       return;
     }
     case 'death': {
@@ -416,7 +489,7 @@ function handle(player: Player, msg: ClientMessage): void {
       if (!Number.isInteger(by)) return;
       const killer = players.get(by);
       if (!killer || killer.id === player.id) return;
-      economy.recordKill(killer.name, player.name);
+      plugins.emit('kill', asPluginPlayer(killer), asPluginPlayer(player));
       return;
     }
   }
@@ -475,6 +548,11 @@ setInterval(() => {
 
 setInterval(() => { world.save(); economy.save(); }, SAVE_INTERVAL_MS);
 
+// A slow heartbeat for plugins. Once a second, not once a frame: anything a
+// plugin does here runs on the same thread as the world, and a plugin author
+// should have to opt into finer granularity rather than get it by accident.
+setInterval(() => plugins.emit('tick', undefined), 1000);
+
 function shutdown(): void {
   console.log('\n[server] saving and shutting down');
   world.save();
@@ -484,11 +562,19 @@ function shutdown(): void {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
+// Third-party plugins load after the builtins, so a plugin can see that the
+// economy's commands are already taken rather than silently losing to them.
+await plugins.loadFrom(join(process.cwd(), 'plugins'));
+
 http.listen(PORT, () => {
   console.log(`[server] Blockcraft on http://localhost:${PORT}  (seed ${world.seed})`);
   // Say what is actually true. The hosting app runs this with no client
   // build beside it -- players bring their own -- and a line claiming to
   // serve from a directory that is not there reads as a broken install.
+  console.log(`[server] ${SERVER_NAME}`);
+  console.log(plugins.names.length
+    ? `[plugins] loaded: ${plugins.names.join(', ')}`
+    : '[plugins] none');
   console.log(adminEnabled()
     ? '[admin] control surface on, loopback only'
     : '[admin] off (no ADMIN_TOKEN)');

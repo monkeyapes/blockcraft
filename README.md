@@ -97,6 +97,40 @@ question can be reproduced from a link instead of by flying there and hoping:
 Same world, same camera, every time. Time of day still advances, so two runs
 differ in brightness -- compare geometry, not absolute pixels.
 
+## Running an SMP
+
+A survival server with money in it. Press **B** in game for the shop, or use
+`/shop`, `/bal`, `/pay`, `/baltop`, `/sell`.
+
+The rule that gives it its shape: killing a player takes **a quarter of their
+balance**, capped, with a cooldown per killer-victim pair so a group cannot
+take turns farming one person. Dying to a mob costs you your stuff; dying to a
+*person* costs you money. That is what makes carrying a large balance a
+decision.
+
+Set `SERVER_NAME` and the server calls itself that everywhere.
+
+```bash
+SERVER_NAME="CokeSMP" PORT=8787 npm start --workspace @bc/server
+```
+
+## Plugins
+
+Drop a `.mjs` file in `plugins/` that exports `register`, and restart. No
+build step, no manifest. A plugin can add commands, listen for events, and
+build whole in-game screens without shipping any client code — the game draws
+whatever rows the server sends.
+
+See [plugins/README.md](plugins/README.md), and `plugins/welcome.mjs` for a
+worked example. The economy is registered through the same API, on purpose:
+an extension API the project's own features bypass grows gaps exactly where
+the interesting work is.
+
+**Plugins are not sandboxed.** They run in the server process and can do
+anything it can. Failures are contained — one that throws is logged and
+skipped, and never stops the server or the other plugins — but that is
+containment of bugs, not of intent.
+
 ## Hosting a server
 
 `Blockcraft Server` is a separate, optional download that runs a server on

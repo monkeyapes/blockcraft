@@ -15,9 +15,10 @@ import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from '
 import { dirname } from 'node:path';
 
 import {
-  KILL_COOLDOWN_S, STARTING_BALANCE, formatMoney, killTransfer, payProblem,
-  priceOf, shopItems,
+  KILL_CAP, KILL_COOLDOWN_S, STARTING_BALANCE, formatMoney, killTransfer,
+  payProblem, priceOf, shopItems,
 } from '@shared/economy.js';
+import type { PanelRow, SPanel } from '@shared/protocol.js';
 import { itemName } from '@shared/items.js';
 
 /** What the economy needs from the server to act on the world. */
@@ -33,6 +34,13 @@ export interface EconomyHooks {
 }
 
 interface Account {
+  /**
+   * The name as its owner types it.
+   *
+   * Accounts are keyed by lowercase name so that Ada and ada are one wallet,
+   * but the leaderboard has to show people their own name back, not the key.
+   */
+  display: string;
   balance: number;
   /** When this player was last killed by each other player, for the cooldown. */
   lastKilledBy: Record<string, number>;
@@ -55,8 +63,12 @@ export class Economy {
     const k = this.key(name);
     let a = this.accounts.get(k);
     if (!a) {
-      a = { balance: STARTING_BALANCE, lastKilledBy: {} };
+      a = { display: name, balance: STARTING_BALANCE, lastKilledBy: {} };
       this.accounts.set(k, a);
+      this.dirty = true;
+    }
+    else if (a.display !== name) {
+      a.display = name;
       this.dirty = true;
     }
     return a;
@@ -213,7 +225,7 @@ export class Economy {
     }
     this.hooks.tell(name, 'Richest players:');
     top.forEach(([who, acc], i) => {
-      this.hooks.tell(name, `  ${i + 1}. ${who} — ${formatMoney(acc.balance)}`);
+      this.hooks.tell(name, `  ${i + 1}. ${acc.display ?? who} — ${formatMoney(acc.balance)}`);
     });
   }
 
@@ -232,39 +244,53 @@ export class Economy {
   private cmdBuy(name: string, args: string): void {
     const parsed = this.parseItemArgs(name, args, 'buy');
     if (!parsed) return;
-    const { id, count, price } = parsed;
-
-    const cost = price.buy * count;
-    if (cost > this.balance(name)) {
-      this.hooks.tell(name,
-        `${itemName(id)} x${count} costs ${formatMoney(cost)}; you have ${formatMoney(this.balance(name))}.`);
-      return;
-    }
-    // Take the money only once the items are actually in hand. A full
-    // inventory that still charged would be the worst bug this could have.
-    if (!this.hooks.grant(name, id, count)) {
-      this.hooks.tell(name, 'No room for that. Clear some space and try again.');
-      return;
-    }
-    this.adjust(name, -cost);
-    this.hooks.tell(name,
-      `Bought ${itemName(id)} x${count} for ${formatMoney(cost)}. You have ${formatMoney(this.balance(name))}.`);
+    this.hooks.tell(name, this.buy(name, parsed.id, parsed.count));
   }
 
   private cmdSell(name: string, args: string): void {
     const parsed = this.parseItemArgs(name, args, 'sell');
     if (!parsed) return;
-    const { id, count, price } = parsed;
+    this.hooks.tell(name, this.sell(name, parsed.id, parsed.count));
+  }
 
-    const taken = this.hooks.take(name, id, count);
-    if (taken <= 0) {
-      this.hooks.tell(name, `You have no ${itemName(id)}.`);
-      return;
+  /**
+   * Buys, and says what happened.
+   *
+   * Both the chat command and the shop panel come through here, so the two
+   * cannot end up charging different prices for the same thing -- which is
+   * exactly the sort of divergence that appears months later, in one code
+   * path nobody tests.
+   */
+  buy(name: string, item: number, count: number): string {
+    const price = priceOf(item);
+    if (!price) return 'The shop does not deal in that.';
+
+    const cost = price.buy * count;
+    if (cost > this.balance(name)) {
+      return `${itemName(item)} x${count} costs ${formatMoney(cost)}; ` +
+        `you have ${formatMoney(this.balance(name))}.`;
     }
+    // Take the money only once the items are actually in hand. A full
+    // inventory that still charged would be the worst bug this could have.
+    if (!this.hooks.grant(name, item, count)) {
+      return 'No room for that. Clear some space and try again.';
+    }
+    this.adjust(name, -cost);
+    return `Bought ${itemName(item)} x${count} for ${formatMoney(cost)}. ` +
+      `You have ${formatMoney(this.balance(name))}.`;
+  }
+
+  /** Sells, and says what happened. */
+  sell(name: string, item: number, count: number): string {
+    const price = priceOf(item);
+    if (!price) return 'The shop does not deal in that.';
+
+    const taken = this.hooks.take(name, item, count);
+    if (taken <= 0) return `You have no ${itemName(item)}.`;
     const paid = price.sell * taken;
     this.adjust(name, paid);
-    this.hooks.tell(name,
-      `Sold ${itemName(id)} x${taken} for ${formatMoney(paid)}. You have ${formatMoney(this.balance(name))}.`);
+    return `Sold ${itemName(item)} x${taken} for ${formatMoney(paid)}. ` +
+      `You have ${formatMoney(this.balance(name))}.`;
   }
 
   /** Shared argument handling for buy and sell. */
@@ -308,6 +334,134 @@ export class Economy {
     return prefix.length === 1 ? prefix[0] : null;
   }
 
+  // --- panels --------------------------------------------------------------
+  //
+  // The same operations as the commands, drawn instead of typed. Both go
+  // through the same methods below the surface, so a shop that works in one
+  // and not the other is not possible.
+
+  /**
+   * Builds a panel for this player.
+   *
+   * Returns the whole screen every time rather than a diff. Panels are small,
+   * they change only when the player asks or acts, and a diff protocol here
+   * would be a lot of machinery guarding against a cost nobody is paying.
+   */
+  panel(name: string, id: string, arg?: string, notice?: string): SPanel {
+    const tabs: Array<[string, string]> = [
+      ['shop', 'Shop'], ['sell', 'Sell'], ['baltop', 'Leaderboard'], ['me', 'You'],
+    ];
+    const balance = this.balance(name);
+    const money = formatMoney(balance);
+
+    switch (id) {
+      case 'sell': {
+        // Only what the shop will actually take, so nobody hunts for the one
+        // row that works.
+        const rows: PanelRow[] = shopItems().map(({ id: item, price }) => ({
+          item,
+          label: itemName(item),
+          detail: formatMoney(price.sell),
+          actions: ['sell', 'sellall'],
+        }));
+        return {
+          t: 'panel', id: 'sell', title: 'Sell', subtitle: `You have ${money}`,
+          rows, tabs, active: 'sell', notice,
+        };
+      }
+
+      case 'baltop': {
+        const top = [...this.accounts.entries()]
+          .sort((a, b) => b[1].balance - a[1].balance)
+          .slice(0, 15);
+        const rows: PanelRow[] = top.map(([who, acc], i) => ({
+          label: `${i + 1}.  ${acc.display ?? who}`,
+          detail: formatMoney(acc.balance),
+        }));
+        if (!rows.length) rows.push({ label: 'Nobody has anything yet.' });
+        return {
+          t: 'panel', id: 'baltop', title: 'Richest players',
+          subtitle: `You have ${money}`, rows, tabs, active: 'baltop', notice,
+        };
+      }
+
+      case 'me': {
+        const rank = [...this.accounts.entries()]
+          .sort((a, b) => b[1].balance - a[1].balance)
+          .findIndex(([who]) => who === this.key(name)) + 1;
+        return {
+          t: 'panel', id: 'me', title: name, subtitle: money,
+          rows: [
+            { label: 'Balance', detail: money },
+            { label: 'Rank', detail: rank ? `#${rank}` : '—' },
+            { label: 'Killing a player takes', detail: '25% of their balance' },
+            { label: 'Most you can lose at once', detail: formatMoney(KILL_CAP) },
+            { label: 'Pay someone', detail: '/pay <player> <amount>' },
+          ],
+          tabs, active: 'me', notice,
+        };
+      }
+
+      default: {
+        // The shop, paged, with anything unaffordable greyed out and told why
+        // rather than failing on the click.
+        const all = shopItems();
+        const perPage = 10;
+        const pages = Math.max(1, Math.ceil(all.length / perPage));
+        const page = Math.min(Math.max(1, Number(arg) || 1), pages);
+        const rows: PanelRow[] = all
+          .slice((page - 1) * perPage, page * perPage)
+          .map(({ id: item, price }) => ({
+            item,
+            label: itemName(item),
+            detail: formatMoney(price.buy),
+            actions: ['buy', 'buy10'],
+            disabled: price.buy > balance ? 'too expensive' : undefined,
+          }));
+        return {
+          t: 'panel', id: 'shop', title: 'Shop',
+          subtitle: `You have ${money}  ·  page ${page} of ${pages}`,
+          rows, tabs, active: 'shop', notice,
+        };
+      }
+    }
+  }
+
+  /**
+   * Acts on a panel row and returns the panel to draw next.
+   *
+   * Every action routes through the same buy/sell methods the chat commands
+   * use, so the two can never drift into charging different prices.
+   */
+  panelAction(
+    name: string, id: string, action: string, arg?: string, count?: number,
+  ): SPanel {
+    const item = Number(arg);
+    const price = Number.isFinite(item) ? priceOf(item) : null;
+    if (!price) return this.panel(name, id, undefined, 'The shop does not deal in that.');
+
+    let notice: string;
+    switch (action) {
+      case 'buy':
+      case 'buy10': {
+        const n = action === 'buy10' ? 10 : Math.max(1, count ?? 1);
+        notice = this.buy(name, item, n);
+        break;
+      }
+      case 'sell':
+      case 'sellall': {
+        // "All" is capped at a stack rather than unbounded: a single click
+        // that empties an inventory is a click people make by accident.
+        const n = action === 'sellall' ? 64 : Math.max(1, count ?? 1);
+        notice = this.sell(name, item, n);
+        break;
+      }
+      default:
+        notice = `Unknown action "${action}".`;
+    }
+    return this.panel(name, id, undefined, notice);
+  }
+
   // --- persistence ---------------------------------------------------------
 
   private load(): void {
@@ -319,6 +473,8 @@ export class Economy {
       for (const [k, v] of Object.entries(raw.accounts ?? {})) {
         if (typeof v?.balance !== 'number' || !Number.isFinite(v.balance)) continue;
         this.accounts.set(k, {
+          // Saves written before names were kept fall back to the key.
+          display: v.display ?? k,
           balance: Math.max(0, Math.floor(v.balance)),
           lastKilledBy: v.lastKilledBy ?? {},
         });

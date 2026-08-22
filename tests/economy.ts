@@ -239,6 +239,66 @@ check('an economy command is claimed', econ.handleChat('Ada', '/bal') === true);
     reloaded.recordKill('Ada', 'Bob') === 0);
 }
 
+// --- panels ----------------------------------------------------------------
+//
+// The panels and the chat commands run the same buy and sell underneath, so
+// what matters here is that the drawn version says the same thing the typed
+// version does -- a shop that advertises one price in a window and charges
+// another at the prompt is the failure to avoid.
+
+{
+  const shop = econ.panel('Ada', 'shop');
+  check('the shop panel lists items with prices',
+    shop.rows.length > 0 && shop.rows.every((r) => r.detail?.startsWith('$')),
+    JSON.stringify(shop.rows[0]));
+  check('and offers buy actions',
+    shop.rows.every((r) => r.actions?.includes('buy')));
+  check('and carries tabs so the other screens are reachable',
+    (shop.tabs?.length ?? 0) >= 4 && shop.active === 'shop');
+  check('and says what the player has',
+    shop.subtitle?.includes(formatMoney(econ.balance('Ada'))) === true, shop.subtitle);
+
+  // Anything unaffordable is greyed out with a reason rather than failing on
+  // the click.
+  const dear = shop.rows.find((r) => r.disabled);
+  const expensive = econ.panel('Ada', 'shop', '3').rows.find((r) => r.disabled);
+  check('items beyond the balance are marked, not hidden',
+    !!(dear || expensive), 'no disabled row on any page');
+}
+
+{
+  const before = econ.balance('Ada');
+  const after = econ.panelAction('Ada', 'shop', 'buy', String(Block.Cobblestone), 1);
+  check('buying through a panel charges the same as the command',
+    econ.balance('Ada') === before - priceOf(Block.Cobblestone)!.buy,
+    `${before} -> ${econ.balance('Ada')}`);
+  check('and reports what happened in the panel itself',
+    after.notice?.includes('Bought') === true, after.notice);
+  check('and hands back the same screen the player was on', after.id === 'shop');
+}
+
+{
+  const bogus = econ.panelAction('Ada', 'shop', 'buy', 'not-an-item');
+  check('a panel action for something unsellable is refused, not crashed',
+    bogus.notice?.includes('does not deal') === true, bogus.notice);
+}
+
+{
+  const top = econ.panel('Ada', 'baltop');
+  check('the leaderboard is ranked highest first',
+    top.rows.length > 0 && top.rows[0].label.startsWith('1.'), JSON.stringify(top.rows[0]));
+  check('and shows the name as its owner types it, not the lookup key',
+    top.rows.some((r) => r.label.includes('Ada')),
+    top.rows.map((r) => r.label).join(' | '));
+}
+
+{
+  const me = econ.panel('Ada', 'me');
+  check('the player panel shows a balance and a rank',
+    me.rows.some((r) => r.label === 'Balance') && me.rows.some((r) => r.label === 'Rank'),
+    JSON.stringify(me.rows.map((r) => r.label)));
+}
+
 check('money formats readably', formatMoney(1234567) === '$1,234,567');
 
 rmSync(dir, { recursive: true, force: true });
