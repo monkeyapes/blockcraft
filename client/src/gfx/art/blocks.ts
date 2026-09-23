@@ -681,18 +681,6 @@ export const BLOCK_ART: Record<string, Recipe> = {
   },
   // A C-shaped steel striker over a wedge of flint, with sparks between
   // them -- the two parts and the spark are what name the item.
-  flint_steel: (t) => {
-    t.rect(2, 5, 3, 8, [188, 188, 194], 6);   // striker back
-    t.rect(2, 4, 6, 2, [188, 188, 194], 6);   // upper arm
-    t.rect(2, 12, 6, 2, [160, 160, 166], 6);  // lower arm
-    t.rect(6, 6, 2, 2, [140, 140, 146], 4);
-    t.rect(9, 9, 5, 4, [78, 72, 68], 6);      // flint
-    t.rect(10, 8, 3, 1, [104, 96, 90], 4);
-    t.rect(9, 6, 2, 2, [250, 214, 120], 8);   // sparks
-    t.rect(12, 5, 2, 2, [252, 238, 178], 6);
-    t.celShade(18, -16);
-    t.outline();
-  },
   purpur: (t) => t.fill([170, 124, 172], 6)
     .patches(16, [150, 104, 152], 8, 3)
     .patches(10, [192, 150, 194], 6, 2)

@@ -23,3 +23,21 @@ hypotheses that turned out to be wrong. Each one is written to be able to
 
 See `NEXT.md` for what they have already ruled out. Do not re-run them
 expecting news; run them after changing the mesher, the atlas or the lighting.
+
+## Looking at the art
+
+Three tools render what the game draws into PNG files, so a texture, a
+block model or a mob can be judged by eye -- a pixel statistic only proves a
+tile is not blank, not that a sword looks like a sword.
+
+- `sheet.ts` -- a labelled contact sheet of atlas tiles.
+  `npx tsx tests/diagnostics/sheet.ts --items --out=items.png`
+  (`--blocks`, `--names=a,b`, `--match=regex`, `--tiled` to see seams, `--scale=N`)
+- `scene.ts` -- blocks through the real mesher, or mobs through the real mob
+  mesher, on a stone floor, labelled.
+  `npx tsx tests/diagnostics/scene.ts --blocks=PlankFence,GlassPane,Poppy --out=row.png`
+  `npx tsx tests/diagnostics/scene.ts --scene=layout.json --out=layout.png`
+  (a JSON list of `[x, y, z, "BlockName"]`), or `--mobs=all`.
+  Camera: `--yaw`, `--pitch`, `--scale`.
+- `offscreen.ts` -- the library behind both: a Node-side atlas, a z-buffered
+  rasteriser for the terrain vertex format, a PNG encoder and a bitmap font.
