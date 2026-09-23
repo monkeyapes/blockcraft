@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { Block } from '../shared/src/blocks.js';
+import { BLOCKS, Block } from '../shared/src/blocks.js';
 import { CRUSH_SECONDS } from '../shared/src/machines.js';
 import {
   COMPRESS_SECONDS, ESMELT_SECONDS, LINE_LOSS, MAX_BOOST, QUARRY_SECONDS,
@@ -108,7 +108,10 @@ function statValue(label: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
-const blockCount = Object.keys(Block).filter((k) => isNaN(Number(k))).length;
+// Defined blocks, not enum members: the enum reserves ids for content packs
+// before the packs define them, and a reserved id is not a block anyone can
+// place.
+const blockCount = BLOCKS.filter((d) => d !== undefined).length;
 const machineCount = Object.values(Block)
   .filter((b) => typeof b === 'number' && demandOf(b as number)).length;
 

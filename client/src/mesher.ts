@@ -16,7 +16,7 @@ import { Block, blockDef, isOpaque } from '@shared/blocks.js';
 import { CHUNK_X, CHUNK_Z, SECTION_Y, WORLD_Y, voxelIndex } from '@shared/constants.js';
 import type { Atlas } from './gfx/atlas.js';
 import { MAX_LIGHT } from './light.js';
-import { shapeOf } from '@shared/shapes.js';
+import { crossOf, isDynamicShape, shapeOf, type Around, type Box } from '@shared/shapes.js';
 import type { ClientWorld } from './world.js';
 
 export const FLOATS_PER_VERTEX = 7;
@@ -153,6 +153,74 @@ function falloff(level: number): number {
   return LIGHT_CURVE[i < 0 ? 0 : i >= LIGHT_CURVE.length ? LIGHT_CURVE.length - 1 : i];
 }
 
+/** The tile a box shows on face f (0 top, 1 bottom, else side). */
+function faceTexture(box: Box, own: [string, string, string], f: number): string {
+  const tex = box.tex ?? own;
+  if (typeof tex === 'string') return tex;
+  return tex[f === 0 ? 0 : f === 1 ? 1 : 2];
+}
+
+/** Neighbour lookup for a cell of the padded section, within one block. */
+function aroundIn(x: number, y: number, z: number): Around {
+  return (dx, dy, dz) => {
+    if (dx < -1 || dx > 1 || dy < -1 || dy > 1 || dz < -1 || dz > 1) return 0;
+    return padded[padIndex(x + dx, y + dy, z + dz)];
+  };
+}
+
+/** Light at a single open cell, for geometry that has no faces to average. */
+function cellLight(i: number, skyBrightness: number): number {
+  return Math.max(
+    AMBIENT_FLOOR,
+    falloff(paddedSky[i]) * skyBrightness,
+    falloff(paddedBlock[i]),
+  );
+}
+
+/**
+ * Two crossed planes, the way grass, flowers and crops are drawn.
+ *
+ * Each plane is emitted with both windings so it shows from either side --
+ * the opaque pass culls back faces, and a flower that vanishes when you walk
+ * round it is worse than no flower. Transparent texels are discarded by the
+ * shader, so these can sit in the opaque pass with no sorting at all.
+ */
+function emitCross(
+  verts: number[], indices: number[], atlas: Atlas, tex: string,
+  x: number, y: number, z: number, baseY: number,
+  cross: { height: number; inset: number }, light: number,
+): void {
+  const [u0, v0, u1, v1] = atlas.uv(tex);
+  // Each plane is one block wide, turned 45 degrees -- corner to corner of
+  // the cell less a little, so neighbouring plants do not z-fight.
+  const lo = 0.5 - (0.5 - cross.inset) * Math.SQRT1_2;
+  const hi = 1 - lo;
+  const h = cross.height;
+  const planes: Array<[number, number, number, number]> = [
+    [lo, lo, hi, hi],
+    [lo, hi, hi, lo],
+  ];
+  // The top of the texture lines up with the top of the plant, so a short
+  // plant shows the bottom of its tile rather than a squashed whole.
+  const vt = v1 - (v1 - v0) * h;
+  for (const [ax, az, bx, bz] of planes) {
+    for (const flip of [false, true]) {
+      const first = verts.length / FLOATS_PER_VERTEX;
+      const corners: Array<[number, number, number, number, number]> = [
+        [ax, 0, az, u0, v1],
+        [bx, 0, bz, u1, v1],
+        [bx, h, bz, u1, vt],
+        [ax, h, az, u0, vt],
+      ];
+      if (flip) corners.reverse();
+      for (const [cx, cy, cz, u, v] of corners) {
+        verts.push(x + cx, baseY + y + cy, z + cz, u, v, light * 0.92, 1);
+      }
+      indices.push(first, first + 1, first + 2, first, first + 2, first + 3);
+    }
+  }
+}
+
 export function meshSection(
   world: ClientWorld, atlas: Atlas, cx: number, cz: number, section: number,
   skyBrightness = 1,
@@ -180,9 +248,22 @@ export function meshSection(
         const verts = translucent ? alphaV : opaqueV;
         const indices = translucent ? alphaI : opaqueI;
 
+        // Plants are two crossed planes rather than boxes.
+        const cross = crossOf(id);
+        if (cross) {
+          emitCross(verts, indices, atlas, def.textures[2], x, y, z, baseY, cross,
+            def.light > 0 ? 1 : cellLight(padIndex(x, y, z), skyBrightness));
+          continue;
+        }
+
         // Most blocks are a single full cube, so this loop runs once and the
-        // shape lookup returns a shared array without allocating.
-        const boxes = shapeOf(id);
+        // shape lookup returns a shared array without allocating. Shapes that
+        // reach toward their neighbours (fences, panes, doors) read them from
+        // the padded copy, which holds exactly one block of skirt -- enough
+        // for anything that looks at the cells touching it.
+        const boxes = isDynamicShape(id)
+          ? shapeOf(id, aroundIn(x, y, z))
+          : shapeOf(id);
 
         for (const box of boxes) {
           const bLo = [box.x0, box.y0, box.z0];
@@ -209,7 +290,7 @@ export function meshSection(
               if (isOpaque(neighbour)) continue;
             }
 
-            const texName = def.textures[f === 0 ? 0 : f === 1 ? 1 : 2];
+            const texName = faceTexture(box, def.textures, f);
             const [u0, v0, u1, v1] = atlas.uv(texName);
 
             const nIdx = padIndex(nx, ny, nz);

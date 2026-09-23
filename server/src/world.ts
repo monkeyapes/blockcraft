@@ -8,7 +8,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-import { Block, blockDef } from '@shared/blocks.js';
+import { Block, canReplace } from '@shared/blocks.js';
 import {
   CHUNK_X, CHUNK_Z, Dimension, WORLD_Y, dimChunkKey, voxelIndex,
 } from '@shared/constants.js';
@@ -123,11 +123,9 @@ export class ServerWorld {
   /** Is this a legal block for a player to place? */
   canPlace(dim: Dimension, x: number, y: number, z: number, block: number): boolean {
     if (y < 1 || y >= WORLD_Y) return false;
-    const def = blockDef(block);
-    if (block !== Block.Air && def.id === Block.Air) return false; // unknown id
-    const current = this.getBlock(dim, x, y, z);
-    if (block === Block.Air) return blockDef(current).breakable;
-    return current === Block.Air || blockDef(current).liquid;
+    // Placing, breaking, a door opening, a crop growing: one rule, shared
+    // with the single-player link. See canReplace in shared/blocks.ts.
+    return canReplace(this.getBlock(dim, x, y, z), block);
   }
 
   // ------------------------------------------------------------------- save

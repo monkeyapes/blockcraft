@@ -7,74 +7,13 @@
  */
 
 import { Block, blockDef } from './blocks.js';
+import { PACKS } from './content/index.js';
+import type { CreativeTab, ItemSpec } from './content/types.js';
 
-export const ITEM_ID_BASE = 128;
+export const ITEM_ID_BASE = 256;
 
-export enum Item {
-  Stick = 128,
-  Coal = 129,
-  IronIngot = 130,
-  GoldIngot = 131,
-  Diamond = 132,
-
-  WoodPickaxe = 140,
-  StonePickaxe = 141,
-  IronPickaxe = 142,
-  DiamondPickaxe = 143,
-  WoodAxe = 144,
-  StoneAxe = 145,
-  IronAxe = 146,
-  DiamondAxe = 147,
-  WoodShovel = 148,
-  StoneShovel = 149,
-  IronShovel = 150,
-  DiamondShovel = 151,
-  MiningDrill = 152,
-  FlintAndSteel = 153,
-
-  Skateboard = 170,
-  Car = 171,
-  Plane = 172,
-  Helicopter = 173,
-  Boat = 174,
-  Truck = 175,
-
-  // Reserved for the ending; recipes land with the dimensions work.
-  BlazeRod = 160,
-  BlazePowder = 161,
-  EnderPearl = 162,
-  EyeOfEnder = 163,
-
-  LeatherHelmet = 180,
-  LeatherChestplate = 181,
-  LeatherLeggings = 182,
-  LeatherBoots = 183,
-  IronHelmet = 184,
-  IronChestplate = 185,
-  IronLeggings = 186,
-  IronBoots = 187,
-  DiamondHelmet = 188,
-  DiamondChestplate = 189,
-  DiamondLeggings = 190,
-  DiamondBoots = 191,
-
-  Leather = 195,
-  Feather = 196,
-
-  WoodSword = 200,
-  StoneSword = 201,
-  IronSword = 202,
-  DiamondSword = 203,
-
-  RawPorkchop = 210,
-  CookedPorkchop = 211,
-  RawBeef = 212,
-  Steak = 213,
-  RawMutton = 214,
-  CookedMutton = 215,
-  RawChicken = 216,
-  CookedChicken = 217,
-}
+export { Item } from './itemids.js';
+import { Item } from './itemids.js';
 
 /** Equipment slots, in the order they appear in the inventory. */
 export type ArmorSlot = 'head' | 'chest' | 'legs' | 'feet';
@@ -87,7 +26,11 @@ export interface ArmorSpec {
   durability: number;
 }
 
-export type ToolKind = 'pickaxe' | 'axe' | 'shovel';
+/**
+ * Tool classes. A hammer mines what a pickaxe mines (see `actsAs`); a hoe
+ * tills; shears cut leaves, wool and webs.
+ */
+export type ToolKind = 'pickaxe' | 'axe' | 'shovel' | 'hoe' | 'hammer' | 'shears';
 
 export interface ToolSpec {
   kind: ToolKind;
@@ -98,6 +41,8 @@ export interface ToolSpec {
   durability: number;
   /** Counts as the right tool for every block. The drill does. */
   universal?: boolean;
+  /** Mines as this class: a hammer is a slow, wide pickaxe. */
+  actsAs?: ToolKind;
 }
 
 /** Vehicles are items you place into the world and then ride. */
@@ -140,6 +85,9 @@ export interface ItemDef {
   attack?: number;
   /** Health restored when eaten. */
   food?: number;
+  /** Placing the item puts this block down. */
+  places?: number;
+  category?: CreativeTab;
 }
 
 const itemDefs = new Map<number, ItemDef>();
@@ -277,6 +225,42 @@ item(Item.BlazePowder, 'Blaze Powder', 'blaze_powder');
 item(Item.EnderPearl, 'Ender Pearl', 'ender_pearl');
 item(Item.EyeOfEnder, 'Eye of Ender', 'eye_of_ender');
 
+// --- content packs -------------------------------------------------------
+
+const smelting = new Map<number, { id: number; count: number }>();
+const fuels = new Map<number, number>();
+
+for (const pack of PACKS) {
+  for (const spec of pack.items ?? []) {
+    if (itemDefs.has(spec.id)) {
+      throw new Error(`item ${spec.id} (${spec.name}) is defined twice; the ${pack.name} pack clashes`);
+    }
+    if (spec.id < ITEM_ID_BASE) {
+      throw new Error(`item ${spec.name} has id ${spec.id}, below ITEM_ID_BASE; that range is blocks`);
+    }
+    const s: ItemSpec = spec;
+    itemDefs.set(s.id, {
+      id: s.id,
+      name: s.name,
+      texture: s.texture,
+      stackSize: s.stackSize ?? (s.tool || s.armor ? 1 : 64),
+      tool: s.tool,
+      armor: s.armor,
+      attack: s.attack,
+      food: s.food,
+      places: s.places,
+      category: s.category,
+    });
+  }
+  for (const { from, to, count } of pack.smelting ?? []) smelting.set(from, { id: to, count: count ?? 1 });
+  for (const { id, value } of pack.fuel ?? []) fuels.set(id, value);
+}
+
+/** Every pure item id, in id order. */
+export function allItemIds(): number[] {
+  return [...itemDefs.keys()].sort((a, b) => a - b);
+}
+
 /** Atlas tiles referenced by pure items, in a stable order. */
 export function allItemTextureNames(): string[] {
   return [...new Set([...itemDefs.values()].map((d) => d.texture))].sort();
@@ -294,8 +278,9 @@ export function itemDef(id: number): ItemDef {
   return {
     id,
     name: block.name,
-    texture: block.textures[2],
+    texture: block.icon ?? block.textures[2],
     stackSize: 64,
+    category: block.category,
   };
 }
 
@@ -356,7 +341,9 @@ export function damageAfterArmor(damage: number, defense: number): number {
 }
 
 /** Which tool class is effective against a block. */
-export function preferredTool(block: Block): ToolKind | null {
+export function preferredTool(block: Block | number): ToolKind | null {
+  const own = blockDef(block).tool;
+  if (own) return own;
   switch (block) {
     case Block.Stone:
     case Block.Cobblestone:
@@ -390,7 +377,9 @@ export function preferredTool(block: Block): ToolKind | null {
 }
 
 /** Minimum tool tier required for a block to drop anything at all. */
-export function requiredTier(block: Block): number {
+export function requiredTier(block: Block | number): number {
+  const own = blockDef(block).tier;
+  if (own !== undefined) return own;
   switch (block) {
     case Block.Obsidian:
       return 4;
@@ -411,19 +400,24 @@ export function requiredTier(block: Block): number {
   }
 }
 
+/** The class a tool counts as when mining. */
+export function minesAs(tool: ToolSpec): ToolKind {
+  return tool.actsAs ?? tool.kind;
+}
+
 /**
  * Seconds to break a block with the given held item.
  * Roughly Minecraft's shape: hardness scaled by tool speed, with a stiff
  * penalty for using the wrong tool.
  */
-export function breakTime(block: Block, heldItem: number | null): number {
+export function breakTime(block: Block | number, heldItem: number | null): number {
   const def = blockDef(block);
   if (!def.breakable) return Infinity;
   if (def.hardness <= 0) return 0;
 
   const tool = heldItem === null ? undefined : toolSpec(heldItem);
   const wanted = preferredTool(block);
-  const correct = !!tool && (tool.universal || (wanted !== null && tool.kind === wanted));
+  const correct = !!tool && (tool.universal || (wanted !== null && minesAs(tool) === wanted));
   const speed = correct ? tool.speed : 1;
 
   const base = (def.hardness * 1.5) / speed;
@@ -438,17 +432,41 @@ export function breakTime(block: Block, heldItem: number | null): number {
  * The tier gate only counts for the *matching* tool kind: a wooden shovel is
  * tier 1, but it still shouldn't harvest stone.
  */
-export function canHarvest(block: Block, heldItem: number | null): boolean {
+export function canHarvest(block: Block | number, heldItem: number | null): boolean {
   const needed = requiredTier(block);
   if (needed === 0) return true;
   const tool = heldItem === null ? undefined : toolSpec(heldItem);
   if (!tool) return false;
-  if (!tool.universal && tool.kind !== preferredTool(block)) return false;
+  if (!tool.universal && minesAs(tool) !== preferredTool(block)) return false;
   return tool.tier >= needed;
 }
 
-/** What a broken block yields. */
-export function blockDrop(block: Block): { id: number; count: number } | null {
+/**
+ * Everything a broken block yields.
+ *
+ * The block's own roll wins, then its fixed `drop`, then the legacy table.
+ * `random` returns 0..1; `tool` is the held item, for drops that depend on
+ * it (shears on leaves).
+ */
+export function blockDrops(
+  block: Block | number, random: () => number = Math.random, tool: number | null = null,
+): Array<{ id: number; count: number }> {
+  const d = blockDef(block);
+  if (d.drops) return d.drops(random, tool).filter((x) => x.count > 0);
+  if (d.drop !== undefined && d.id !== Block.Air && block >= Block.TallGrass) {
+    return [{ id: d.drop, count: 1 }];
+  }
+  const one = blockDrop(block);
+  return one ? [one] : [];
+}
+
+/** What a broken block yields, when it yields exactly one thing. */
+export function blockDrop(block: Block | number): { id: number; count: number } | null {
+  const own = blockDef(block);
+  if (own.id !== Block.Air && block >= Block.TallGrass) {
+    if (own.drops) return own.drops(Math.random, null)[0] ?? null;
+    return { id: own.drop ?? block, count: 1 };
+  }
   switch (block) {
     case Block.Grass:
       return { id: Block.Dirt, count: 1 };
@@ -471,6 +489,8 @@ export function blockDrop(block: Block): { id: number; count: number } | null {
 
 /** Furnace smelting results. */
 export function smeltResult(id: number): { id: number; count: number } | null {
+  const packed = smelting.get(id);
+  if (packed) return { ...packed };
   const cooked = cookedForm(id);
   if (cooked !== null) return { id: cooked, count: 1 };
   switch (id) {
@@ -491,6 +511,8 @@ export function smeltResult(id: number): { id: number; count: number } | null {
 
 /** How many items a fuel smelts. */
 export function fuelValue(id: number): number {
+  const packed = fuels.get(id);
+  if (packed !== undefined) return packed;
   switch (id) {
     case Item.Coal:
       return 8;

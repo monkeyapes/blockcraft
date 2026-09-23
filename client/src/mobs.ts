@@ -66,7 +66,9 @@ export class Mob {
     return [this.x, this.y + this.def.height / 2, this.z];
   }
 
-  hurt(amount: number): void {
+  hurt(amount: number, fromX?: number, fromZ?: number): void {
+    void fromX;
+    void fromZ;
     if (this.dead) return;
     this.health -= amount;
     this.hurtTimer = 0.3;

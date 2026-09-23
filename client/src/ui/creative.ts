@@ -7,7 +7,7 @@
 
 import { BLOCKS, Block } from '@shared/blocks.js';
 import { HOTBAR_SIZE, type Inventory } from '@shared/inventory.js';
-import { Item, isBlockItem, itemDef, stackSize } from '@shared/items.js';
+import { Item, allItemIds, isBlockItem, itemDef, stackSize } from '@shared/items.js';
 import type { Atlas } from '../gfx/atlas.js';
 
 interface Tab {
@@ -59,16 +59,43 @@ function buildTabs(): Tab[] {
   ];
   const portals = [B.EndPortalFrame, B.EndPortalFrameFilled, B.NetherPortal, B.EndPortal];
 
+  // Content-pack blocks and items name their own tab, so a new block shows
+  // up in the catalogue without anyone remembering to list it here.
+  const byTab: Record<string, number[]> = {
+    building, nature, tools, combat, machines, transport, materials,
+    food: [], farming: [], decoration: [], redstone: [],
+  };
+  const packIds = [
+    ...BLOCKS.filter((d) => d && d.category).map((d) => d.id as number),
+    ...allItemIds().filter((id) => itemDef(id).category),
+  ];
+  for (const id of packIds) {
+    const tab = itemDef(id).category!;
+    const list = byTab[tab];
+    if (list && !list.includes(id)) list.push(id);
+  }
+  const extra = (id: string, label: string, icon: number): Tab[] =>
+    byTab[id].length > 0 ? [{ id, label, icon, ids: byTab[id] }] : [];
+  const everything = [...new Set([
+    ...allBlocks.filter((id) => !BLOCKS[id].family || BLOCKS[id].category),
+    ...tools, ...combat, ...transport, ...materials,
+    ...byTab.food, ...byTab.farming, ...byTab.decoration, ...byTab.redstone,
+  ])];
+
   return [
     { id: 'building', label: 'Building', icon: B.Bricks, ids: building },
     { id: 'nature', label: 'Nature', icon: B.Grass, ids: nature },
     { id: 'tools', label: 'Tools', icon: I.DiamondPickaxe, ids: tools },
-    { id: 'combat', label: 'Armour', icon: I.IronChestplate, ids: combat },
+    { id: 'combat', label: 'Combat', icon: I.IronChestplate, ids: combat },
     { id: 'transport', label: 'Transport', icon: I.Car, ids: transport },
     { id: 'machines', label: 'Machines', icon: B.Furnace, ids: machines },
     { id: 'materials', label: 'Materials', icon: I.Diamond, ids: materials },
+    ...extra('decoration', 'Decoration', B.Poppy),
+    ...extra('farming', 'Farming', Item.Wheat),
+    ...extra('food', 'Food', Item.Bread),
+    ...extra('redstone', 'Mechanisms', B.TNT),
     { id: 'portals', label: 'Portals', icon: B.EndPortalFrame, ids: portals },
-    { id: 'all', label: 'Everything', icon: B.Glowstone, ids: [...allBlocks, ...tools, ...combat, ...transport, ...materials] },
+    { id: 'all', label: 'Everything', icon: B.Glowstone, ids: everything },
   ];
 }
 

@@ -23,7 +23,7 @@ import {
   boostAt, demandOf, isConduit, isConsumer, pressureAt, requiresNoVolt,
 } from '@shared/novolt.js';
 import { findRecipe } from '@shared/recipes.js';
-import { CONVEYOR_HEIGHT, shapeOf } from '@shared/shapes.js';
+import { CONVEYOR_HEIGHT, collisionOf } from '@shared/shapes.js';
 import type { ClientWorld } from './world.js';
 
 /** Six-neighbour offsets, for power and item routing. */
@@ -543,7 +543,7 @@ export class MachineWorld {
     const bz = Math.floor(z);
     const id = world.getBlock(bx, by, bz);
     if (!isSolid(id)) return false;
-    for (const box of shapeOf(id)) {
+    for (const box of collisionOf(id)) {
       // A hair above the surface counts as clear, so cargo resting exactly
       // on a belt is not read as being inside it.
       if (y >= by + box.y0 + 1e-3 && y < by + box.y1 - 1e-3) return true;
@@ -574,7 +574,7 @@ export class MachineWorld {
     for (let by = Math.floor(fromY) + 1; by >= Math.floor(toY) - 1; by--) {
       const id = world.getBlock(bx, by, bz);
       if (!isSolid(id)) continue;
-      for (const box of shapeOf(id)) {
+      for (const box of collisionOf(id)) {
         const top = by + box.y1;
         if (top > fromY + 1e-6) continue;   // started below it: not a floor
         if (top < toY - 1e-6) continue;     // never reached it this step

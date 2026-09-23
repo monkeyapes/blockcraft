@@ -1,10 +1,11 @@
 /** Blockcraft client entry point: input, streaming, game loop. */
 
-import { Block, blockDef } from '@shared/blocks.js';
+import { Block, blockDef, canReplace } from '@shared/blocks.js';
+import { boundsOf, isDynamicShape, selectionOf } from '@shared/shapes.js';
 import { Dimension, SECTION_COUNT, WORLD_Y } from '@shared/constants.js';
 import { HOTBAR_SIZE, Inventory } from '@shared/inventory.js';
 import {
-  Item, armorSpec, blockDrop, canHarvest, isBlockItem, itemDef,
+  Item, armorSpec, blockDrops, canHarvest, isBlockItem, itemDef,
   vehicleItem, vehicleKind,
 } from '@shared/items.js';
 import { TICK_HZ } from '@shared/protocol.js';
@@ -25,7 +26,15 @@ import { WebSocketLink, type Link } from './link.js';
 import { LocalLink } from './local.js';
 import { meshSection } from './mesher.js';
 import { Connection, defaultServerUrl } from './net.js';
-import { EYE_HEIGHT, Player, type InputState } from './player.js';
+import { EYE_HEIGHT, Player, aroundAt, type InputState } from './player.js';
+import './content/index.js';
+import {
+  TICK_RATE, dispatchAfterPlace, dispatchBreak, dispatchMobUse, dispatchPlacement,
+  dispatchRelease, dispatchUse, dispatchUseAir, flushNeighbourChanges, hasRelease,
+  noteBlockChanged, randomTickAround, resetSystems, setGameContext, systemMeshes,
+  updateSystems, type GameContext, type PlaceContext, type UseContext,
+} from './content/api.js';
+import type { Mob } from './mobs.js';
 import { runCommand } from './commands.js';
 import { PanelUI } from './ui/panel.js';
 import { DayNight } from './daynight.js';
@@ -359,10 +368,14 @@ async function start(
     set: (msg) => {
       if (msg.dim !== dimension || msg.by === net.selfId) return;
       world?.setBlock(msg.x, msg.y, msg.z, msg.b);
+      noteBlockChanged(msg.x, msg.y, msg.z);
     },
     reject: (msg) => {
       // Server said no: roll the optimistic edit back to its truth.
-      if (msg.dim === dimension) world?.setBlock(msg.x, msg.y, msg.z, msg.b);
+      if (msg.dim === dimension) {
+        world?.setBlock(msg.x, msg.y, msg.z, msg.b);
+        noteBlockChanged(msg.x, msg.y, msg.z);
+      }
       hud.toast(`Can't do that (${msg.reason})`);
     },
     dim: (msg) => {
@@ -373,8 +386,10 @@ async function start(
       world = new ClientWorld(seed, msg.dim);
       renderer.dropAll();
       subscribed.clear();
-      // Mobs belong to the world you left, not the one you arrive in.
+      // Mobs belong to the world you left, not the one you arrive in; so do
+      // arrows in flight and blocks mid-fall.
       mobs.setDimension(msg.dim);
+      resetSystems();
       if (riding) dismount();
       player.x = msg.x;
       player.y = msg.y;
@@ -448,6 +463,13 @@ async function start(
   let placeHeld = false;
   let lastPlace = 0;
   let lastSwing = 0;
+  /** An item being held in use -- a bow drawing -- and since when. */
+  let usingItem: { id: number; since: number } | null = null;
+  /** Time until the next point of contact damage (cactus). */
+  let contactTimer = 0;
+  /** Random ticks owed, at TICK_RATE per second. */
+  let tickAccum = 0;
+  const sessionStart = performance.now();
 
   function syncInput(): void {
     const frozen = anyPanelOpen();
@@ -732,7 +754,18 @@ async function start(
     if (e.button === 0) {
       mineHeld = false;
       mining.cancel();
-    } else if (e.button === 2) placeHeld = false;
+    } else if (e.button === 2) {
+      placeHeld = false;
+      if (usingItem) {
+        const using = usingItem;
+        usingItem = null;
+        // Only if the same item is still in hand: switching slots mid-draw
+        // cancels the shot rather than firing whatever you switched to.
+        if (heldItem() === using.id) {
+          dispatchRelease(ctx, using.id, (performance.now() - using.since) / 1000);
+        }
+      }
+    }
   });
 
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -782,6 +815,123 @@ async function start(
 
   function heldItem(): number | null {
     return inventory.get(player.slot)?.id ?? null;
+  }
+
+  /**
+   * Changes one block the way the player's own edits do: applied at once,
+   * sent to the server, and announced to the neighbours. Refused locally by
+   * the same rule the server applies, so a hook cannot make an edit here
+   * that the server would only roll back.
+   */
+  function applyEdit(x: number, y: number, z: number, id: number): boolean {
+    if (!world || y < 1 || y >= WORLD_Y) return false;
+    const current = world.getBlock(x, y, z);
+    if (!canReplace(current, id)) return false;
+    world.setBlock(x, y, z, id);
+    net.send({ t: 'set', dim: dimension, x, y, z, b: id });
+    noteBlockChanged(x, y, z);
+    if (isMachine(id)) machines.register(x, y, z);
+    return true;
+  }
+
+  /** Into the inventory; anything that will not fit lands at the player's feet. */
+  function give(id: number, count: number): void {
+    if (survival.creative) return;
+    const leftover = inventory.add(id, count);
+    if (leftover < count) advancements.fire({ kind: 'pickup', id });
+    if (leftover > 0) machines.spawn(player.x, player.y + 0.5, player.z, id, leftover);
+    hud.refreshHotbar();
+  }
+
+  /**
+   * Hurts a mob and settles what its death means: drops, the kill message,
+   * and for the dragon the end of the game. Swords, arrows and explosions
+   * all come through here, so a kill counts the same however it happened.
+   */
+  function hurtMob(mob: Mob, damage: number, fromX?: number, fromZ?: number): void {
+    if (mob.dead) return;
+    mob.hurt(damage, fromX, fromZ);
+    if (!mob.dead) return;
+    for (const drop of rollDrops(mob.kind, Math.random)) {
+      if (!survival.creative) machines.spawn(mob.x, mob.y + 0.4, mob.z, drop.id, drop.count);
+    }
+    hud.refreshHotbar();
+    if (mob.def.boss) {
+      dragonBeaten = true;
+      advancements.fire({ kind: 'event', name: 'dragon' });
+      hud.setBoss(null);
+      releasePointer();
+      hud.showVictory(
+        'You have beaten the Ender Dragon. The world is yours to build in — ' +
+        'the Overworld, the Nether, and everything you make of them.',
+        () => grabPointer());
+    } else {
+      hud.toast(`Killed ${mob.def.name}`);
+    }
+  }
+
+  /** Everything a content pack can reach. See content/api.ts. */
+  const ctx: GameContext = {
+    get world() { return world!; },
+    get dimension() { return dimension; },
+    player,
+    mobs,
+    get creative() { return survival.creative; },
+    get time() { return (performance.now() - sessionStart) / 1000; },
+    sound,
+    getBlock: (x, y, z) => world?.getBlock(x, y, z) ?? 0,
+    setBlock: applyEdit,
+    breakBlock: (x, y, z, opts) => {
+      const id = world?.getBlock(x, y, z) ?? 0;
+      if (id === Block.Air || !blockDef(id).breakable) return;
+      breakBlock(x, y, z, id, { drops: opts?.drops ?? true, byPlayer: false });
+    },
+    heldItem,
+    consumeHeld: (count = 1) => {
+      if (survival.creative) return true;
+      const stack = inventory.get(player.slot);
+      if (!stack || stack.count < count) return false;
+      for (let i = 0; i < count; i++) inventory.consumeAt(player.slot);
+      hud.refreshHotbar();
+      return true;
+    },
+    replaceHeld: (id, count = 1) => {
+      if (survival.creative) return;
+      const stack = inventory.get(player.slot);
+      if (stack && stack.count > 1) {
+        // Filling one bucket of a stack: the rest stay as they were.
+        inventory.consumeAt(player.slot);
+        give(id, count);
+      } else {
+        inventory.set(player.slot, { id, count });
+      }
+      hud.refreshHotbar();
+    },
+    give,
+    dropItem: (x, y, z, id, count) => machines.spawn(x, y, z, id, count),
+    damagePlayer: (amount, cause) => survival.damage(amount, cause),
+    healPlayer: (amount) => survival.heal(amount),
+    pushPlayer: (vx, vy, vz) => {
+      player.vx += vx;
+      player.vz += vz;
+      player.vy += vy;
+      if (vy > 0) player.onGround = false;
+    },
+    hurtMob,
+    toast: (text) => hud.toast(text),
+    chat: (text) => hud.addChat(text, true),
+    breakParticles: (x, y, z, id) => particles.spawnBreak(atlas, x, y, z, id),
+    swing: () => { swing = Math.max(swing, 0.001); },
+    random: Math.random,
+  };
+  setGameContext(ctx);
+
+  /** A UseContext for a raycast hit. */
+  function useContextFor(hit: NonNullable<ReturnType<Player['raycast']>>): UseContext {
+    return Object.assign(Object.create(ctx) as GameContext, {
+      x: hit.block[0], y: hit.block[1], z: hit.block[2], id: hit.id,
+      face: hit.face, point: hit.point, held: heldItem(), sneaking: input.sneak,
+    }) as UseContext;
   }
 
   function openInventory(size: 2 | 3): void {
@@ -898,20 +1048,59 @@ async function start(
   }
 
   function tryUse(): boolean {
-    if (!world || input.sneak) return false;
+    if (!world) return false;
 
-    // Vehicles take priority: they sit in front of whatever block is behind.
     const [ex, ey, ez] = player.eye;
     const [fx, fy, fz] = player.forward;
-    const vehicle = vehicles.pick(ex, ey, ez, fx, fy, fz, 5);
-    if (vehicle && !riding) {
-      mount(vehicle);
+
+    // A mob in reach comes first: shearing, taming, feeding.
+    const mob = riding ? null : mobs.pick(ex, ey, ez, fx, fy, fz, 4);
+    if (mob && dispatchMobUse(ctx, mob)) {
+      swing = SWING_TIME;
       return true;
     }
 
-    const hit = player.raycast(world);
-    if (!hit) return false;
+    // Vehicles take priority: they sit in front of whatever block is behind.
+    if (!input.sneak) {
+      const vehicle = vehicles.pick(ex, ey, ez, fx, fy, fz, 5);
+      if (vehicle && !riding) {
+        mount(vehicle);
+        return true;
+      }
+    }
 
+    const hit = player.raycast(world);
+    if (hit) {
+      if (!input.sneak && useLegacyBlock(hit)) return true;
+
+      // Content packs: a door opens, a hoe tills, a bucket fills.
+      if (dispatchUse(useContextFor(hit))) {
+        swing = SWING_TIME;
+        return true;
+      }
+
+      // Items that act on the world rather than being placed. The server owns
+      // the result, so it can build the portal and take the item.
+      const held = heldItem();
+      if (held === Item.FlintAndSteel || held === Item.EyeOfEnder) {
+        const [x, y, z] = hit.block;
+        net.send({ t: 'use', dim: dimension, x, y, z, item: held });
+        swing = SWING_TIME;
+        return true;
+      }
+    }
+
+    // Items used whatever they point at: a bow starts drawing.
+    const held = heldItem();
+    if (dispatchUseAir(ctx, held)) {
+      if (held !== null && hasRelease(held)) usingItem = { id: held, since: performance.now() };
+      return true;
+    }
+    return false;
+  }
+
+  /** The blocks main.ts has always handled itself: benches, storage, beds. */
+  function useLegacyBlock(hit: NonNullable<ReturnType<Player['raycast']>>): boolean {
     if (hit.id === Block.CraftingTable) {
       openInventory(3);
       swing = SWING_TIME;
@@ -952,16 +1141,6 @@ async function start(
     // the pattern of what it should divert, not something it will consume.
     if (hit.id === Block.Sorter) {
       openSorter(hit.block[0], hit.block[1], hit.block[2]);
-      swing = SWING_TIME;
-      return true;
-    }
-
-    // Items that act on the world rather than being placed. The server owns
-    // the result, so it can build the portal and take the item.
-    const held = heldItem();
-    if (held === Item.FlintAndSteel || held === Item.EyeOfEnder) {
-      const [x, y, z] = hit.block;
-      net.send({ t: 'use', dim: dimension, x, y, z, item: held });
       swing = SWING_TIME;
       return true;
     }
@@ -1008,25 +1187,28 @@ async function start(
     }
   }
 
-  function breakBlock(x: number, y: number, z: number, id: number): void {
+  function breakBlock(
+    x: number, y: number, z: number, id: number,
+    opts: { drops?: boolean; byPlayer?: boolean } = {},
+  ): void {
     if (!world) return;
+    const byPlayer = opts.byPlayer ?? true;
+    const tool = byPlayer ? heldItem() : null;
 
     sound.blockBreak(id);
     particles.spawnBreak(atlas, x, y, z, id);
-    advancements.fire({ kind: 'mine', id });
+    if (byPlayer) advancements.fire({ kind: 'mine', id });
 
     // A machine holding items gives them back rather than swallowing them.
     for (const stack of machines.clearAt(x, y, z)) {
       machines.spawn(x + 0.5, y + 0.5, z + 0.5, stack.id, stack.count);
     }
 
-    if (!survival.creative) {
-      if (canHarvest(id, heldItem())) {
-        const drop = blockDrop(id);
-        if (drop) {
-          const leftover = inventory.add(drop.id, drop.count);
-          if (leftover < drop.count) advancements.fire({ kind: 'pickup', id: drop.id });
-          if (leftover > 0) hud.toast('Inventory full');
+    if (!survival.creative && opts.drops !== false) {
+      if (!byPlayer || canHarvest(id, tool)) {
+        for (const drop of blockDrops(id, Math.random, tool)) {
+          if (byPlayer) give(drop.id, drop.count);
+          else machines.spawn(x + 0.5, y + 0.3, z + 0.5, drop.id, drop.count);
         }
       } else {
         hud.toast(`You need a better tool for ${blockDef(id).name}`);
@@ -1036,6 +1218,8 @@ async function start(
 
     world.setBlock(x, y, z, Block.Air); // optimistic
     net.send({ t: 'set', dim: dimension, x, y, z, b: Block.Air });
+    noteBlockChanged(x, y, z);
+    dispatchBreak(ctx, x, y, z, id, tool);
   }
 
   function tryPlace(): void {
@@ -1045,34 +1229,50 @@ async function start(
 
     const stack = inventory.get(player.slot);
     if (!stack) return;
-    if (!isBlockItem(stack.id)) {
+
+    // What goes down: a content hook's choice (stairs pick a facing, seeds
+    // insist on farmland), else the item's own block.
+    const pctx = Object.assign(useContextFor(hit), {
+      px: hit.place[0], py: hit.place[1], pz: hit.place[2], allowReplace: false,
+    }) as PlaceContext;
+    const hooked = dispatchPlacement(pctx, stack.id);
+    let placed: number;
+    if (hooked === null) return;
+    if (hooked !== undefined) {
+      placed = hooked;
+    } else if (isBlockItem(stack.id)) {
+      // A conveyor is stored as one of four facings, chosen from where the
+      // player is looking, so belts lay themselves in the direction you walk.
+      placed = stack.id === Block.Conveyor ? conveyorForYaw(player.yaw) : stack.id;
+    } else if (itemDef(stack.id).places !== undefined) {
+      placed = itemDef(stack.id).places!;
+    } else {
       hud.toast(`${itemDef(stack.id).name} isn't placeable`);
       return;
     }
 
-    const [x, y, z] = hit.place;
-    if (player.intersects(x, y, z)) return;
+    const x = pctx.px;
+    const y = pctx.py;
+    const z = pctx.pz;
     if (y < 1 || y >= WORLD_Y) return;
     const current = world.getBlock(x, y, z);
-    if (current !== Block.Air && !blockDef(current).liquid) return;
+    if (!pctx.allowReplace && !canReplace(current, placed)) return;
+    if (pctx.allowReplace && current !== Block.Air && !canReplace(current, placed)) return;
+    if (player.intersects(x, y, z, placed, world)) return;
 
     if (!survival.creative && !inventory.consumeAt(player.slot)) return;
     hud.refreshHotbar();
     swing = SWING_TIME;
-    sound.blockPlace(stack.id);
-
-    // A conveyor is stored as one of four facings, chosen from where the
-    // player is looking, so belts lay themselves in the direction you walk.
-    const placed = stack.id === Block.Conveyor
-      ? conveyorForYaw(player.yaw)
-      : stack.id;
+    sound.blockPlace(placed);
 
     world.setBlock(x, y, z, placed); // optimistic
     net.send({ t: 'set', dim: dimension, x, y, z, b: placed });
+    noteBlockChanged(x, y, z);
     // Fired with the item's own id rather than the placed variant, so a
     // conveyor counts whichever of the four facings ends up in the world.
     advancements.fire({ kind: 'place', id: stack.id });
     if (isMachine(placed)) machines.register(x, y, z);
+    dispatchAfterPlace(ctx, x, y, z, placed);
   }
 
   // -------------------------------------------------------------- streaming
@@ -1368,6 +1568,27 @@ async function start(
         const bitten = mobs.update(dt, world, player);
         if (bitten > 0) survival.damage(bitten, 'was attacked');
 
+        // Content packs: arrows, falling sand, growing crops, and anything
+        // reacting to a block beside it changing.
+        updateSystems(ctx, dt);
+        tickAccum = Math.min(tickAccum + dt, 3 / TICK_RATE);
+        while (tickAccum >= 1 / TICK_RATE) {
+          tickAccum -= 1 / TICK_RATE;
+          randomTickAround(ctx, player.x, player.z);
+        }
+        flushNeighbourChanges(ctx);
+
+        // Pressed against a cactus: a point of damage every half second.
+        if (player.contactDamage > 0 && !survival.creative) {
+          contactTimer -= dt;
+          if (contactTimer <= 0) {
+            survival.damage(Math.max(1, Math.round(player.contactDamage * 0.5)), 'was pricked to death');
+            contactTimer = 0.5;
+          }
+        } else {
+          contactTimer = 0;
+        }
+
         // Machines run whether or not anyone is watching them, which is the
         // point of automation; the callback is how loose items reach the
         // player's inventory.
@@ -1439,26 +1660,7 @@ async function start(
         if (targetMob) {
           lastSwing = now;
           swing = Math.max(swing, 0.001);
-          const damage = attackDamage(heldItem());
-          targetMob.hurt(damage);
-          if (targetMob.dead) {
-            for (const drop of rollDrops(targetMob.kind, Math.random)) {
-              if (!survival.creative) inventory.add(drop.id, drop.count);
-            }
-            hud.refreshHotbar();
-            if (targetMob.def.boss) {
-              dragonBeaten = true;
-              advancements.fire({ kind: 'event', name: 'dragon' });
-              hud.setBoss(null);
-              releasePointer();
-              hud.showVictory(
-                'You have beaten the Ender Dragon. The world is yours to build in — ' +
-                'the Overworld, the Nether, and everything you make of them.',
-                () => grabPointer());
-            } else {
-              hud.toast(`Killed ${targetMob.def.name}`);
-            }
-          }
+          hurtMob(targetMob, attackDamage(heldItem()), player.x, player.z);
           mineHeld = false;
         } else {
           const targetVehicle = vehicles.pick(ex, ey, ez, fx, fy, fz, 5);
@@ -1529,8 +1731,16 @@ async function start(
       renderer.render(view.eye, view.forward);
 
       if (hit) {
+        // Outline what the cursor actually hits -- a slab's half, a fence
+        // post and its arms -- not the whole cell.
         const [x, y, z] = hit.block;
-        renderer.drawBox([x - 0.002, y - 0.002, z - 0.002], [x + 1.002, y + 1.002, z + 1.002]);
+        const boxes = isDynamicShape(hit.id)
+          ? selectionOf(hit.id, aroundAt(world, x, y, z))
+          : selectionOf(hit.id);
+        const b = boundsOf(boxes) ?? { x0: 0, y0: 0, z0: 0, x1: 1, y1: 1, z1: 1 };
+        renderer.drawBox(
+          [x + b.x0 - 0.002, y + b.y0 - 0.002, z + b.z0 - 0.002],
+          [x + b.x1 + 0.002, y + b.y1 + 0.002, z + b.z1 + 0.002]);
       }
 
       // Mining-progress cracks, only in survival: creative breaks instantly,
@@ -1586,6 +1796,10 @@ async function start(
 
       if (mobs.mobs.length > 0) {
         const mesh = buildMobMesh(atlas, mobs.mobs);
+        renderer.drawWorldMesh(mesh.vertices, mesh.indices);
+      }
+
+      for (const mesh of systemMeshes(ctx, atlas)) {
         renderer.drawWorldMesh(mesh.vertices, mesh.indices);
       }
 

@@ -2,6 +2,7 @@
 
 import { Block } from './blocks.js';
 import { Item } from './items.js';
+import { PACKS } from './content/index.js';
 
 export interface RecipeResult {
   id: number;
@@ -277,6 +278,10 @@ export const RECIPES: Recipe[] = [
 ];
 
 /** A crafting grid: `width * height` cells, null where empty. */
+// Every pack's recipes join the list. Appended rather than merged by result:
+// two recipes for one item (planks from any log, say) are both meant.
+for (const pack of PACKS) RECIPES.push(...(pack.recipes ?? []));
+
 export interface Grid {
   width: number;
   height: number;

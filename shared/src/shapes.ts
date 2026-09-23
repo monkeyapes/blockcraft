@@ -14,26 +14,14 @@
  */
 
 import { Block } from './blocks.js';
+import { PACKS } from './content/index.js';
+import { post, slab, type Around, type Box, type Shape, type ShapeEntry } from './shapekit.js';
 
-/** An axis-aligned box in cell-local space, 0..1 on each axis. */
-export interface Box {
-  x0: number; y0: number; z0: number;
-  x1: number; y1: number; z1: number;
-}
+export type { Around, Box, Shape, ShapeEntry } from './shapekit.js';
 
 /** The whole cell. Anything without its own shape uses this. */
 export const FULL_BOX: Box = { x0: 0, y0: 0, z0: 0, x1: 1, y1: 1, z1: 1 };
 const FULL: Box[] = [FULL_BOX];
-
-/** A slab of the given height, sitting on the cell floor. */
-function slab(height: number): Box[] {
-  return [{ x0: 0, y0: 0, z0: 0, x1: 1, y1: height, z1: 1 }];
-}
-
-/** A square post running the full height, inset from the cell walls. */
-function post(inset: number): Box[] {
-  return [{ x0: inset, y0: 0, z0: inset, x1: 1 - inset, y1: 1, z1: 1 - inset }];
-}
 
 /**
  * Belt height. Low enough to step onto without jumping -- a conveyor you have
@@ -111,27 +99,98 @@ const SHAPES: Partial<Record<Block, Box[]>> = {
   ],
 };
 
+// --- the registry -------------------------------------------------------
+
+/** No neighbours: what a shape looks like standing alone. */
+const ALONE: Around = () => 0;
+const EMPTY: Box[] = [];
+
+interface Resolved {
+  visual: Shape;
+  collision: Shape;
+  selection: Shape;
+  cross: { height: number; inset: number } | null;
+  dynamic: boolean;
+}
+
+/** Indexed by block id; undefined means a full cube. */
+const table: Array<Resolved | undefined> = new Array(256);
+const owner: string[] = [];
+
+function register(id: number, entry: ShapeEntry, from: string): void {
+  if (owner[id]) throw new Error(`block ${id} has two shapes, from ${owner[id]} and ${from}`);
+  owner[id] = from;
+  const cross = entry.cross
+    ? { height: 1, inset: 0, ...(typeof entry.cross === 'object' ? entry.cross : {}) }
+    : null;
+  const visual: Shape = cross ? EMPTY : entry.visual ?? FULL;
+  const collision: Shape = entry.collision ?? (cross ? EMPTY : visual);
+  // A plant is picked by a box round its stem, not by its (empty) boxes.
+  const plantBox: Box[] = cross
+    ? [{ x0: 3 / 16, y0: 0, z0: 3 / 16, x1: 13 / 16, y1: Math.min(1, cross.height * 0.8), z1: 13 / 16 }]
+    : EMPTY;
+  const selection: Shape = entry.selection ?? (cross ? plantBox : visual);
+  const dynamic = [visual, collision, selection].some((x) => typeof x === 'function');
+  table[id] = { visual, collision, selection, cross, dynamic };
+}
+
+for (const [id, boxes] of Object.entries(SHAPES)) register(Number(id), { visual: boxes }, 'shapes.ts');
+for (const pack of PACKS) {
+  for (const [ids, entry] of pack.shapes ?? []) {
+    for (const id of Array.isArray(ids) ? ids : [ids]) register(id, entry, `the ${pack.name} pack`);
+  }
+}
+
+function resolve(shape: Shape, around: Around): Box[] {
+  return typeof shape === 'function' ? shape(around) : shape;
+}
+
 /**
- * The boxes a block occupies.
+ * The boxes a block is drawn as.
  *
  * Returns the shared FULL array for ordinary blocks, which is most of them --
  * this is called per cell in the collision inner loop, so it must not
- * allocate.
+ * allocate. `around` matters only for shapes that depend on neighbours;
+ * without it they are shaped as if standing alone.
  */
-export function shapeOf(block: number): Box[] {
-  return SHAPES[block as Block] ?? FULL;
+export function shapeOf(block: number, around: Around = ALONE): Box[] {
+  const r = table[block];
+  return r ? resolve(r.visual, around) : FULL;
+}
+
+/** What a body bumps into. Only meaningful for solid blocks. */
+export function collisionOf(block: number, around: Around = ALONE): Box[] {
+  const r = table[block];
+  return r ? resolve(r.collision, around) : FULL;
+}
+
+/** What the cursor hits and outlines. */
+export function selectionOf(block: number, around: Around = ALONE): Box[] {
+  const r = table[block];
+  return r ? resolve(r.selection, around) : FULL;
+}
+
+/** Crossed-plane plants: their height and inset, or null for box models. */
+export function crossOf(block: number): { height: number; inset: number } | null {
+  return table[block]?.cross ?? null;
+}
+
+/** Does this block's shape depend on its neighbours? */
+export function isDynamicShape(block: number): boolean {
+  return table[block]?.dynamic ?? false;
 }
 
 /** True when the block fills its cell, so the cheap paths apply. */
 export function isFullCube(block: number): boolean {
-  return shapeOf(block) === FULL;
+  return table[block] === undefined;
 }
 
-/** The smallest box containing every box of the shape. Used for highlights. */
-export function boundingBox(block: number): Box {
-  const boxes = shapeOf(block);
+/** The smallest box containing every box of a list. */
+export function boundsOf(boxes: Box[]): Box | null {
+  if (boxes.length === 0) return null;
   if (boxes.length === 1) return boxes[0];
   const out = { ...boxes[0] };
+  delete out.tex;
   for (const b of boxes) {
     if (b.x0 < out.x0) out.x0 = b.x0;
     if (b.y0 < out.y0) out.y0 = b.y0;
@@ -143,6 +202,11 @@ export function boundingBox(block: number): Box {
   return out;
 }
 
+/** The smallest box containing every box of the shape. Used for highlights. */
+export function boundingBox(block: number, around: Around = ALONE): Box {
+  return boundsOf(selectionOf(block, around)) ?? boundsOf(shapeOf(block, around)) ?? FULL_BOX;
+}
+
 /**
  * Height of the surface a body standing in this cell would rest on, or null
  * if nothing in the shape supports it.
@@ -150,9 +214,9 @@ export function boundingBox(block: number): Box {
  * Only boxes that reach the cell floor count: a shape floating in the middle
  * of its cell is something you walk under, not something you stand on.
  */
-export function supportHeight(block: number): number | null {
+export function supportHeight(block: number, around: Around = ALONE): number | null {
   let best: number | null = null;
-  for (const b of shapeOf(block)) {
+  for (const b of collisionOf(block, around)) {
     if (b.y0 > 0.0001) continue;
     if (best === null || b.y1 > best) best = b.y1;
   }

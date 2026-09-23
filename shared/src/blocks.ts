@@ -5,85 +5,12 @@
  * Texture names here are resolved against the procedurally built atlas.
  */
 
-export enum Block {
-  Air = 0,
-  Grass = 1,
-  Dirt = 2,
-  Stone = 3,
-  Cobblestone = 4,
-  Sand = 5,
-  Gravel = 6,
-  Bedrock = 7,
-  Log = 8,
-  Leaves = 9,
-  Planks = 10,
-  Bricks = 11,
-  Glass = 12,
-  Water = 13,
-  Glowstone = 14,
-  CoalOre = 15,
-  IronOre = 16,
-  GoldOre = 17,
-  DiamondOre = 18,
-  IronBlock = 19,
-  CraftingTable = 20,
-  Furnace = 21,
-  Conveyor = 22,
-  Sorter = 23,
-  Cable = 24,
-  Netherrack = 25,
-  SoulSand = 26,
-  Lava = 27,
-  Obsidian = 28,
-  NetherPortal = 29,
-  NetherBricks = 30,
-  Quartz = 31,
-  EndStone = 32,
-  EndPortalFrame = 33,
-  EndPortal = 34,
-  Purpur = 35,
-  EndPortalFrameFilled = 36,
-  Torch = 37,
+export { Block } from './blockids.js';
+import { Block } from './blockids.js';
 
-  /*
-   * Placed conveyors carry a facing.
-   *
-   * A chunk is a flat Uint8Array with no room for per-block metadata, so
-   * direction has to live in the block id itself. Placement picks the
-   * variant from where the player is looking, and all four drop the plain
-   * Conveyor item, so the split is invisible in the inventory.
-   */
-  ConveyorNorth = 38,
-  ConveyorEast = 39,
-  ConveyorSouth = 40,
-  ConveyorWest = 41,
-
-  Chest = 42,
-  Collector = 43,
-  Miner = 44,
-  Ladder = 45,
-  Bed = 46,
-  Generator = 47,
-  Crusher = 48,
-  SolarPanel = 49,
-  Battery = 50,
-  Elevator = 51,
-  Booster = 52,
-
-  /* NoVolt consumers, and one more renewable source. */
-  StoneGenerator = 53,
-  ElectricFurnace = 54,
-  Sawmill = 55,
-  Compressor = 56,
-  Quarry = 57,
-  WaterWheel = 58,
-  // Logistics. Conveyors move items along the floor; these decide where the
-  // items go, which is the difference between a belt and a factory.
-  Splitter = 59,
-  Tube = 60,
-  Filter = 61,
-  Incinerator = 62,
-}
+import type { ToolKind } from './items.js';
+import { PACKS } from './content/index.js';
+import type { BlockSpec, CreativeTab, DropFn } from './content/types.js';
 
 export interface BlockDef {
   id: Block;
@@ -104,15 +31,34 @@ export interface BlockDef {
   hardness: number;
   /** What the block drops when broken; defaults to itself. */
   drop?: Block;
+  /** A drop roll, for chance and multiple items. Wins over `drop`. */
+  drops?: DropFn;
+  /** The tool class that mines it quickly; unset falls back to the table in items.ts. */
+  tool?: ToolKind;
+  /** Tool tier needed for it to drop anything; unset falls back likewise. */
+  tier?: number;
+  /** Placing a block into this cell simply overwrites it. */
+  replaceable: boolean;
+  /** States of one thing, swappable in place. See content/types.ts. */
+  family?: string;
+  slipperiness: number;
+  speedFactor: number;
+  bounce: number;
+  contactDamage: number;
+  climbable: boolean;
+  category?: CreativeTab;
+  icon?: string;
 }
 
 const defs: BlockDef[] = [];
+
+type DefOpts = Partial<Omit<BlockDef, 'id' | 'name' | 'textures'>>;
 
 function def(
   id: Block,
   name: string,
   textures: string | [string, string, string],
-  opts: Partial<Omit<BlockDef, 'id' | 'name' | 'textures'>> = {},
+  opts: DefOpts = {},
 ): void {
   const tex: [string, string, string] =
     typeof textures === 'string' ? [textures, textures, textures] : textures;
@@ -128,6 +74,18 @@ function def(
     light: opts.light ?? 0,
     hardness: opts.hardness ?? 1,
     drop: opts.drop,
+    drops: opts.drops,
+    tool: opts.tool,
+    tier: opts.tier,
+    replaceable: opts.replaceable ?? false,
+    family: opts.family,
+    slipperiness: opts.slipperiness ?? 0,
+    speedFactor: opts.speedFactor ?? 1,
+    bounce: opts.bounce ?? 0,
+    contactDamage: opts.contactDamage ?? 0,
+    climbable: opts.climbable ?? false,
+    category: opts.category,
+    icon: opts.icon,
   };
 }
 
@@ -175,7 +133,7 @@ def(Block.Chest, 'Chest', ['chest_top', 'chest_top', 'chest_side'], { hardness: 
 // A ladder is climbed, not stood on, so it must not be solid or opaque --
 // the climbing itself is handled in the player's vertical movement.
 def(Block.Ladder, 'Ladder', 'ladder', {
-  solid: false, opaque: false, translucent: true, hardness: 0.4,
+  solid: false, opaque: false, translucent: true, hardness: 0.4, climbable: true,
 });
 def(Block.Bed, 'Bed', ['bed_top', 'planks', 'bed_side'], {
   solid: false, opaque: false, translucent: true, hardness: 0.4,
@@ -220,7 +178,7 @@ def(Block.Filter, 'Line Filter', ['filter_top', 'iron_block', 'filter_side'],
 def(Block.Incinerator, 'Incinerator', ['incinerator_top', 'iron_block', 'incinerator_side'],
   { hardness: 1 });
 def(Block.Netherrack, 'Netherrack', 'netherrack', { hardness: 0.7 });
-def(Block.SoulSand, 'Soul Sand', 'soul_sand', { hardness: 1 });
+def(Block.SoulSand, 'Soul Sand', 'soul_sand', { hardness: 1, speedFactor: 0.55 });
 def(Block.Lava, 'Lava', 'lava', {
   solid: false, opaque: false, translucent: true, liquid: true, breakable: false,
   light: 15, hardness: 0,
@@ -243,10 +201,40 @@ def(Block.EndPortalFrameFilled, 'End Portal Frame', ['end_frame_eye', 'end_stone
 });
 def(Block.Purpur, 'Purpur Block', 'purpur', { hardness: 3 });
 
+// --- content packs -------------------------------------------------------
+
+/** Which pack defined each id, so a clash can name both sides. */
+const definedBy = new Map<number, string>();
+for (const d of defs) if (d) definedBy.set(d.id, 'blocks.ts');
+
+/** One-way in-place changes, keyed `from:to`. */
+const transitions = new Set<string>();
+
+for (const pack of PACKS) {
+  for (const spec of pack.blocks ?? []) {
+    const clash = definedBy.get(spec.id);
+    if (clash) {
+      throw new Error(`block ${spec.id} (${spec.name}) is defined by both ${clash} and the ${pack.name} pack`);
+    }
+    if (spec.id <= 0 || spec.id >= 256) {
+      throw new Error(`block ${spec.name} has id ${spec.id}; chunks store blocks in one byte`);
+    }
+    definedBy.set(spec.id, `the ${pack.name} pack`);
+    const { id, name, textures, ...opts } = spec as BlockSpec;
+    def(id as Block, name, textures, opts as DefOpts);
+  }
+  for (const [from, to] of pack.transitions ?? []) transitions.add(`${from}:${to}`);
+}
+
 export const BLOCKS: readonly BlockDef[] = defs;
 
 export function blockDef(id: Block | number): BlockDef {
   return defs[id] ?? defs[Block.Air];
+}
+
+/** True for ids with a definition; an unknown id reads as air everywhere else. */
+export function isKnownBlock(id: number): boolean {
+  return id === Block.Air || (defs[id] !== undefined && id > 0 && id < 256);
 }
 
 export function isOpaque(id: number): boolean {
@@ -261,12 +249,44 @@ export function isLiquid(id: number): boolean {
   return defs[id]?.liquid ?? false;
 }
 
+/** Placing into this cell is allowed: air, a liquid, or something replaceable. */
+export function isReplaceable(id: number): boolean {
+  if (id === Block.Air) return true;
+  const d = defs[id];
+  return !!d && (d.liquid || d.replaceable);
+}
+
+/**
+ * May a player turn the block at a cell from `current` into `next`?
+ *
+ * The one rule both the server and the single-player link enforce, so what
+ * is legal cannot drift between them. Four cases:
+ *
+ *  - placing: into air, a liquid, or a replaceable block
+ *  - breaking: to air, if the block is breakable -- or scooping up a liquid
+ *  - a state change within a family: a door opening, a crop growing
+ *  - a one-way change some pack declared: dirt tilled into farmland
+ */
+export function canReplace(current: number, next: number): boolean {
+  if (!isKnownBlock(next)) return false;
+  if (current === next) return false;
+  if (next === Block.Air) {
+    const d = blockDef(current);
+    return d.breakable || d.liquid;
+  }
+  if (isReplaceable(current)) return true;
+  const family = defs[current]?.family;
+  if (family && defs[next]?.family === family) return true;
+  return transitions.has(`${current}:${next}`);
+}
+
 /** Every distinct atlas tile the registry references, in a stable order. */
 export function allTextureNames(): string[] {
   const seen = new Set<string>();
   for (const d of defs) {
     if (!d) continue;
     for (const t of d.textures) seen.add(t);
+    if (d.icon) seen.add(d.icon);
   }
   return [...seen].sort();
 }

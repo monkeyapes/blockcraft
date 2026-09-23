@@ -139,6 +139,11 @@ export class Survival {
       this.fallStart = null;
       return;
     }
+    // A bounce pad caught the fall: measure from the next peak instead.
+    if (player.softLanding) {
+      player.softLanding = false;
+      this.fallStart = null;
+    }
     if (!player.onGround) {
       if (this.fallStart === null || player.y > this.fallStart) this.fallStart = player.y;
       return;

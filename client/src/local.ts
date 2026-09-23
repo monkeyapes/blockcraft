@@ -6,7 +6,7 @@
  * offline too. Worlds persist to IndexedDB.
  */
 
-import { Block, blockDef } from '@shared/blocks.js';
+import { Block, canReplace } from '@shared/blocks.js';
 import {
   CHUNK_X, CHUNK_Z, Dimension, WORLD_Y, dimChunkKey, voxelIndex,
 } from '@shared/constants.js';
@@ -219,9 +219,8 @@ export class LocalLink implements Link {
       case 'set': {
         const { dim, x, y, z, b } = msg;
         const current = this.getBlock(dim, x, y, z);
-        const legal = b === Block.Air
-          ? blockDef(current).breakable
-          : current === Block.Air || blockDef(current).liquid;
+        // The same rule the server applies; see canReplace in shared/blocks.ts.
+        const legal = canReplace(current, b);
 
         if (y < 1 || y >= WORLD_Y || !legal) {
           this.emit({ t: 'reject', dim, x, y, z, b: current, reason: 'blocked' });
