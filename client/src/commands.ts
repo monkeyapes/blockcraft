@@ -8,7 +8,9 @@
 import { CHUNK_X, CHUNK_Z, Dimension } from '@shared/constants.js';
 import { findPlacement } from '@shared/structures.js';
 import { columnHeight } from '@shared/terrain.js';
-import { MobKind } from '@shared/mobs.js';
+import { MobKind, allMobKinds, mobDef } from '@shared/mobs.js';
+import { BLOCKS } from '@shared/blocks.js';
+import { allItemIds, itemDef, stackSize } from '@shared/items.js';
 import type { MobWorld } from './mobs.js';
 import type { Player } from './player.js';
 import type { Survival } from './survival.js';
@@ -20,21 +22,43 @@ export interface CommandContext {
   dimension: Dimension;
   mobs: MobWorld;
   say: (text: string, system?: boolean) => void;
+  /** Puts items in the player's inventory; returns how many fit. */
+  give?: (id: number, count: number) => number;
 }
 
-const MOB_NAMES: Record<string, MobKind> = {
-  pig: MobKind.Pig,
-  cow: MobKind.Cow,
-  sheep: MobKind.Sheep,
-  chicken: MobKind.Chicken,
-  zombie: MobKind.Zombie,
-};
+/** Command-line name of a thing: lower case, words joined by underscores. */
+function slug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+/**
+ * Every mob by name, built from the registry so a new mob can be summoned
+ * the moment it exists. Bosses are left out: the dragon is placed by the
+ * End, not conjured in a meadow.
+ */
+function mobNames(): Record<string, MobKind> {
+  const out: Record<string, MobKind> = {};
+  for (const kind of allMobKinds()) {
+    const def = mobDef(kind);
+    if (!def.boss) out[slug(def.name)] = kind;
+  }
+  return out;
+}
+
+/** Every block and item by name, for /give. */
+function thingNames(): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const d of BLOCKS) if (d && d.id !== 0) out.set(slug(d.name), d.id);
+  for (const id of allItemIds()) out.set(slug(itemDef(id).name), id);
+  return out;
+}
 
 const HELP = [
   '/help - this list',
   '/tp <x> <y> <z> - teleport, or /tp <x> <z> to land on the surface',
   '/locate <village|mansion|stronghold> - find the nearest one',
-  '/summon <pig|cow|sheep|chicken|zombie> [count] - spawn mobs in front of you',
+  '/summon <mob> [count] - spawn mobs in front of you',
+  '/give <item> [count] - put blocks or items in your inventory',
   '/gamemode <survival|creative> - switch mode',
   '/seed - show the world seed',
   '/pos - show your position',
@@ -158,10 +182,11 @@ export function runCommand(text: string, ctx: CommandContext): boolean {
     }
 
     case 'summon': {
-      const kindName = (args[0] ?? '').toLowerCase();
-      const kind = MOB_NAMES[kindName];
+      const kindName = slug(args[0] ?? '');
+      const names = mobNames();
+      const kind = names[kindName];
       if (kind === undefined) {
-        say(`Usage: /summon <${Object.keys(MOB_NAMES).join('|')}> [count]`, true);
+        say(`Usage: /summon <${Object.keys(names).join('|')}> [count]`, true);
         return true;
       }
       const count = Math.max(1, Math.min(20, Math.floor(Number(args[1] ?? 1)) || 1));
@@ -174,6 +199,24 @@ export function runCommand(text: string, ctx: CommandContext): boolean {
         ctx.mobs.spawn(kind, x, player.y + 1, z);
       }
       say(`Summoned ${count} ${kindName}${count > 1 ? 's' : ''}`, true);
+      return true;
+    }
+
+    case 'give': {
+      const want = slug(args[0] ?? '');
+      const names = thingNames();
+      const id = names.get(want) ??
+        [...names.entries()].find(([n]) => n.includes(want) && want.length >= 3)?.[1];
+      if (!want || id === undefined || !ctx.give) {
+        say('Usage: /give <item> [count], e.g. /give oak_sapling 4', true);
+        return true;
+      }
+      const count = Math.max(1, Math.min(stackSize(id) * 9,
+        Math.floor(Number(args[1] ?? stackSize(id))) || 1));
+      const given = ctx.give(id, count);
+      say(given > 0
+        ? `Gave ${given} ${itemDef(id).name}`
+        : 'Nothing given: /give works in single player, or in creative', true);
       return true;
     }
 

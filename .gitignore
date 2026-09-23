@@ -27,3 +27,7 @@ Thumbs.db
 host/src-tauri/bin/
 host/src-tauri/target/
 host/dist/
+
+# Renders from tests/diagnostics, made while looking at art
+.scratch/
+*.png.tmp

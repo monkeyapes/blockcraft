@@ -575,6 +575,14 @@ async function start(
       const handled = runCommand(text, {
         player, survival, seed, dimension, mobs,
         say: (line, system) => hud.addChat(line, system),
+        give: (id, count) => {
+          // In multiplayer the server owns inventories' worth; a local world
+          // and creative mode are the player's own to fill.
+          if (multiplayer && !survival.creative) return 0;
+          const leftover = inventory.add(id, count);
+          hud.refreshHotbar();
+          return count - leftover;
+        },
       });
       if (!handled) {
         if (!multiplayer && text.startsWith('/')) {
