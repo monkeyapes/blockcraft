@@ -2,229 +2,347 @@
  * Equipment icons: tools, weapons and armour.
  *
  * Split from art/items.ts because these share one problem the rest do not:
- * every one of them is "a shape on a stick", and at icon size the head's
+ * most of them are "a shape on a stick", and at icon size the head's
  * silhouette is the only thing telling a pickaxe from an axe from a hammer,
  * or a sword from a hoe. Each kind has to be recognisable from its outline
  * alone, and each tier from its colour.
- */
-
-import { type RGB, type Recipe, Tile } from '../tile.js';
-
-const HANDLE: RGB = [122, 88, 48];
-
-/**
- * Shared silhouette for every tool, coloured by tier.
  *
- * The heads are deliberately chunky and very different in outline: at the
- * ~34px these are drawn at in the UI, a subtle head shape is unreadable and
- * every tool looks like the same brown stick.
+ * They are painted from pixel maps (art/equipment-maps.ts) rather than
+ * stacked rectangles. A diagonal blade built from rects and thick lines comes
+ * out lumpy -- the old sword's notched edge read as a wrench -- whereas a map
+ * places every unit on purpose: the sword's edge runs one clean staircase,
+ * the pickaxe's arms are mirror images across the haft, and the light falls
+ * on the same side of every part. One map per kind, one colour ramp per
+ * tier, so the four pickaxes are the same shape by construction and differ
+ * only in material.
  */
-function toolTile(kind: 'pickaxe' | 'axe' | 'shovel', head: RGB) {
-  const dark: RGB = [head[0] * 0.7, head[1] * 0.7, head[2] * 0.7];
-  const lit: RGB = [
-    Math.min(255, head[0] * 1.18 + 14),
-    Math.min(255, head[1] * 1.18 + 14),
-    Math.min(255, head[2] * 1.18 + 14),
-  ];
-  return (t: Tile) => {
-    // Proportions matter more than any detail here. A real tool icon is
-    // mostly *handle*: a long shaft running corner to corner, with a
-    // comparatively small head perched on its top end. Earlier passes had a
-    // stubby half-length shaft under an oversized slab of a head, which is
-    // why they read as "a shape on a stick" rather than as a tool.
-    t.line(1, 14, 11, 4, HANDLE, 2);
-    t.line(1, 15, 10, 6, [92, 64, 34], 1);  // shaft shading
-    t.rect(0, 13, 3, 3, HANDLE, 6);         // butt cap
-    t.rect(0, 15, 3, 1, [80, 54, 28]);
 
-    if (kind === 'pickaxe') {
-      // An asymmetric crescent sweeping over the top, which the shaft passes
-      // *through* near its right end -- not a symmetric bar sitting on top
-      // of it. Stamped along an arc so the curve is a real curve.
-      for (let a = 202; a <= 338; a += 4) {
-        const r = (a * Math.PI) / 180;
-        const cx = 8.5 + Math.cos(r) * 6.0;
-        const cy = 9.2 + Math.sin(r) * 6.0;
-        t.rect(Math.round(cx), Math.round(cy), 2, 2, head, 4);
-      }
-      // Tips, darkened so the ends read as points rather than stubs.
-      t.rect(2, 6, 2, 2, dark, 3);
-      t.rect(13, 6, 2, 2, dark, 3);
-      t.rect(6, 2, 4, 1, lit);                // lit crown
-    } else if (kind === 'axe') {
-      // One solid head: a blade tapering from a flared cutting edge on the
-      // left back to a squared poll that sits over the shaft's top. A poll
-      // drawn as a separate disc left a gap the shaft showed through, which
-      // turned the whole head into a spike.
-      t.rect(5, 1, 6, 2, head, 6);            // top
-      t.rect(4, 3, 7, 3, head, 6);            // widest, at the cutting edge
-      t.rect(5, 6, 5, 2, head, 6);            // taper
-      t.rect(6, 8, 3, 1, head, 5);
-      t.rect(11, 3, 2, 3, head, 5);           // poll, over the shaft top
-      t.rect(4, 3, 1, 3, lit);                // lit cutting edge
-      t.rect(5, 1, 3, 1, lit);
-      t.rect(11, 5, 2, 1, dark);              // shadow beneath the poll
-    } else {
-      // A small rounded spade on the shaft's top end.
-      t.disc(10.6, 4.4, 3.3, head, 8);
-      t.rect(8, 2, 5, 4, head, 6);
-      t.rect(9, 6, 3, 2, head, 5);            // socket onto the shaft
-      t.rect(8, 2, 2, 3, lit);                // lit face
-      t.rect(12, 4, 1, 3, dark);              // shadowed side
-    }
+import { type RGB, type Recipe, S, TILE, TILE_PX, Tile } from '../tile.js';
+import {
+  ARROW, AXE, BOOTS, BOW, BUCKET, CHEST, DRILL, FLINT_STEEL, HAMMER, HELMET, HOE, LEGS,
+  PICKAXE, SHEARS, SHOVEL, SWORD,
+} from './equipment-maps.js';
 
-    // Crisp banding plus a dark silhouette edge. The highlight is gentler
-    // than the default: iron and diamond are already pale, and a +34 step
-    // pushed their whole head to near-white, losing the material colour.
-    t.celShade(18, -26);
-    t.outline();
-  };
-}
+// --- colour ---------------------------------------------------------------
 
-const TOOL_TIERS: Array<[string, RGB]> = [
-  ['wood', [158, 122, 72]],
-  ['stone', [136, 136, 136]],
-  ['iron', [214, 214, 218]],
-  ['diamond', [104, 226, 220]],
-];
+/** Five tones of one material, lightest first: highlight to deep shadow. */
+interface Ramp { H: RGB; L: RGB; M: RGB; D: RGB; S: RGB }
 
-export const EQUIPMENT_ART: Record<string, Recipe> = {
-  // A power drill in profile: body, pistol grip, chuck, and a bit that
-  // actually tapers to a point.
-  drill: (t) => {
-    t.rect(1, 5, 8, 6, [104, 104, 110], 5);     // motor housing
-    t.rect(2, 4, 5, 1, [140, 140, 146], 4);     // lit top edge
-    t.rect(3, 11, 4, 4, [66, 60, 56], 4);       // grip
-    t.rect(3, 15, 4, 1, [46, 42, 40], 3);
-    t.rect(9, 6, 3, 4, [188, 188, 194], 5);     // chuck
-    t.rect(12, 7, 2, 2, [104, 226, 226], 6);    // bit
-    t.rect(14, 7, 1, 2, [180, 246, 246], 4);    // its point
-    t.celShade(20, -18);
-    t.outline();
+export type ToolTier = 'wood' | 'stone' | 'iron' | 'diamond';
+export type ArmorMaterial = 'leather' | 'iron' | 'diamond';
+
+/*
+ * The tier ramps are what a player reads the tier from, so they are spread
+ * apart on purpose: wood is warm and mid-dark, stone a flat mid grey, iron
+ * near-white, diamond saturated cyan. Stone and iron are both grey, so they
+ * are kept a full ~70 levels of brightness apart rather than relying on hue.
+ */
+const RAMPS: Record<ToolTier | ArmorMaterial, Ramp> = {
+  // Plank-coloured, and noticeably lighter and yellower than the stick it
+  // is fixed to -- a wooden head the same brown as its handle is just a
+  // bent stick.
+  wood: {
+    H: [246, 212, 150], L: [222, 180, 116], M: [190, 146, 86], D: [148, 108, 60], S: [106, 76, 40],
   },
-  flint_steel: (t) => {
-    t.rect(2, 5, 3, 8, [188, 188, 194], 6);   // striker back
-    t.rect(2, 4, 6, 2, [188, 188, 194], 6);   // upper arm
-    t.rect(2, 12, 6, 2, [160, 160, 166], 6);  // lower arm
-    t.rect(6, 6, 2, 2, [140, 140, 146], 4);
-    t.rect(9, 9, 5, 4, [78, 72, 68], 6);      // flint
-    t.rect(10, 8, 3, 1, [104, 96, 90], 4);
-    t.rect(9, 6, 2, 2, [250, 214, 120], 8);   // sparks
-    t.rect(12, 5, 2, 2, [252, 238, 178], 6);
-    t.celShade(18, -16);
-    t.outline();
+  stone: {
+    H: [188, 188, 184], L: [156, 156, 154], M: [126, 126, 126], D: [96, 96, 100], S: [68, 68, 74],
+  },
+  iron: {
+    H: [255, 255, 255], L: [232, 234, 238], M: [200, 204, 212], D: [150, 156, 168], S: [106, 112, 126],
+  },
+  diamond: {
+    H: [228, 255, 252], L: [150, 246, 236], M: [78, 216, 208], D: [36, 160, 166], S: [18, 102, 118],
+  },
+  leather: {
+    H: [212, 152, 100], L: [184, 124, 78], M: [152, 100, 62], D: [116, 74, 46], S: [84, 52, 32],
   },
 };
 
-for (const [tier, head] of TOOL_TIERS) {
-  EQUIPMENT_ART[`pickaxe_${tier}`] = toolTile('pickaxe', head);
-  EQUIPMENT_ART[`axe_${tier}`] = toolTile('axe', head);
-  EQUIPMENT_ART[`shovel_${tier}`] = toolTile('shovel', head);
+/** The stick every tool is hafted on: a darker, redder wood than any head. */
+const STICK = { h: [150, 106, 60] as RGB, m: [112, 78, 44] as RGB, d: [80, 54, 30] as RGB };
+/** Leather strapping: bindings, grips, the bow's hand-hold. */
+const WRAP = { b: [156, 96, 60] as RGB, B: [98, 58, 38] as RGB };
+
+type Palette = Record<string, RGB>;
+
+function rampPalette(r: Ramp): Palette {
+  return { H: r.H, L: r.L, M: r.M, D: r.D, S: r.S };
 }
 
-/** Armour silhouettes, one shape per slot, tinted per material. */
-function armorTile(slot: 'head' | 'chest' | 'legs' | 'feet', tint: RGB) {
-  const dark: RGB = [tint[0] * 0.72, tint[1] * 0.72, tint[2] * 0.72];
-  // Plate needs a highlight and a shadow, or it reads as a coloured blob at
-  // icon size -- iron leggings measured 216 brightness with almost no
-  // variation, which is indistinguishable from a white rectangle.
-  const lit: RGB = [
-    Math.min(255, tint[0] * 1.2), Math.min(255, tint[1] * 1.2), Math.min(255, tint[2] * 1.2),
-  ];
-  const shadow: RGB = [tint[0] * 0.72, tint[1] * 0.72, tint[2] * 0.72];
+// --- drawing --------------------------------------------------------------
 
-  return (t: Tile) => {
-    if (slot === 'head') {
-      // A helmet: domed crown, a dark visor slot, and cheek guards down
-      // either side. The slot is what stops it reading as a bucket.
-      t.rect(4, 1, 8, 2, tint, 5);
-      t.rect(2, 3, 12, 4, tint, 6);        // crown
-      t.rect(2, 7, 3, 5, tint, 6);         // cheek guards
-      t.rect(11, 7, 3, 5, tint, 6);
-      t.rect(5, 7, 6, 2, dark, 3);         // visor slot
-      t.rect(5, 9, 6, 3, tint, 5);         // nose guard below the slot
-      t.rect(7, 9, 2, 3, dark, 3);
-    } else if (slot === 'chest') {
-      // Pauldrons standing proud of a torso, with a neck notch between them.
-      t.rect(1, 3, 4, 4, tint, 6);         // left pauldron
-      t.rect(11, 3, 4, 4, tint, 6);        // right pauldron
-      t.rect(5, 4, 6, 2, tint, 5);         // collar
-      t.rect(6, 2, 4, 2, dark, 3);         // neck opening
-      t.rect(3, 6, 10, 7, tint, 6);        // torso
-      t.rect(6, 8, 4, 4, dark, 3);         // breastplate seam
-      t.rect(4, 13, 8, 1, dark, 3);        // hem
-    } else if (slot === 'legs') {
-      t.rect(3, 2, 10, 3, tint, 6);        // belt
-      t.rect(3, 5, 4, 9, tint, 6);         // left leg
-      t.rect(9, 5, 4, 9, tint, 6);         // right leg
-      t.rect(7, 5, 2, 5, dark, 3);         // the gap between them
-      t.rect(4, 3, 8, 1, dark, 3);         // belt line
-    } else {
-      // Two boots seen from the side: an ankle cuff over a toe that sticks
-      // forward, which is the shape a plain rectangle was missing.
-      t.rect(2, 5, 4, 6, tint, 6);         // left ankle
-      t.rect(1, 11, 6, 3, tint, 6);        // left foot
-      t.rect(10, 5, 4, 6, tint, 6);        // right ankle
-      t.rect(9, 11, 6, 3, tint, 6);        // right foot
-      t.rect(1, 13, 6, 1, dark, 3);        // soles
-      t.rect(9, 13, 6, 1, dark, 3);
+/**
+ * Paints a 16x16 character map, one authoring unit per character.
+ * '.' is transparent; every other character must have a colour, so a typo
+ * in a map fails loudly instead of leaving a silent hole.
+ */
+function paint(t: Tile, rows: readonly string[], palette: Palette): void {
+  if (rows.length !== TILE) throw new Error(`pixel map has ${rows.length} rows, not ${TILE}`);
+  rows.forEach((row, y) => {
+    if (row.length !== TILE) throw new Error(`pixel map row ${y} is ${row.length} wide: "${row}"`);
+    for (let x = 0; x < TILE; x++) {
+      const ch = row[x];
+      if (ch === '.') continue;
+      const c = palette[ch];
+      if (!c) throw new Error(`pixel map uses '${ch}' but the palette has no colour for it`);
+      t.set(x, y, c[0], c[1], c[2]);
     }
-
-    // Rake a highlight across the upper-left of the plate and a shadow along
-    // the lower-right, so the shape reads as metal rather than a silhouette.
-    t.shadeShape(lit, shadow, 0.42);
-    t.grain(9, 10);
-    t.outline();
-  };
+  });
 }
 
-const ARMOR_MATERIALS: Array<[string, RGB]> = [
-  ['leather', [148, 104, 66]],
-  ['iron', [214, 214, 220]],
-  ['diamond', [104, 226, 220]],
-];
+/** Calls fn for every authoring unit whose map character is in `chars`. */
+function cells(rows: readonly string[], chars: string, fn: (x: number, y: number) => void): void {
+  rows.forEach((row, y) => {
+    for (let x = 0; x < TILE; x++) if (chars.includes(row[x])) fn(x, y);
+  });
+}
 
-for (const [material, tint] of ARMOR_MATERIALS) {
-  for (const slot of ['head', 'chest', 'legs', 'feet'] as const) {
-    EQUIPMENT_ART[`armor_${slot}_${material}`] = armorTile(slot, tint);
+/** Shifts the brightness of a block of real pixels inside one unit. */
+function dab(t: Tile, x: number, y: number, ox: number, oy: number, w: number, h: number, delta: number): void {
+  for (let py = 0; py < h; py++) {
+    for (let px = 0; px < w; px++) {
+      const X = Math.round(x * S) + ox + px;
+      const Y = Math.round(y * S) + oy + py;
+      if (X < 0 || Y < 0 || X >= TILE_PX || Y >= TILE_PX) continue;
+      const i = (Y * TILE_PX + X) * 4;
+      if (t.px[i + 3] < 8) continue;
+      t.px[i] += delta;
+      t.px[i + 1] += delta;
+      t.px[i + 2] += delta;
+    }
   }
 }
 
-/** Swords: a blade up the diagonal with a crossguard and grip. */
-function swordTile(blade: RGB) {
-  const dark: RGB = [blade[0] * 0.72, blade[1] * 0.72, blade[2] * 0.72];
-  const lit: RGB = [
-    Math.min(255, blade[0] * 1.2 + 16),
-    Math.min(255, blade[1] * 1.2 + 16),
-    Math.min(255, blade[2] * 1.2 + 16),
-  ];
-  return (t: Tile) => {
-    // A 3-unit blade rather than a hairline. At icon size a 1px diagonal is
-    // nearly invisible, which is why every tier looked the same: the only
-    // thing separating wood from diamond was a colour too thin to read.
-    // Like the tools, this is mostly *blade*: a long diagonal running almost
-    // corner to corner, with the hilt occupying only the bottom-left eighth.
-    t.line(4, 12, 12, 4, blade, 4);
-    t.line(4, 14, 11, 7, dark, 1);       // shadowed lower bevel
-    t.line(5, 11, 12, 4, lit, 1);        // lit upper bevel
-    t.rect(11, 2, 3, 3, blade);          // tip, kept clear of the corner
-    t.rect(13, 1, 2, 2, lit);
-
-    // A guard crossing the blade at right angles, and a round pommel at the
-    // very corner -- the two things that stop a diagonal reading as a stick.
-    // Kept thin: at two units deep it was a slab wider than the blade.
-    const guard: RGB = [92, 64, 34];
-    for (let i = -3; i <= 3; i++) {
-      t.rect(5 + i, 11 + i, 2, 1, i < 0 ? [112, 80, 44] : guard);
+/**
+ * A straight line at the rendered resolution, for things far thinner than
+ * one authoring unit.
+ */
+function fineLine(t: Tile, x0: number, y0: number, x1: number, y1: number, colour: RGB, width = 2): void {
+  const ax = x0 * S;
+  const ay = y0 * S;
+  const bx = x1 * S;
+  const by = y1 * S;
+  const steps = Math.ceil(Math.max(Math.abs(bx - ax), Math.abs(by - ay)) * 2);
+  const r = width / 2;
+  for (let i = 0; i <= steps; i++) {
+    const cx = ax + ((bx - ax) * i) / steps;
+    const cy = ay + ((by - ay) * i) / steps;
+    for (let py = Math.floor(cy - r); py < cy + r; py++) {
+      for (let px = Math.floor(cx - r); px < cx + r; px++) {
+        if (px < 0 || py < 0 || px >= TILE_PX || py >= TILE_PX) continue;
+        const j = (py * TILE_PX + px) * 4;
+        t.px[j] = colour[0];
+        t.px[j + 1] = colour[1];
+        t.px[j + 2] = colour[2];
+        t.px[j + 3] = 255;
+      }
     }
-    t.line(1, 15, 4, 12, [64, 44, 24], 2);   // grip
-    t.disc(1.6, 14.6, 1.7, [48, 34, 18], 4); // pommel
+  }
+}
 
-    t.celShade();
-    t.outline();
+const INK: RGB = [16, 12, 20];
+
+/**
+ * A dark rim drawn just *outside* the silhouette, tinted by what it borders.
+ *
+ * Tile.outline() darkens the shape's own edge pixels, which is right for
+ * chunky food and materials but eats thin parts alive: a haft two units
+ * wide loses half a unit on each side and turns into a dark line with a
+ * brown seam. Growing the rim outward instead keeps every painted unit its
+ * own colour, so a two-unit stick still reads as wood. Where a shape runs
+ * to the tile's edge there is no room outside, and those edge pixels are
+ * inked in place the way outline() would.
+ */
+function rim(t: Tile): void {
+  const reach = Math.max(1, Math.round(S / 2));
+  const N = TILE_PX;
+  const src = t.px.slice();
+  const solid = (x: number, y: number): boolean =>
+    x >= 0 && y >= 0 && x < N && y < N && src[(y * N + x) * 4 + 3] >= 8;
+  const ink = (i: number, from: number): void => {
+    t.px[i] = src[from] + (INK[0] - src[from]) * 0.8;
+    t.px[i + 1] = src[from + 1] + (INK[1] - src[from + 1]) * 0.8;
+    t.px[i + 2] = src[from + 2] + (INK[2] - src[from + 2]) * 0.8;
+    t.px[i + 3] = 255;
+  };
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const i = (y * N + x) * 4;
+      if (src[i + 3] >= 8) {
+        if (x < reach || y < reach || x >= N - reach || y >= N - reach) ink(i, i);
+        continue;
+      }
+      let best = -1;
+      let bestD = Infinity;
+      for (let dy = -reach; dy <= reach; dy++) {
+        for (let dx = -reach; dx <= reach; dx++) {
+          if (!solid(x + dx, y + dy)) continue;
+          const d = dx * dx + dy * dy;
+          if (d < bestD) {
+            bestD = d;
+            best = ((y + dy) * N + (x + dx)) * 4;
+          }
+        }
+      }
+      if (best >= 0) ink(i, best);
+    }
+  }
+}
+
+/**
+ * Per-material surface at the rendered resolution. The maps give every
+ * unit one flat tone; these add the texture that says what it is made of --
+ * pitted stone, a glint on cut diamond, a sheen on iron, grain in wood and
+ * hide.
+ */
+function finish(t: Tile, rows: readonly string[], material: ToolTier | ArmorMaterial, chars = 'HLMDS'): void {
+  const r = t.rng;
+  if (material === 'stone') {
+    cells(rows, chars, (x, y) => {
+      if (r() < 0.45) dab(t, x, y, (r() * 3) | 0, (r() * 3) | 0, 2, 2, r() < 0.5 ? -22 : 16);
+    });
+  } else if (material === 'diamond') {
+    cells(rows, 'H', (x, y) => dab(t, x, y, 0, 0, 2, 2, 40));
+    cells(rows, 'L', (x, y) => { if (r() < 0.3) dab(t, x, y, 1, 1, 1, 1, 60); });
+  } else if (material === 'iron') {
+    cells(rows, 'HL', (x, y) => dab(t, x, y, 0, 0, 1, 4, 12));
+  } else {
+    cells(rows, chars, (x, y) => {
+      if (r() < 0.35) dab(t, x, y, 0, (r() * 4) | 0, 4, 1, -12);
+    });
+  }
+}
+
+/** Grain along the stick, so a handle reads as wood and not brown plastic. */
+function stickGrain(t: Tile, rows: readonly string[]): void {
+  const r = t.rng;
+  cells(rows, 'hmd', (x, y) => {
+    if (r() < 0.5) dab(t, x, y, (r() * 3) | 0, (r() * 3) | 0, 2, 1, -14);
+  });
+}
+
+// --- tools and weapons ----------------------------------------------------
+
+function toolIcon(rows: readonly string[], tier: ToolTier): Recipe {
+  const palette: Palette = { ...rampPalette(RAMPS[tier]), ...STICK, ...WRAP };
+  return (t) => {
+    paint(t, rows, palette);
+    stickGrain(t, rows);
+    finish(t, rows, tier);
+    rim(t);
   };
 }
 
-for (const [tier, head] of TOOL_TIERS) {
-  EQUIPMENT_ART[`sword_${tier}`] = swordTile(head);
+function swordIcon(tier: ToolTier): Recipe {
+  const r = RAMPS[tier];
+  const palette: Palette = { ...rampPalette(r), g: r.D, G: r.S, p: r.M, P: r.D, ...WRAP };
+  return (t) => {
+    paint(t, SWORD, palette);
+    finish(t, SWORD, tier, 'HLMD');
+    rim(t);
+  };
+}
+
+function armorIcon(rows: readonly string[], material: ArmorMaterial): Recipe {
+  const r = RAMPS[material];
+  const palette: Palette = { ...rampPalette(r), R: r.H };
+  return (t) => {
+    paint(t, rows, palette);
+    finish(t, rows, material);
+    rim(t);
+  };
+}
+
+const IRON = RAMPS.iron;
+
+function bucketIcon(contents: 'empty' | 'water' | 'lava'): Recipe {
+  const inside: Record<typeof contents, [RGB, RGB]> = {
+    empty: [[44, 46, 54], [70, 72, 82]],
+    water: [[64, 132, 222], [40, 96, 186]],
+    lava: [[255, 150, 40], [224, 84, 20]],
+  };
+  const [w, W] = inside[contents];
+  return (t) => {
+    paint(t, BUCKET, { ...rampPalette(IRON), k: IRON.D, w, W });
+    if (contents === 'water') cells(BUCKET, 'w', (x, y) => { if (x % 3 === 1) dab(t, x, y, 0, 1, 4, 1, 50); });
+    if (contents === 'lava') cells(BUCKET, 'wW', (x, y) => { if ((x + y) % 3 === 0) dab(t, x, y, 1, 1, 2, 2, 60); });
+    finish(t, BUCKET, 'iron');
+    rim(t);
+  };
+}
+
+// --- the table ------------------------------------------------------------
+
+export const TOOL_TIERS: readonly ToolTier[] = ['wood', 'stone', 'iron', 'diamond'];
+export const ARMOR_MATERIALS: readonly ArmorMaterial[] = ['leather', 'iron', 'diamond'];
+
+/** The map each tool kind is drawn from, keyed by its texture prefix. */
+export const TOOL_MAPS: Record<string, readonly string[]> = {
+  pickaxe: PICKAXE, axe: AXE, shovel: SHOVEL, hoe: HOE, hammer: HAMMER, sword: SWORD,
+};
+
+/** Which tiers each kind comes in. Hammers start at stone: no wooden sledge. */
+export const KIND_TIERS: Record<string, readonly ToolTier[]> = {
+  pickaxe: TOOL_TIERS, axe: TOOL_TIERS, shovel: TOOL_TIERS, hoe: TOOL_TIERS,
+  sword: TOOL_TIERS, hammer: ['stone', 'iron', 'diamond'],
+};
+
+/** Armour maps by slot, keyed the way the texture names are. */
+export const ARMOR_MAPS: Record<'head' | 'chest' | 'legs' | 'feet', readonly string[]> = {
+  head: HELMET, chest: CHEST, legs: LEGS, feet: BOOTS,
+};
+
+export const EQUIPMENT_ART: Record<string, Recipe> = {
+  bow: (t) => {
+    paint(t, BOW, { ...STICK, ...WRAP });
+    stickGrain(t, BOW);
+    rim(t);
+    // The string runs nock to nock, pulled taut: a fine line with no rim of
+    // its own. A unit thick, or outlined like the limbs, it reads as a
+    // second limb and the bow turns into a closed "D" of wood.
+    fineLine(t, 13.4, 2.6, 2.6, 13.4, [236, 232, 218], 2);
+  },
+  arrow: (t) => {
+    paint(t, ARROW, {
+      ...rampPalette(RAMPS.stone), ...STICK,
+      f: [240, 238, 232], F: [196, 192, 184], r: [204, 66, 52],
+    });
+    rim(t);
+  },
+  shears: (t) => {
+    paint(t, SHEARS, { ...rampPalette(IRON), r: [196, 58, 48], O: [70, 72, 80] });
+    rim(t);
+  },
+  bucket: bucketIcon('empty'),
+  bucket_water: bucketIcon('water'),
+  bucket_lava: bucketIcon('lava'),
+  flint_steel: (t) => {
+    paint(t, FLINT_STEEL, {
+      ...rampPalette(IRON),
+      c: [226, 216, 190], k: [98, 94, 102], K: [58, 54, 62],
+      y: [255, 214, 96], Y: [255, 248, 196], o: [255, 142, 40],
+    });
+    rim(t);
+  },
+  drill: (t) => {
+    paint(t, DRILL, {
+      H: [255, 176, 96], L: [238, 136, 54], M: [212, 104, 36], D: [158, 70, 24], S: [110, 46, 16],
+      c: [200, 204, 212], C: [140, 146, 158],
+      s: RAMPS.diamond.L, z: RAMPS.diamond.D, t: RAMPS.diamond.H, u: RAMPS.diamond.M,
+      g: [64, 60, 58], G: [40, 38, 38], b: [80, 84, 92], B: [52, 54, 60], y: [206, 60, 44],
+    });
+    rim(t);
+  },
+};
+
+for (const [kind, rows] of Object.entries(TOOL_MAPS)) {
+  for (const tier of KIND_TIERS[kind]) {
+    EQUIPMENT_ART[`${kind}_${tier}`] = kind === 'sword' ? swordIcon(tier) : toolIcon(rows, tier);
+  }
+}
+
+for (const material of ARMOR_MATERIALS) {
+  for (const [slot, rows] of Object.entries(ARMOR_MAPS)) {
+    EQUIPMENT_ART[`armor_${slot}_${material}`] = armorIcon(rows, material);
+  }
 }
