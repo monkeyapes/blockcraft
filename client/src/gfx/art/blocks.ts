@@ -1534,9 +1534,25 @@ function endSocket(t: Tile, filled: boolean): void {
 // geometry over dark metal rather than as a material, so they sit outside
 // the pixel-art kit above.
 
+/**
+ * The bare panel under every machine face: `base` metal mottled with `dark`
+ * in flat cells, plus a lighter tone of its own.
+ *
+ * Machines used to start from filtered noise at the rendered resolution.
+ * Next to terrain drawn on the 16-unit grid that read as a finer, fuzzier
+ * material than anything around it, so the panel now sits on the same grid
+ * while everything drawn over it -- arrows, gauges, fireboxes -- is exactly
+ * as it was.
+ */
+function casing(t: Tile, base: RGB, dark: RGB, alpha = 255): Tile {
+  const light: RGB = [base[0] + 10, base[1] + 10, base[2] + 8];
+  const mottle = bands(noiseField((t.rng() * 2 ** 31) | 0, [[8, 1], [4, 0.6]]), [0.3, 0.5, 0.2]);
+  return paint(t, mottle, [dark, base, light], alpha);
+}
+
 /** The belt surface every conveyor variant shares. */
 function beltBase(t: Tile): Tile {
-  t.fill([64, 64, 70], 5).patches(8, [52, 52, 58], 6, 3).posterize(9);
+  casing(t, [64, 64, 70], [52, 52, 58]);
   for (let y = 1; y < TILE; y += 4) t.blot(0, y, TILE, 2, [92, 92, 100], 4);
   for (let y = 2; y < TILE; y += 4) t.blot(0, y, TILE, 1, [40, 40, 46], 3);
   return t.border([36, 36, 42]);
@@ -1590,7 +1606,7 @@ const MACHINE_ART: Record<string, Recipe> = {
   conveyor: (t) => beltBase(t),
 
   collector_top: (t) => {
-    t.fill([64, 64, 70], 5).patches(8, [52, 52, 58], 6, 3).posterize(9);
+    casing(t, [64, 64, 70], [52, 52, 58]);
     t.border([36, 36, 42]);
     // A funnel: concentric rings stepping inward.
     t.rect(2, 2, 12, 12, [88, 88, 96]);
@@ -1598,14 +1614,14 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(6, 6, 4, 4, [30, 30, 34]);
   },
   collector_side: (t) => {
-    t.fill([64, 64, 70], 5).patches(8, [52, 52, 58], 6, 3).posterize(9);
+    casing(t, [64, 64, 70], [52, 52, 58]);
     t.border([36, 36, 42]);
     t.rect(2, 3, 12, 3, [88, 88, 96]);    // wide mouth
     t.rect(5, 6, 6, 4, [46, 46, 52]);     // tapering
     t.rect(6, 10, 4, 4, [30, 30, 34]);    // spout
   },
   stonegen_top: (t) => {
-    t.fill([74, 76, 86], 4).patches(8, [60, 62, 72], 5, 3).posterize(10);
+    casing(t, [74, 76, 86], [60, 62, 72]);
     t.border([42, 44, 52]);
     t.disc(7.5, 7.5, 4.6, [128, 128, 132], 6);   // the cast stone forming
     t.disc(7.5, 7.5, 2.6, [96, 96, 100], 5);
@@ -1613,7 +1629,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(6, 13, 4, 2, [206, 96, 40], 6);       // lava inlet
   },
   stonegen_side: (t) => {
-    t.fill([74, 76, 86], 4).patches(8, [60, 62, 72], 5, 3).posterize(10);
+    casing(t, [74, 76, 86], [60, 62, 72]);
     t.border([42, 44, 52]);
     t.rect(1, 5, 5, 6, [96, 140, 200], 6);       // water side
     t.rect(10, 5, 5, 6, [206, 96, 40], 6);       // lava side
@@ -1621,14 +1637,14 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(6, 4, 4, 1, [160, 160, 164], 4);
   },
   efurnace_top: (t) => {
-    t.fill([70, 74, 86], 4).patches(8, [58, 62, 72], 5, 3).posterize(10);
+    casing(t, [70, 74, 86], [58, 62, 72]);
     t.border([40, 42, 50]);
     t.rect(3, 3, 10, 10, [44, 48, 60], 4);
     t.rect(5, 5, 6, 6, [122, 214, 234], 7);      // element glow
     t.rect(6, 6, 4, 4, [200, 244, 252], 5);
   },
   efurnace_side: (t) => {
-    t.fill([70, 74, 86], 4).patches(8, [58, 62, 72], 5, 3).posterize(10);
+    casing(t, [70, 74, 86], [58, 62, 72]);
     t.border([40, 42, 50]);
     t.rect(3, 6, 10, 7, [40, 44, 56], 4);        // chamber
     t.rect(4, 8, 8, 3, [122, 214, 234], 8);      // coils, not flame
@@ -1637,7 +1653,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     for (let x = 5; x < 12; x += 2) t.rect(x, 2, 1, 3, [70, 70, 76]);
   },
   sawmill_top: (t) => {
-    t.fill([120, 92, 56], 5).patches(8, [100, 76, 46], 5, 3).posterize(10);
+    casing(t, [120, 92, 56], [100, 76, 46]);
     t.border([70, 52, 30]);
     t.rect(7, 0, 2, TILE, [186, 186, 194], 5);   // the blade, edge on
     for (let y = 0; y < TILE; y += 3) t.rect(6, y, 1, 2, [220, 220, 228]);
@@ -1645,7 +1661,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(11, 5, 3, 6, [150, 112, 66], 5);
   },
   sawmill_side: (t) => {
-    t.fill([120, 92, 56], 5).patches(8, [100, 76, 46], 5, 3).posterize(10);
+    casing(t, [120, 92, 56], [100, 76, 46]);
     t.border([70, 52, 30]);
     t.disc(8, 7, 5.0, [186, 186, 194], 5);       // circular blade
     t.disc(8, 7, 3.2, [120, 92, 56], 4);
@@ -1657,14 +1673,14 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(0, 12, TILE, 4, [96, 72, 44], 5);     // bench
   },
   compressor_top: (t) => {
-    t.fill([68, 70, 80], 4).patches(8, [56, 58, 68], 5, 3).posterize(10);
+    casing(t, [68, 70, 80], [56, 58, 68]);
     t.border([38, 40, 48]);
     t.rect(3, 3, 10, 10, [150, 150, 158], 5);    // the ram face
     t.rect(5, 5, 6, 6, [92, 94, 104], 5);
     t.rect(6, 6, 4, 4, [50, 52, 60], 4);
   },
   compressor_side: (t) => {
-    t.fill([68, 70, 80], 4).patches(8, [56, 58, 68], 5, 3).posterize(10);
+    casing(t, [68, 70, 80], [56, 58, 68]);
     t.border([38, 40, 48]);
     t.rect(4, 1, 8, 4, [150, 150, 158], 5);      // ram
     t.rect(6, 5, 4, 3, [110, 112, 122], 4);      // piston rod
@@ -1673,7 +1689,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     for (let x = 3; x < 14; x += 3) t.rect(x, 11, 1, 2, [60, 52, 20]);
   },
   quarry_top: (t) => {
-    t.fill([66, 68, 78], 4).patches(8, [54, 56, 66], 5, 3).posterize(10);
+    casing(t, [66, 68, 78], [54, 56, 66]);
     t.border([36, 38, 46]);
     // A gantry frame, which is what a quarry reads as from above.
     t.rect(1, 1, 14, 2, [178, 150, 54], 5);
@@ -1684,7 +1700,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(7, 7, 2, 2, [40, 42, 50], 3);
   },
   quarry_side: (t) => {
-    t.fill([66, 68, 78], 4).patches(8, [54, 56, 66], 5, 3).posterize(10);
+    casing(t, [66, 68, 78], [54, 56, 66]);
     t.border([36, 38, 46]);
     t.rect(1, 1, 14, 2, [178, 150, 54], 5);      // top rail
     t.rect(2, 3, 2, 10, [110, 112, 122], 4);     // legs
@@ -1694,13 +1710,13 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(7, 14, 2, 2, [60, 62, 70], 3);
   },
   waterwheel_top: (t) => {
-    t.fill([132, 100, 60], 5).patches(8, [110, 82, 48], 5, 3).posterize(10);
+    casing(t, [132, 100, 60], [110, 82, 48]);
     t.border([76, 56, 32]);
     t.rect(7, 0, 2, TILE, [150, 150, 158], 5);   // axle
     for (let y = 1; y < TILE; y += 4) t.rect(2, y, 12, 2, [150, 112, 66], 5);
   },
   waterwheel_side: (t) => {
-    t.fill([96, 140, 200], 6, 200);              // water showing through
+    casing(t, [96, 140, 200], [80, 122, 184], 200); // water showing through
     t.disc(8, 8, 7.2, [150, 112, 66], 6);        // wheel
     t.disc(8, 8, 5.4, [96, 140, 200], 6);
     for (let i = 0; i < 8; i++) {                // paddles
@@ -1712,14 +1728,14 @@ const MACHINE_ART: Record<string, Recipe> = {
   },
   // Booster: a pressure vessel with a gauge, glowing when live.
   booster_top: (t) => {
-    t.fill([72, 74, 84], 4).patches(8, [58, 60, 70], 5, 3).posterize(10);
+    casing(t, [72, 74, 84], [58, 60, 70]);
     t.border([40, 42, 50]);
     t.disc(7.5, 7.5, 4.6, [128, 132, 146], 5);
     t.disc(7.5, 7.5, 3.0, [40, 44, 54], 4);
     t.disc(7.5, 7.5, 1.6, [122, 214, 234], 6);   // the nV glow
   },
   booster_side: (t) => {
-    t.fill([72, 74, 84], 4).patches(8, [58, 60, 70], 5, 3).posterize(10);
+    casing(t, [72, 74, 84], [58, 60, 70]);
     t.border([40, 42, 50]);
     t.rect(2, 4, 12, 8, [50, 54, 64], 4);        // vessel
     t.rect(3, 5, 10, 2, [122, 214, 234], 7);     // charge window
@@ -1729,7 +1745,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(6, 12, 4, 2, [186, 160, 52], 5);      // gauge
   },
   solar_top: (t) => {
-    t.fill([28, 34, 58], 4).posterize(10);
+    casing(t, [28, 34, 58], [22, 28, 50]);
     // A grid of dark blue cells with a lit strip along each -- the pattern
     // is what makes it read as a panel rather than a slab of glass.
     for (let y = 1; y < 15; y += 4) {
@@ -1741,20 +1757,20 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.border([120, 124, 136]);
   },
   solar_side: (t) => {
-    t.fill([96, 100, 112], 4).patches(8, [80, 84, 94], 5, 3).posterize(10);
+    casing(t, [96, 100, 112], [80, 84, 94]);
     t.rect(0, 2, TILE, 3, [42, 62, 118], 5);   // the panel edge-on
     t.rect(0, 2, TILE, 1, [92, 132, 200], 4);
     t.border([56, 58, 66]);
   },
   battery_top: (t) => {
-    t.fill([64, 66, 74], 4).patches(8, [52, 54, 62], 5, 3).posterize(10);
+    casing(t, [64, 66, 74], [52, 54, 62]);
     t.border([36, 38, 44]);
     t.rect(3, 4, 4, 8, [186, 160, 52], 5);     // terminals
     t.rect(9, 4, 4, 8, [150, 150, 158], 5);
     t.rect(4, 6, 2, 4, [232, 208, 96], 4);
   },
   battery_side: (t) => {
-    t.fill([64, 66, 74], 4).patches(8, [52, 54, 62], 5, 3).posterize(10);
+    casing(t, [64, 66, 74], [52, 54, 62]);
     t.border([36, 38, 44]);
     t.rect(2, 2, 12, 10, [42, 44, 50], 4);     // cell body
     // Charge bars, the readable "this is a battery" cue.
@@ -1771,7 +1787,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.border([50, 52, 60]);
   },
   elevator_side: (t) => {
-    t.fill([88, 92, 102], 4).patches(8, [72, 76, 86], 5, 3).posterize(10);
+    casing(t, [88, 92, 102], [72, 76, 86]);
     t.border([48, 50, 58]);
     // Upward chevrons, so the direction of travel is obvious.
     for (let y = 1; y < 15; y += 5) {
@@ -1783,7 +1799,7 @@ const MACHINE_ART: Record<string, Recipe> = {
   // Generator: a furnace-like firebox with a flywheel, so it reads as the
   // thing producing power rather than another storage box.
   generator_top: (t) => {
-    t.fill([76, 76, 82], 4).patches(9, [62, 62, 68], 5, 3).posterize(9);
+    casing(t, [76, 76, 82], [62, 62, 68]);
     t.border([40, 40, 46]);
     t.disc(7.5, 7.5, 4.4, [150, 150, 158], 6);   // flywheel
     t.disc(7.5, 7.5, 2.4, [70, 70, 76], 4);
@@ -1795,7 +1811,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     }
   },
   generator_side: (t) => {
-    t.fill([76, 76, 82], 4).patches(9, [62, 62, 68], 5, 3).posterize(9);
+    casing(t, [76, 76, 82], [62, 62, 68]);
     t.border([40, 40, 46]);
     t.rect(3, 7, 10, 6, [48, 42, 38], 4);        // firebox
     t.rect(4, 8, 8, 4, [28, 24, 22], 3);
@@ -1806,7 +1822,7 @@ const MACHINE_ART: Record<string, Recipe> = {
   },
   // Crusher: opposed toothed rollers.
   crusher_top: (t) => {
-    t.fill([70, 70, 76], 4).patches(9, [58, 58, 64], 5, 3).posterize(9);
+    casing(t, [70, 70, 76], [58, 58, 64]);
     t.border([38, 38, 44]);
     t.rect(2, 4, 5, 8, [140, 140, 148], 5);      // rollers
     t.rect(9, 4, 5, 8, [140, 140, 148], 5);
@@ -1817,7 +1833,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(7, 2, 2, 12, [40, 40, 46], 3);        // the gap between them
   },
   crusher_side: (t) => {
-    t.fill([70, 70, 76], 4).patches(9, [58, 58, 64], 5, 3).posterize(9);
+    casing(t, [70, 70, 76], [58, 58, 64]);
     t.border([38, 38, 44]);
     t.rect(2, 2, 12, 3, [96, 96, 104], 5);       // hopper mouth
     t.rect(4, 5, 8, 2, [44, 44, 50], 3);
@@ -1828,13 +1844,13 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(5, 13, 6, 2, [178, 150, 54], 5);      // hazard band
   },
   miner_top: (t) => {
-    t.fill([72, 72, 78], 5).patches(8, [58, 58, 64], 6, 3).posterize(9);
+    casing(t, [72, 72, 78], [58, 58, 64]);
     t.border([38, 38, 44]);
     t.disc(7.5, 7.5, 4.5, [150, 150, 158], 8);   // drill collar
     t.disc(7.5, 7.5, 2.2, [58, 58, 64], 5);      // bore
   },
   miner_side: (t) => {
-    t.fill([72, 72, 78], 5).patches(8, [58, 58, 64], 6, 3).posterize(9);
+    casing(t, [72, 72, 78], [58, 58, 64]);
     t.border([38, 38, 44]);
     t.rect(3, 2, 10, 3, [188, 160, 54], 5);      // hazard stripe
     for (let x = 3; x < 13; x += 3) t.rect(x, 2, 1, 3, [60, 52, 20]);
@@ -1842,7 +1858,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.rect(7, 12, 2, 3, [96, 96, 104], 4);
   },
   sorter: (t) => {
-    t.fill([64, 64, 70], 5).patches(8, [52, 52, 58], 6, 3).posterize(4);
+    casing(t, [64, 64, 70], [52, 52, 58]);
     t.border([36, 36, 42]);
     // A big arrow, readable at block size, so its direction is obvious.
     const gold: RGB = [206, 182, 62];
@@ -1890,7 +1906,7 @@ const MACHINE_ART: Record<string, Recipe> = {
 
   tube: (t) => {
     // A glass pipe with a metal band, so cargo reads as travelling inside it.
-    t.fill([70, 78, 88], 5).patches(7, [58, 66, 76], 6, 3).posterize(10);
+    casing(t, [70, 78, 88], [58, 66, 76]);
     t.rect(4, 0, 8, TILE, [126, 148, 166], 6);      // the bore
     t.rect(4, 0, 1, TILE, [176, 200, 216], 4);      // lit edge
     t.rect(11, 0, 1, TILE, [78, 94, 110], 4);       // shadowed edge
@@ -1900,7 +1916,7 @@ const MACHINE_ART: Record<string, Recipe> = {
   },
 
   incinerator_top: (t) => {
-    t.fill([58, 52, 52], 5).patches(9, [46, 40, 40], 6, 3).posterize(6);
+    casing(t, [58, 52, 52], [46, 40, 40]);
     t.border([32, 28, 28]);
     // An open mouth with fire in it: unmistakably where things go to die.
     t.rect(3, 3, 10, 10, [26, 20, 18], 4);
@@ -1909,7 +1925,7 @@ const MACHINE_ART: Record<string, Recipe> = {
     t.blot(7, 11, 2, 2, [248, 214, 120], 3);
   },
   incinerator_side: (t) => {
-    t.fill([58, 52, 52], 5).patches(9, [46, 40, 40], 6, 3).posterize(6);
+    casing(t, [58, 52, 52], [46, 40, 40]);
     t.border([32, 28, 28]);
     t.rect(2, 2, 12, 3, [150, 62, 26], 5);          // hazard band
     for (let x = 3; x < 14; x += 3) t.rect(x, 2, 1, 3, [40, 26, 20]);
@@ -1918,7 +1934,7 @@ const MACHINE_ART: Record<string, Recipe> = {
   },
 
   cable: (t) => {
-    t.fill([52, 48, 56], 5).patches(8, [42, 38, 46], 6, 3).posterize(12);
+    casing(t, [52, 48, 56], [42, 38, 46]);
     t.rect(0, 6, TILE, 4, [168, 118, 54], 6);   // copper run across the block
     t.rect(0, 6, TILE, 1, [206, 156, 84], 4);   // lit top edge
     t.rect(0, 9, TILE, 1, [112, 74, 34], 4);    // shadowed underside

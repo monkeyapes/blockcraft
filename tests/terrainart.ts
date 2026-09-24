@@ -17,6 +17,7 @@
  * long as the picture keeps these properties.
  */
 
+import { BLOCK_ART } from '../client/src/gfx/art/blocks.js';
 import { renderTile } from '../client/src/gfx/atlas.js';
 import { TILE, TILE_PX } from '../client/src/gfx/tile.js';
 
@@ -156,10 +157,18 @@ const MATERIALS = [
 
 // --- pixel art on the grid ----------------------------------------------------
 
+// The terrain and material tiles all come from the block art module, which
+// is what the rest of this file is testing.
+const OWNED = Object.keys(BLOCK_ART);
+check('every terrain and material tile is drawn by art/blocks.ts',
+  TERRAIN.every((name) => OWNED.includes(name)), TERRAIN.filter((n) => !OWNED.includes(n)).join(', '));
+
 // Every unit is one flat colour. Filtered noise at the rendered resolution
 // is exactly the "mush" these tiles replaced: it averages to one flat tone a
-// few blocks away, where flat 16-unit cells still read.
-for (const name of TERRAIN) {
+// few blocks away, where flat 16-unit cells still read. This holds for the
+// machines the module draws too, so a factory floor sits on the same grid
+// as the ground under it.
+for (const name of OWNED) {
   const { mixed } = cells(name);
   check(`${name}: drawn in flat cells on the 16-unit grid`, mixed === 0, `${mixed} mixed cells`);
 }
