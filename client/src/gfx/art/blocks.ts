@@ -917,22 +917,28 @@ const IRON: Ramp = [
 ];
 
 const QUARTZ: Ramp = [
-  [168, 158, 184], [198, 190, 206], [226, 222, 214], [238, 235, 226], [252, 249, 234],
+  [176, 168, 188], [204, 198, 214], [226, 222, 214], [238, 235, 226], [252, 249, 234],
 ];
 
-/** A closed wandering line across the tile, as one y per column, that ends where it began. */
-function vein(rng: () => number, y0: number): number[] {
-  const ys: number[] = [];
-  let y = y0;
-  for (let x = 0; x < TILE; x++) {
-    ys.push(y);
-    const left = TILE - 1 - x;
-    const drift = y - y0;
-    // Steer home in time to meet the start on the far edge.
-    if (Math.abs(drift) >= left) y -= Math.sign(drift);
-    else if (rng() < 0.45) y += rng() < 0.5 ? 1 : -1;
+/**
+ * A short vein wandering diagonally from a random start, as cells.
+ *
+ * Short on purpose. A vein that crossed the whole tile met its own copy in
+ * the next block, and a wall of them turned into ruled lines; a few
+ * fragments that stop partway read as natural flaws in the stone.
+ */
+function vein(rng: () => number, from: readonly [number, number]): Array<[number, number]> {
+  const cells: Array<[number, number]> = [];
+  let x = Math.floor(from[0]);
+  let y = Math.floor(from[1]);
+  const fall = rng() < 0.5 ? 1 : -1;
+  const len = 5 + ((rng() * 4) | 0);
+  for (let k = 0; k < len; k++) {
+    cells.push([x, y]);
+    x++;
+    if (rng() < 0.45) y += fall;
   }
-  return ys;
+  return cells;
 }
 
 const MATERIAL_ART: Record<string, Recipe> = {
@@ -978,12 +984,13 @@ const MATERIAL_ART: Record<string, Recipe> = {
   quartz: (t) => {
     const rng = mulberry32(nameSeed('quartz'));
     const g = bands(noiseField(nameSeed('quartz'), [[4, 1], [8, 0.4]]), [0.3, 0.5, 0.2]).map((v) => v + 2);
-    for (const y0 of [3, 10]) {
-      const ys = vein(rng, y0);
-      ys.forEach((y, x) => {
-        if (rng() < 0.85) g.set(x, y, rng() < 0.3 ? 0 : 1);
-        g.set(x, y - 1, Math.max(g.get(x, y - 1), 3));
-      });
+    for (const start of jittered(rng, 2, 2, 0.8).slice(0, 3)) {
+      // A hairline, darkest where it is deepest, with the polished face
+      // just above it catching the light.
+      for (const [x, y] of vein(rng, [start[0] - 3, start[1]])) {
+        g.set(x, y, rng() < 0.15 ? 0 : 1);
+        if (g.get(x, y - 1) > 1) g.set(x, y - 1, Math.max(g.get(x, y - 1), 3));
+      }
     }
     for (let i = 0; i < 4; i++) g.set((rng() * TILE) | 0, (rng() * TILE) | 0, 4);
     paint(t, g, QUARTZ);
@@ -1315,15 +1322,18 @@ const DIMENSION_ART: Record<string, Recipe> = {
   // snaking through.
   netherrack: (t) => {
     const rng = mulberry32(nameSeed('netherrack'));
-    const g = bands(noiseField(nameSeed('netherrack'), [[4, 1], [8, 0.7], [16, 0.35]]),
+    // Fine-grained like stone, for the same reason: the nether is walls of
+    // this in every direction, and one big blotch per tile would stamp a
+    // visible grid across all of them.
+    const g = bands(noiseField(nameSeed('netherrack'), [[8, 1], [16, 0.6], [4, 0.45]]),
       [0.06, 0.28, 0.36, 0.22, 0.08]);
     const light = emboss(g);
     const out = g.map((v, x, y) => (v >= 2 && light.get(x, y) > 0 ? Math.min(4, v + 1) : v));
     for (let i = 0; i < 3; i++) {
       let x = (rng() * TILE) | 0;
       let y = (rng() * TILE) | 0;
-      for (let k = 0; k < 5; k++) {
-        out.set(x, y, 0);
+      for (let k = 0; k < 4; k++) {
+        out.set(x, y, k === 0 || k === 3 ? 1 : 0);
         out.set(x + 1, y + 1, Math.min(4, out.get(x + 1, y + 1) + 1));
         if (rng() < 0.5) x++;
         else y++;
