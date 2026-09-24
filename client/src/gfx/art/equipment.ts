@@ -305,7 +305,7 @@ export const EQUIPMENT_ART: Record<string, Recipe> = {
   arrow: (t) => {
     paint(t, ARROW, {
       ...rampPalette(RAMPS.stone), ...STICK,
-      f: [240, 238, 232], F: [196, 192, 184], r: [204, 66, 52],
+      f: [240, 236, 226], F: [200, 194, 182], r: [198, 60, 48], R: [232, 104, 84],
     });
     rim(t);
   },

@@ -159,4 +159,4 @@ for (const name of ITEMS) {
 }
 
 console.log(failures === 0 ? '\nAll item-art checks passed.' : `\n${failures} FAILED`);
-process.exit(failures === 0 ? 0 : 1);
+process.exitCode = failures === 0 ? 0 : 1;

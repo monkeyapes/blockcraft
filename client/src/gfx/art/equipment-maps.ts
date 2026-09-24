@@ -56,10 +56,10 @@ export const PICKAXE: readonly string[] = [
 export const AXE: readonly string[] = [
   '................',
   '...HL...........',
-  '..HMML....LLLM..',
+  '..HMML....LLM...',
   '..HMMMLLLLMMMD..',
-  '..HMMMMMMMMMMD..',
-  '..HMMMMD..DDD...',
+  '..HMMMMMMMMMD...',
+  '..HMMMMD..DD....',
   '..HMMMMD.bb.....',
   '..HMMMD.hm......',
   '...HMD.hm.......',
@@ -74,13 +74,13 @@ export const AXE: readonly string[] = [
 
 export const SHOVEL: readonly string[] = [
   '................',
-  '...........HLL..',
-  '..........HLLMM.',
+  '............HL..',
+  '..........HLLLM.',
   '.........HLLHMD.',
   '........HLLHMMD.',
-  '........LLHMMD..',
-  '.........LHMD...',
-  '.........DDS....',
+  '........LLHMMDD.',
+  '........LHMMDS..',
+  '.........DDSS...',
   '........hm......',
   '.......hm.......',
   '......hm........',
@@ -175,7 +175,7 @@ export const BOW: readonly string[] = [
   '................',
 ];
 
-/** Stone head, a one-unit shaft, feathers (f F) with a red cock feather (r). */
+/** Stone head, a one-unit shaft, one white vane (f F) and one red (r R). */
 export const ARROW: readonly string[] = [
   '................',
   '...........DMLH.',
@@ -186,11 +186,11 @@ export const ARROW: readonly string[] = [
   '.........h......',
   '........h.......',
   '.......h........',
-  '....f.h.........',
-  '...ffh..........',
-  '..rFhFr.........',
-  '...hFf..........',
-  '..d.f...........',
+  '.....Fh.........',
+  '...fFhr.........',
+  '..ffhrr.........',
+  '..fhrR..........',
+  '..drR...........',
   '................',
   '................',
 ];
@@ -300,7 +300,7 @@ export const DRILL: readonly string[] = [
 export const HELMET: readonly string[] = [
   '................',
   '................',
-  '.....HHLLL......',
+  '.....HHLLLM.....',
   '...HHLLLLMMMD...',
   '..HLLLMMMMMMMD..',
   '.HLLMMMMMMMMMMD.',
@@ -321,8 +321,8 @@ export const CHEST: readonly string[] = [
   '..HLL......LLM..',
   '..HLMM....MMMD..',
   '.HLMMMD..DMMMMD.',
+  '.LMMMMD..DMMMMD.',
   '.LMMMMMDDMMMMMD.',
-  '.LMMMMMMMMMMMMD.',
   '.DDDLMMMMMMDDDD.',
   '....LMMDMMMD....',
   '....LMMDMMMD....',
