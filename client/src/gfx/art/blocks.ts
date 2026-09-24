@@ -951,11 +951,11 @@ const MATERIAL_ART: Record<string, Recipe> = {
   // machine's casing is this tile, and it has to sit quietly under them.
   iron_block: (t) => {
     const g = new Grid(3);
-    for (let y = 0; y < TILE; y++) {
-      for (let x = 0; x < TILE; x++) {
+    // One short glint across the panel's upper-left, where the light lands.
+    for (let y = 4; y < 12; y++) {
+      for (let x = 4; x < 12; x++) {
         const d = x + y;
-        if (d >= 8 && d <= 10) g.set(x, y, 4);
-        if (d >= 18 && d <= 19) g.set(x, y, 4);
+        if (d >= 11 && d <= 12) g.set(x, y, 4);
       }
     }
     for (let i = 0; i < TILE; i++) {
