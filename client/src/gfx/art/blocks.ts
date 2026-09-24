@@ -54,10 +54,6 @@ export class Grid {
     this.v[wrap(y) * TILE + wrap(x)] = value;
   }
 
-  add(x: number, y: number, delta: number): void {
-    this.v[wrap(y) * TILE + wrap(x)] += delta;
-  }
-
   map(fn: (value: number, x: number, y: number) => number): Grid {
     const out = new Grid();
     for (let y = 0; y < TILE; y++) {
@@ -130,12 +126,11 @@ export function emboss(height: Grid): Grid {
   return height.map((h, x, y) => Math.sign(h - height.get(x - 1, y - 1)));
 }
 
-/** Colours every cell from its level on the ramp; NaN cells are left alone. */
+/** Colours every cell from its level on the ramp, clamped to the ramp's ends. */
 export function paint(t: Tile, levels: Grid, ramp: Ramp, alpha = 255): Tile {
   for (let y = 0; y < TILE; y++) {
     for (let x = 0; x < TILE; x++) {
       const v = levels.get(x, y);
-      if (Number.isNaN(v)) continue;
       const [r, g, b] = ramp[Math.max(0, Math.min(ramp.length - 1, Math.round(v)))];
       t.set(x, y, r, g, b, alpha);
     }
@@ -178,7 +173,7 @@ interface Cells {
   margin: Float32Array;
 }
 
-function voronoi(points: ReadonlyArray<readonly [number, number]>, stretchY = 1): Cells {
+function voronoi(points: ReadonlyArray<readonly [number, number]>): Cells {
   const owner = new Int16Array(TILE * TILE);
   const margin = new Float32Array(TILE * TILE);
   for (let y = 0; y < TILE; y++) {
@@ -190,7 +185,7 @@ function voronoi(points: ReadonlyArray<readonly [number, number]>, stretchY = 1)
         let dx = Math.abs(x + 0.5 - px) % TILE;
         let dy = Math.abs(y + 0.5 - py) % TILE;
         dx = Math.min(dx, TILE - dx);
-        dy = Math.min(dy, TILE - dy) * stretchY;
+        dy = Math.min(dy, TILE - dy);
         const d = Math.hypot(dx, dy);
         if (d < best) {
           second = best;
@@ -461,7 +456,13 @@ const TERRAIN_ART: Record<string, Recipe> = {
     const field = noiseField(nameSeed('bedrock'), [[8, 1], [4, 0.6], [16, 0.45]]);
     const g = bands(field, [0.24, 0.26, 0.26, 0.24]);
     const light = emboss(g);
-    paint(t, g.map((v, x, y) => Math.max(0, Math.min(4, v + (light.get(x, y) > 0 && v >= 2 ? 1 : light.get(x, y) < 0 ? -1 : 0)))), BEDROCK);
+    // The pale chunks get a lit rim; every edge falling away drops into the
+    // void below it.
+    paint(t, g.map((v, x, y) => {
+      const l = light.get(x, y);
+      if (l > 0 && v >= 2) return v + 1;
+      return l < 0 ? v - 1 : v;
+    }), BEDROCK);
   },
 };
 
@@ -756,7 +757,7 @@ const ORE_ART: Record<string, Recipe> = {
     ore(t, [[150, 96, 22], [222, 170, 40], [250, 216, 78], [255, 246, 176]], deposits);
   },
 
-  // Diamond: faceted crystals, each a small cross with a white-hot centre.
+  // Diamond: faceted crystals, rhombus-cut, each with a white-hot facet.
   diamond_ore: (t) => {
     const rng = mulberry32(nameSeed('diamond_ore'));
     // One large crystal and a few small ones: the big rhombus is what reads
@@ -867,7 +868,6 @@ const GLOW_ART: Record<string, Recipe> = {
   },
 };
 
-
 // --- building materials --------------------------------------------------
 
 /**
@@ -936,7 +936,7 @@ function vein(rng: () => number, from: readonly [number, number]): Array<[number
   for (let k = 0; k < len; k++) {
     cells.push([x, y]);
     x++;
-    if (rng() < 0.45) y += fall;
+    if (rng() < 0.6) y += fall;
   }
   return cells;
 }
@@ -1257,7 +1257,7 @@ const FURNITURE_ART: Record<string, Recipe> = {
     const WHITE: Ramp = [[150, 150, 170], [196, 198, 210], [226, 228, 234], [246, 246, 248]];
     const FRAME: Ramp = [[66, 42, 30], [110, 76, 46], [144, 106, 64], [170, 130, 82]];
     for (let x = 0; x < TILE; x++) {
-      for (let y = 0; y < 16; y++) {
+      for (let y = 0; y < TILE; y++) {
         let c: RGB;
         if (y < 9) c = RED[y === 0 ? 3 : y === 8 ? 1 : 2];
         else if (y < 11) c = WHITE[y === 9 ? 2 : 1];
@@ -1371,7 +1371,13 @@ const DIMENSION_ART: Record<string, Recipe> = {
     const gap = (x: number, y: number): boolean => margin[wrap(y) * TILE + wrap(x)] < 0.5;
     const light = pieceLight(owner, gap);
     const tone = pts.map(() => 1 + ((rng() * 2) | 0));
-    const g = new Grid().map((_, x, y) => (gap(x, y) ? 0 : tone[owner[y * TILE + x]] + light.get(x, y) * (light.get(x, y) > 0 ? 2 : 1)));
+    // Glass is all highlight or nothing: a lit edge jumps two levels, a
+    // shadowed one only drops one.
+    const g = new Grid().map((_, x, y) => {
+      if (gap(x, y)) return 0;
+      const l = light.get(x, y);
+      return tone[owner[y * TILE + x]] + (l > 0 ? 2 : l);
+    });
     for (let i = 0; i < 3; i++) {
       const x = (rng() * TILE) | 0;
       const y = (rng() * TILE) | 0;
@@ -1394,8 +1400,13 @@ const DIMENSION_ART: Record<string, Recipe> = {
     const PORTAL: Ramp = [[46, 12, 96], [78, 26, 146], [112, 48, 192], [152, 86, 228], [204, 150, 252]];
     const warpA = noiseField(nameSeed('portal'), [[4, 1], [8, 0.5]]);
     const warpB = noiseField(nameSeed('portal') + 17, [[4, 1], [8, 0.5]]);
-    const field = new Grid().map((_, x, y) =>
-      Math.sin(((x + warpA.get(x, y) * 7) / 8) * Math.PI * 2 + ((y + warpB.get(x, y) * 7) / 16) * Math.PI * 2));
+    // Diagonal bands, pushed around by two noise fields. The band repeats
+    // every 8 across and 16 down -- both divide the tile, so it still wraps.
+    const field = new Grid().map((_, x, y) => {
+      const u = (x + warpA.get(x, y) * 7) / 8;
+      const v = (y + warpB.get(x, y) * 7) / 16;
+      return Math.sin((u + v) * Math.PI * 2);
+    });
     paint(t, bands(field, [0.14, 0.26, 0.3, 0.2, 0.1]), PORTAL, 210);
   },
 
@@ -1441,15 +1452,15 @@ const DIMENSION_ART: Record<string, Recipe> = {
   end_portal: (t) => {
     const SKY: Ramp = [[6, 6, 20], [16, 12, 44], [34, 24, 82], [60, 46, 124]];
     const rng = mulberry32(nameSeed('end_portal'));
-    paint(t, bands(noiseField(nameSeed('end_portal'), [[4, 1], [8, 0.5]]), [0.55, 0.25, 0.14, 0.06]), SKY, 240);
+    const clouds = bands(noiseField(nameSeed('end_portal'), [[4, 1], [8, 0.5]]), [0.55, 0.25, 0.14, 0.06]);
+    paint(t, clouds, SKY, 240);
     for (let i = 0; i < 9; i++) {
       const x = (rng() * TILE) | 0;
       const y = (rng() * TILE) | 0;
       const bright = i < 3;
       dot(t, x, y, bright ? [236, 240, 255] : [150, 170, 220], 240);
-      if (bright) {
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) dot(t, x + dx, y + dy, [96, 104, 176], 240);
-      }
+      if (!bright) continue;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) dot(t, x + dx, y + dy, [96, 104, 176], 240);
     }
   },
 

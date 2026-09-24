@@ -53,13 +53,10 @@ function cells(name: string): Cells {
       const first: RGBA = [px[i], px[i + 1], px[i + 2], px[i + 3]];
       c.push(first);
       let flat = true;
-      for (let dy = 0; dy < K && flat; dy++) {
+      for (let dy = 0; dy < K; dy++) {
         for (let dx = 0; dx < K; dx++) {
           const j = ((y * K + dy) * size + x * K + dx) * 4;
-          if (px[j] !== first[0] || px[j + 1] !== first[1] || px[j + 2] !== first[2] || px[j + 3] !== first[3]) {
-            flat = false;
-            break;
-          }
+          for (let ch = 0; ch < 4; ch++) if (px[j + ch] !== first[ch]) flat = false;
         }
       }
       if (!flat) mixed++;
@@ -325,7 +322,8 @@ for (const name of LOOKALIKES) {
   const [what, test] = SIGNATURES[name];
   const imposters = LOOKALIKES.filter((other) => other !== name && test(structure(other)));
   check(`${name}: reads as ${what}`, test(s),
-    `network ${s.network.toFixed(2)} thickness ${s.thickness.toFixed(2)} grain ${s.grain.toFixed(2)} contrast ${s.contrast.toFixed(2)} palette ${s.palette}`);
+    `network ${s.network.toFixed(2)} thickness ${s.thickness.toFixed(2)} grain ${s.grain.toFixed(2)} ` +
+    `contrast ${s.contrast.toFixed(2)} palette ${s.palette}`);
   check(`${name}: no other grey stone shares that signature`, imposters.length === 0,
     imposters.join(', '));
 }
@@ -405,17 +403,19 @@ for (const name of LOOKALIKES) {
 {
   const { c } = cells('ladder');
   const clear = c.filter((p) => p[3] === 0).length;
-  check('ladder: see-through between the rails and rungs', clear >= 100 && clear <= 200, `${clear} clear cells`);
+  check('ladder: see-through between the rails and rungs', clear >= 100 && clear <= 200,
+    `${clear} clear cells`);
   // Rails run the full height; rungs repeat every four rows so a tall
   // ladder stacks without a hitch at each block.
-  const railsSolid = [2, 3, 12, 13].every((x) => [...Array(TILE).keys()].every((y) => c[at(x, y)][3] === 255));
-  check('ladder: two rails run the full height', railsSolid);
+  const rows = [...Array(TILE).keys()];
+  const solid = (x: number, y: number) => c[at(x, y)][3] === 255;
+  check('ladder: two rails run the full height', [2, 3, 12, 13].every((x) => rows.every((y) => solid(x, y))));
   let periodic = true;
   for (let y = 0; y < TILE; y++) {
     for (let x = 0; x < TILE; x++) if (c[at(x, y)][3] !== c[at(x, y + 4)][3]) periodic = false;
   }
   check('ladder: rungs repeat every four rows', periodic);
-  const rungRows = [...Array(TILE).keys()].filter((y) => [...Array(8).keys()].every((i) => c[at(4 + i, y)][3] === 255));
+  const rungRows = rows.filter((y) => [4, 5, 6, 7, 8, 9, 10, 11].every((x) => solid(x, y)));
   check('ladder: has rungs spanning the rails', rungRows.length >= 4, `rows ${rungRows.join(',')}`);
 }
 
@@ -441,10 +441,10 @@ for (const name of LOOKALIKES) {
   const flame = [at(7, 6), at(8, 6), at(7, 7), at(8, 7)].map((i) => c[i]);
   check('torch: rows 6-7 burn bright and warm',
     flame.every((p) => lum(p) >= 150 && p[0] >= p[2] + 50), flame.map(key).join(' | '));
-  const wood = [];
+  const wood: RGBA[] = [];
   for (let y = 9; y < TILE; y++) wood.push(c[at(7, y)], c[at(8, y)]);
-  check('torch: rows 9-15 are wood', wood.every((p) => p[0] > p[1] && p[1] > p[2] && lum(p) >= 50 && lum(p) <= 150),
-    `${wood.filter((p) => !(p[0] > p[1] && p[1] > p[2])).length} non-brown`);
+  const brown = (p: RGBA) => p[0] > p[1] && p[1] > p[2] && lum(p) >= 50 && lum(p) <= 150;
+  check('torch: rows 9-15 are wood', wood.every(brown), `${wood.filter((p) => !brown(p)).length} not wood`);
   const top = [at(7, 7), at(8, 7), at(7, 8), at(8, 8)].map((i) => c[i]);
   check('torch: the 2x2 top face is flame and ember, not bare wood',
     top.every((p) => p[0] >= 190 && p[0] >= p[2] + 120), top.map(key).join(' | '));
@@ -479,25 +479,26 @@ for (const name of LOOKALIKES) {
       if (mask[i] || key(p) === key(stone[i])) return;
       if (lum(p) >= lum(stone[i])) foreign++;
     });
-    check(`${name}: set into the stone block's own surface`, foreign === 0, `${foreign} cells neither stone nor shadow`);
+    check(`${name}: set into the stone block's own surface`, foreign === 0,
+      `${foreign} cells neither stone nor shadow`);
   }
 
   const median = (a: number[]) => [...a].sort((x, y) => x - y)[a.length >> 1];
+  // A deposit near an edge carries on from the far side; shift the wrapped
+  // part back beside the rest so its shape is measured whole. Deposits are
+  // far smaller than half a tile, so a group touching both edges is one
+  // that wraps.
+  const unwrap = (v: number[]) =>
+    v.includes(0) && v.includes(TILE - 1) ? v.map((n) => (n < TILE / 2 ? n + TILE : n)) : v;
   const shapeOf = (g: number[]) => {
-    const xs = g.map((q) => q % TILE);
-    const ys = g.map((q) => (q / TILE) | 0);
-    // Deposits never straddle the wrap in a way that matters here; unwrap
-    // by taking the span as seen.
+    const xs = unwrap(g.map((q) => q % TILE));
+    const ys = unwrap(g.map((q) => (q / TILE) | 0));
     const w = Math.max(...xs) - Math.min(...xs) + 1;
     const h = Math.max(...ys) - Math.min(...ys) + 1;
-    const set = new Set(g.map((q) => `${q % TILE},${(q / TILE) | 0}`));
+    const set = new Set(xs.map((x, i) => `${x},${ys[i]}`));
     const cx = (Math.max(...xs) + Math.min(...xs)) / 2;
     const cy = (Math.max(...ys) + Math.min(...ys)) / 2;
-    const quarterTurn = g.every((q) => {
-      const x = q % TILE - cx;
-      const y = ((q / TILE) | 0) - cy;
-      return set.has(`${cx - y},${cy + x}`);
-    });
+    const quarterTurn = xs.every((x, i) => set.has(`${cx - (ys[i] - cy)},${cy + (x - cx)}`));
     // Elongation along the deposit's own principal axis, so a vein running
     // on the diagonal -- whose bounding box is square -- still counts as long.
     const mx = xs.reduce((a, b) => a + b, 0) / g.length;
@@ -517,17 +518,22 @@ for (const name of LOOKALIKES) {
   };
   const shapes = Object.fromEntries(ORES.map((n) => [n, deposits[n].groups.map(shapeOf)]));
   type Shape = ReturnType<typeof shapeOf>;
+  const size = (s: Shape[]) => median(s.map((d) => d.size));
+  const stretch = (s: Shape[]) => median(s.map((d) => d.elongation));
+  const fill = (s: Shape[]) => median(s.map((d) => d.fill));
+  const crystals = (s: Shape[]) => s.filter((d) => d.quarterTurn && d.fill < 0.7 && d.size >= 5).length;
   const TRAITS: Record<string, [string, (s: Shape[]) => boolean]> = {
-    coal_ore: ['big blocky lumps', (s) => median(s.map((d) => d.size)) >= 7 && median(s.map((d) => d.elongation)) < 1.6],
-    iron_ore: ['many small round nuggets', (s) => s.length >= 6 && median(s.map((d) => d.size)) <= 4 && median(s.map((d) => d.fill)) === 1],
-    gold_ore: ['long thin veins', (s) => median(s.map((d) => d.elongation)) >= 1.6 && median(s.map((d) => d.fill)) < 0.6],
-    diamond_ore: ['cut crystals', (s) => s.filter((d) => d.quarterTurn && d.fill < 0.7 && d.size >= 5).length >= s.length * 0.75],
+    coal_ore: ['big blocky lumps', (s) => size(s) >= 7 && stretch(s) < 1.6],
+    iron_ore: ['many small round nuggets', (s) => s.length >= 6 && size(s) <= 4 && fill(s) === 1],
+    gold_ore: ['long thin veins', (s) => stretch(s) >= 1.6 && fill(s) < 0.6],
+    diamond_ore: ['cut crystals', (s) => crystals(s) >= s.length * 0.75],
   };
+  const describe = (d: Shape) =>
+    `${d.size}c/${d.elongation.toFixed(1)}e/${d.fill.toFixed(2)}f${d.quarterTurn ? '/sym' : ''}`;
   for (const name of ORES) {
     const [what, test] = TRAITS[name];
     const others = ORES.filter((o) => o !== name && test(shapes[o]));
-    check(`${name}: deposits are ${what}`, test(shapes[name]),
-      shapes[name].map((d) => `${d.size}c/${d.elongation.toFixed(1)}e/${d.fill.toFixed(2)}f${d.quarterTurn ? '/sym' : ''}`).join(' '));
+    check(`${name}: deposits are ${what}`, test(shapes[name]), shapes[name].map(describe).join(' '));
     check(`${name}: no other ore's deposits share that shape`, others.length === 0, others.join(', '));
   }
   for (let i = 0; i < ORES.length; i++) {
@@ -555,7 +561,8 @@ for (const name of LOOKALIKES) {
   check('lava: opaque', lava.every((p) => p[3] === 255));
   const hot = lava.filter((p) => lum(p) >= 170).length;
   const crust = lava.filter((p) => lum(p) <= 80).length;
-  check('lava: glowing seams and cooled crust both show', hot >= 8 && crust >= 12, `${hot} hot, ${crust} crust cells`);
+  check('lava: glowing seams and cooled crust both show', hot >= 8 && crust >= 12,
+    `${hot} hot, ${crust} crust cells`);
   check('lava: never blue', lava.every((p) => p[0] > p[2] + 60));
 
   const glow = cells('glowstone').c;
