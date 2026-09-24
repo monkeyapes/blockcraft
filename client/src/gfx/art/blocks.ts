@@ -238,7 +238,7 @@ function pieceLight(owner: Int16Array, gap: (x: number, y: number) => boolean): 
 // Seeds for surfaces other tiles have to match exactly: every ore sits in
 // the same stone as the stone block, and the soil under a grass block's
 // fringe is the dirt block, so a grass block over dirt shows no join.
-const STONE_SEED = 7301;
+const STONE_SEED = 555;
 const DIRT_SEED = 4409;
 
 const STONE: Ramp = [
@@ -246,7 +246,7 @@ const STONE: Ramp = [
 ];
 
 const DIRT: Ramp = [
-  [70, 45, 42], [96, 65, 47], [119, 84, 58], [139, 102, 70], [158, 122, 86],
+  [66, 42, 48], [94, 64, 50], [119, 84, 58], [140, 103, 68], [160, 124, 82],
 ];
 
 const GRASS: Ramp = [
@@ -256,28 +256,32 @@ const GRASS: Ramp = [
 /**
  * The stone surface, as levels on STONE.
  *
- * Soft drifts of lighter and darker rock, flattened sideways the way strata
- * lie, each with a crisp lit rim and a shadowed underside. The drifts are
- * what read as "rock" at a distance; the rims stop them melting into fog up
- * close.
+ * Small irregular patches of lighter and darker rock, two or three units
+ * across and spread evenly, most of them with a lit rim or a shadowed edge.
+ *
+ * Evenness matters more here than anywhere else. Stone is the surface a
+ * player sees most, hundreds of repeats at once, and one big feature per
+ * tile -- the first version had a single broad drift -- turns a hillside
+ * into wallpaper with the same blotch stamped every block. Many small
+ * features at similar weight repeat without a focal point to catch.
  */
 function stoneLevels(): Grid {
-  const field = noiseField(STONE_SEED, [[4, 1], [8, 0.5], [16, 0.22]], 2);
-  const g = bands(field, [0.22, 0.52, 0.26]).map((v) => v + 1);
+  const field = noiseField(STONE_SEED, [[8, 1], [16, 0.6], [4, 0.3]]);
+  const g = bands(field, [0.2, 0.56, 0.24]).map((v) => v + 1);
   const light = emboss(g);
   const rng = mulberry32(STONE_SEED);
   const out = g.map((v, x, y) => {
     const l = light.get(x, y);
-    if (v === 3 && l > 0) return 4;
-    if (v === 1 && l < 0) return 0;
+    if (v === 3 && l > 0 && rng() < 0.7) return 4;
+    if (v === 1 && l < 0 && rng() < 0.5) return 0;
     return v;
   });
-  // A few lone flecks of darker mineral, which is what gives the surface a
-  // grain up close without breaking the drifts.
-  for (let i = 0; i < 5; i++) {
+  // Lone flecks of mineral give the surface a grain up close without
+  // adding anything big enough to repeat visibly.
+  for (let i = 0; i < 6; i++) {
     const x = (rng() * TILE) | 0;
     const y = (rng() * TILE) | 0;
-    if (out.get(x, y) === 2) out.set(x, y, 1);
+    if (out.get(x, y) === 2) out.set(x, y, rng() < 0.6 ? 1 : 3);
   }
   return out;
 }
@@ -290,14 +294,14 @@ function drawDirt(t: Tile): void {
   paint(t, g, DIRT);
   // Pebbles: pale grit sitting proud of the soil, each with a dark crumb
   // under its lower-right corner.
-  const PEBBLE: Ramp = [[74, 60, 58], [128, 118, 108], [158, 148, 132]];
+  const PEBBLE: Ramp = [[128, 116, 108], [166, 150, 124]];
   for (let i = 0; i < 6; i++) {
     const x = (rng() * TILE) | 0;
     const y = (rng() * TILE) | 0;
     const wide = rng() < 0.5;
-    dot(t, x, y, PEBBLE[2]);
-    if (wide) dot(t, x + 1, y, PEBBLE[1]);
-    dot(t, x + (wide ? 2 : 1), y + 1, PEBBLE[0]);
+    dot(t, x, y, PEBBLE[1]);
+    if (wide) dot(t, x + 1, y, PEBBLE[0]);
+    dot(t, x + (wide ? 2 : 1), y + 1, DIRT[0]);
     dot(t, x + (wide ? 1 : 0), y + 1, DIRT[0]);
   }
   // Root threads: short dark strands wandering diagonally.
@@ -306,7 +310,7 @@ function drawDirt(t: Tile): void {
     let y = (rng() * TILE) | 0;
     const dir = rng() < 0.5 ? 1 : -1;
     for (let s = 0; s < 3; s++) {
-      dot(t, x, y, [70, 44, 34]);
+      dot(t, x, y, DIRT[0]);
       x += dir;
       y += rng() < 0.6 ? 1 : 0;
     }
@@ -433,7 +437,7 @@ const TERRAIN_ART: Record<string, Recipe> = {
 
   sand: (t) => {
     const SAND: Ramp = [
-      [178, 146, 98], [202, 178, 124], [220, 201, 146], [232, 218, 168], [244, 236, 196],
+      [156, 128, 114], [198, 174, 128], [220, 201, 146], [233, 218, 164], [246, 236, 186],
     ];
     const rng = mulberry32(nameSeed('sand'));
     const field = noiseField(nameSeed('sand'), [[8, 1], [16, 0.8]], 2);
@@ -454,7 +458,7 @@ const TERRAIN_ART: Record<string, Recipe> = {
     const BEDROCK: Ramp = [
       [16, 16, 24], [40, 40, 50], [70, 70, 78], [104, 103, 106], [140, 138, 134],
     ];
-    const field = noiseField(nameSeed('bedrock'), [[4, 1], [8, 0.7], [16, 0.4]]);
+    const field = noiseField(nameSeed('bedrock'), [[8, 1], [4, 0.6], [16, 0.45]]);
     const g = bands(field, [0.24, 0.26, 0.26, 0.24]);
     const light = emboss(g);
     paint(t, g.map((v, x, y) => Math.max(0, Math.min(4, v + (light.get(x, y) > 0 && v >= 2 ? 1 : light.get(x, y) < 0 ? -1 : 0)))), BEDROCK);
@@ -584,14 +588,16 @@ const WOOD_ART: Record<string, Recipe> = {
           continue;
         }
         if (edge === 1) {
-          dot(t, x, y, WOOD[4]);
+          // Sapwood: pale just inside the bark, lit on the top and left.
+          dot(t, x, y, WOOD[x === 1 || y === 1 ? 4 : 3]);
           continue;
         }
         const dx = Math.abs(x - 7.5);
         const dy = Math.abs(y - 7.5);
         const d = (Math.hypot(dx, dy) + Math.max(dx, dy)) / 2 + wobble.get(x, y) * 1.6;
-        const ring = Math.floor(d / 1.45);
-        dot(t, x, y, WOOD[ring % 2 === 0 ? 3 : 2]);
+        // Each year is a wide pale band and a thin dark line.
+        const ring = d / 1.6;
+        dot(t, x, y, WOOD[ring - Math.floor(ring) < 0.34 ? 1 : ring % 2 < 1 ? 3 : 2]);
       }
     }
     for (const [x, y] of [[7, 7], [8, 7], [7, 8], [8, 8]]) dot(t, x, y, WOOD[1]);
@@ -708,12 +714,12 @@ const ORE_ART: Record<string, Recipe> = {
           cells.push([ax + x, ay + y]);
         }
       }
-      cells.push([ax + 1 + ((rng() * 2) | 0), ay + 3]);
-      return { cells, glint: [ax + 1, ay + 1] };
+      cells.push([ax + (rng() < 0.5 ? 1 : w - 2), ay + 3]);
+      return { cells, glint: cells[0] };
     });
     // Matte black: the lit face is barely lifted, so the lump stays one
     // solid mass and the glint alone says "hard and shiny".
-    ore(t, [[10, 10, 14], [28, 28, 34], [40, 40, 50], [118, 118, 136]], deposits);
+    ore(t, [[10, 10, 14], [28, 28, 34], [54, 54, 66], [116, 116, 134]], deposits);
   },
 
   // Iron: clusters of small rounded nuggets, rusty tan.
@@ -733,17 +739,18 @@ const ORE_ART: Record<string, Recipe> = {
   // Gold: thin bright veins running on the diagonal.
   gold_ore: (t) => {
     const rng = mulberry32(nameSeed('gold_ore'));
-    const deposits = anchors(rng, 3).map(([ax, ay]): Deposit => {
+    const deposits = anchors(rng, 4).map(([ax, ay]): Deposit => {
       const cells: Array<[number, number]> = [];
       const down = rng() < 0.5;
       let x = ax;
       let y = ay + (down ? 0 : 4);
-      for (let k = 0; k < 6; k++) {
+      for (let k = 0; k < 7; k++) {
         cells.push([x, y]);
+        // Thickened in the middle, so the vein swells and thins like a seam.
+        if (k >= 2 && k <= 4) cells.push([x, y + 1]);
         if (k % 2 === 0) x++;
         else y += down ? 1 : -1;
       }
-      cells.push([x, y]);
       return { cells, glint: cells[2] };
     });
     ore(t, [[150, 96, 22], [222, 170, 40], [250, 216, 78], [255, 246, 176]], deposits);
@@ -752,13 +759,19 @@ const ORE_ART: Record<string, Recipe> = {
   // Diamond: faceted crystals, each a small cross with a white-hot centre.
   diamond_ore: (t) => {
     const rng = mulberry32(nameSeed('diamond_ore'));
-    const deposits = anchors(rng, 3).map(([ax, ay]): Deposit => {
-      const cx = ax + 1;
-      const cy = ay + 1;
-      return {
-        cells: [[cx, cy - 1], [cx - 1, cy], [cx, cy], [cx + 1, cy], [cx, cy + 1]],
-        glint: [cx, cy],
-      };
+    // One large crystal and a few small ones: the big rhombus is what reads
+    // from across a cave, the small ones keep it from looking stamped.
+    const deposits = anchors(rng, 4).map(([ax, ay], i): Deposit => {
+      const cx = ax + 2;
+      const cy = ay + 2;
+      const reach = i === 0 ? 2 : 1;
+      const cells: Array<[number, number]> = [];
+      for (let dy = -reach; dy <= reach; dy++) {
+        for (let dx = -reach; dx <= reach; dx++) {
+          if (Math.abs(dx) + Math.abs(dy) <= reach) cells.push([cx + dx, cy + dy]);
+        }
+      }
+      return { cells, glint: [cx - (reach - 1), cy - (reach - 1)] };
     });
     ore(t, [[18, 100, 112], [58, 192, 198], [128, 238, 232], [232, 255, 252]], deposits);
   },
@@ -896,7 +909,7 @@ function brickwork(
 }
 
 const BRICK: Ramp = [
-  [80, 34, 40], [118, 48, 44], [146, 64, 52], [170, 86, 64], [192, 112, 84],
+  [72, 28, 46], [116, 46, 46], [146, 64, 52], [172, 88, 62], [198, 116, 78],
 ];
 
 const IRON: Ramp = [
@@ -904,7 +917,7 @@ const IRON: Ramp = [
 ];
 
 const QUARTZ: Ramp = [
-  [184, 174, 168], [208, 201, 192], [226, 222, 212], [237, 234, 227], [248, 247, 242],
+  [168, 158, 184], [198, 190, 206], [226, 222, 214], [238, 235, 226], [252, 249, 234],
 ];
 
 /** A closed wandering line across the tile, as one y per column, that ends where it began. */
@@ -924,7 +937,7 @@ function vein(rng: () => number, y0: number): number[] {
 
 const MATERIAL_ART: Record<string, Recipe> = {
   brick: (t) => {
-    brickwork(t, nameSeed('brick'), BRICK, [[112, 102, 100], [150, 142, 134], [180, 174, 164]], [8, 8], 4, 4);
+    brickwork(t, nameSeed('brick'), BRICK, [[108, 100, 104], [152, 142, 130], [186, 176, 154]], [8, 8], 4, 4);
   },
 
   // A worked metal plate: a bevelled rim, a pressed inner panel, a rivet in
@@ -968,7 +981,7 @@ const MATERIAL_ART: Record<string, Recipe> = {
     for (const y0 of [3, 10]) {
       const ys = vein(rng, y0);
       ys.forEach((y, x) => {
-        if (rng() < 0.85) g.set(x, y, 1);
+        if (rng() < 0.85) g.set(x, y, rng() < 0.3 ? 0 : 1);
         g.set(x, y - 1, Math.max(g.get(x, y - 1), 3));
       });
     }
@@ -1007,18 +1020,33 @@ const FURNITURE_ART: Record<string, Recipe> = {
   // corner caps, and a lighter board surface -- the grid is what says
   // "craft here" at a glance.
   crafting_top: (t) => {
-    const g = plankLevels(nameSeed('crafting_top')).map((v) => Math.min(4, v + 1));
+    // One smooth slab rather than boards: seams under the grid made it
+    // read as a lattice of lines rather than a surface with a grid on it.
+    const rng = mulberry32(nameSeed('crafting_top'));
+    const g = new Grid(3);
+    for (let i = 0; i < 9; i++) {
+      const x = (rng() * TILE) | 0;
+      const y = (rng() * TILE) | 0;
+      const len = 2 + ((rng() * 4) | 0);
+      for (let k = 0; k < len; k++) g.set(x + k, y, i % 3 === 0 ? 4 : 2);
+    }
     paint(t, g, PLANK);
     frame(t, PLANK, 2, 0);
+    // The grid is cut into the top, so each groove's lower-right lip is lit.
     for (let i = 1; i < TILE - 1; i++) {
       for (const k of [5, 10]) {
         dot(t, k, i, PLANK[0]);
         dot(t, i, k, PLANK[0]);
-        dot(t, k + 1, i, PLANK[4]);
-        dot(t, i, k + 1, PLANK[4]);
       }
     }
-    for (const k of [5, 10]) for (const j of [5, 10]) dot(t, k, j, PLANK[0]);
+    for (let i = 1; i < TILE - 1; i++) {
+      for (const k of [5, 10]) {
+        if (i !== 5 && i !== 10) {
+          dot(t, k + 1, i, PLANK[4]);
+          dot(t, i, k + 1, PLANK[4]);
+        }
+      }
+    }
     const BRASS: Ramp = [[112, 78, 30], [178, 138, 52], [226, 190, 92]];
     for (const [x, y] of [[0, 0], [14, 0], [0, 14], [14, 14]]) {
       dot(t, x, y, BRASS[2]);
@@ -1205,8 +1233,9 @@ const FURNITURE_ART: Record<string, Recipe> = {
         } else if (y < 8) {
           dot(t, x, y, WHITE[y === 6 ? 3 : 2]);      // the turned-down sheet
         } else {
-          // Quilting: a diamond stitch pattern across the blanket.
-          const stitch = (x + y) % 4 === 0 || (x - y + 16) % 4 === 0;
+          // Quilting: a loose diamond of running stitches across the blanket.
+          const onLine = (x + y) % 6 === 0 || (x - y + 18) % 6 === 0;
+          const stitch = onLine && x % 2 === 0;
           dot(t, x, y, RED[y === 8 ? 3 : stitch ? 1 : 2]);
         }
       }
@@ -1248,7 +1277,7 @@ const OBSIDIAN: Ramp = [
 ];
 
 const END_STONE: Ramp = [
-  [146, 144, 104], [180, 179, 128], [206, 205, 150], [223, 222, 168], [238, 238, 192],
+  [124, 130, 110], [174, 176, 130], [206, 205, 150], [224, 222, 166], [244, 242, 186],
 ];
 
 const END_TEAL: Ramp = [[26, 52, 54], [44, 82, 76], [66, 114, 98], [96, 148, 122], [134, 182, 150]];
@@ -1477,9 +1506,12 @@ function endSocket(t: Tile, filled: boolean): void {
   dot(t, 6, 6, EYE[4]);
 }
 
-
-
-const OLD_STONE: RGB = [128, 128, 128];
+// --- machines ------------------------------------------------------------
+//
+// Machines keep the look they already had: a player has learned to read a
+// conveyor's arrow or a battery's charge bars, and those are drawn as hard
+// geometry over dark metal rather than as a material, so they sit outside
+// the pixel-art kit above.
 
 /** The belt surface every conveyor variant shares. */
 function beltBase(t: Tile): Tile {
@@ -1531,238 +1563,11 @@ function conveyorTile(dx: number, dz: number) {
   };
 }
 
-/** The stone every ore is embedded in, kept in one place so they match. */
-function oldStoneBase(t: Tile): Tile {
-  return t.fill(OLD_STONE, 4)
-    .patches(14, [108, 108, 111], 4, 3)
-    .patches(10, [146, 146, 149], 4, 3);
-}
-
-const LEGACY_ART: Record<string, Recipe> = {
-  grass_top: (t) => t.fill([106, 158, 64], 6)
-    .patches(20, [80, 126, 46], 6, 3)
-    .patches(14, [132, 186, 84], 6, 2)
-    .patches(7, [62, 102, 36], 5, 2)
-    .posterize(12),
-  grass_side: (t) => t.fill([134, 96, 67], 9)
-    .patches(16, [110, 78, 52], 10, 3)
-    .patches(10, [152, 112, 80], 10, 2)
-    .posterize(9)
-    .fringe([106, 158, 64]),
-  dirt: (t) => t.fill([134, 96, 67], 9)
-    .patches(20, [110, 78, 52], 10, 3)
-    .patches(12, [152, 112, 80], 10, 2)
-    .posterize(9),
-  // Stone is the most repeated surface in the game, so it has to hold up
-  // both close and at distance: broad tonal patches read from far off, a
-  // few dark pits give it something to catch the eye up close.
-  //
-  // Posterize steps have to be chosen against the material's own tonal
-  // range, not picked by habit. Stone spans about 100-155, and at 5 steps
-  // every band is 64 wide -- the whole range landed in one band and came
-  // out flatter than the version this replaced. Subtle materials need finer
-  // steps to stay quantised without being erased.
-  stone: (t) => t.fill([124, 124, 127], 4)
-    .patches(18, [100, 100, 103], 4, 3)
-    .patches(13, [152, 152, 155], 4, 3)
-    .patches(7, [86, 86, 89], 4, 2)
-    .posterize(9),
-  // Distinct rounded stones with dark gaps between them -- the thing that
-  // separates cobble from plain stone at a glance.
-  cobble: (t) => {
-    t.fill([88, 88, 90], 5);                       // mortar showing through
-    t.patches(13, [132, 132, 136], 12, 4);          // the stones themselves
-    t.patches(9, [108, 108, 112], 10, 3);
-    t.patches(7, [152, 152, 156], 8, 2);            // lit tops
-    t.posterize(9);
-  },
-  sand: (t) => t.fill([222, 210, 162], 7)
-    .patches(18, [206, 193, 144], 6, 2)
-    .patches(10, [236, 226, 184], 6, 2)
-    .posterize(4),
-  gravel: (t) => {
-    t.fill([116, 110, 106], 6);
-    t.patches(16, [140, 134, 128], 10, 3);
-    t.patches(12, [92, 88, 84], 10, 2);
-    t.patches(8, [162, 156, 150], 8, 2);
-    t.posterize(5);
-  },
-  bedrock: (t) => {
-    t.fill([74, 74, 78], 4);
-    t.patches(9, [44, 44, 48], 5, 4);
-    t.patches(7, [108, 108, 114], 5, 4);
-    t.patches(4, [26, 26, 30], 4, 3);
-    t.posterize(8);
-  },
-  log_side: (t) => t.fill([112, 86, 52], 4)
-    .patches(12, [84, 62, 36], 4, 2)
-    .patches(8, [140, 110, 70], 4, 2)
-    .woodGrain(0.45, -22)
-    .posterize(10),
-  // Concentric rings drawn as explicit alternating bands. The old smooth
-  // radial gradient beat against the pixel grid into a plaid moire, and
-  // posterising it afterwards only quantised the moire.
-  log_top: (t) => {
-    t.fill([150, 118, 72], 5);
-    for (let y = 0; y < TILE; y++) {
-      for (let x = 0; x < TILE; x++) {
-        const d = Math.hypot(x - 7.5, y - 7.5);
-        const band = Math.floor(d / 1.6);
-        const tone: RGB = band % 2 === 0 ? [166, 132, 84] : [128, 100, 60];
-        const j = (t.rng() * 2 - 1) * 5;
-        t.set(x, y, tone[0] + j, tone[1] + j, tone[2] + j);
-      }
-    }
-    t.blot(7, 7, 2, 2, [104, 80, 48], 4);  // heartwood
-    t.border([120, 94, 56]);               // bark edge
-  },
-  // Leaves need gaps to read as foliage rather than a green wall; the dark
-  // patches stand in for the shadowed depth between them.
-  leaves: (t) => t.fill([66, 122, 48], 10)
-    .patches(24, [44, 88, 34], 12, 3)
-    .patches(16, [88, 148, 62], 12, 2)
-    .patches(8, [30, 62, 24], 8, 2)
-    .posterize(5),
-  planks: (t) => {
-    t.fill([172, 136, 82], 6);
-    // Per-board tone variation, so the boards read as separate pieces of
-    // wood rather than one sheet with lines scored across it.
-    for (let board = 0; board < 4; board++) {
-      const d = [0, -14, 8, -6][board];
-      t.blot(0, board * 4, TILE, 4, [172 + d, 136 + d, 82 + d], 5);
-    }
-    t.planks(-34);
-    t.posterize(9);
-  },
-  brick: (t) => t.fill([150, 74, 60], 7).courses([176, 172, 166]).posterize(5),
-  glass: (t) => {
-    // Mostly empty, with a frame and a diagonal glint -- glass reads by its
-    // edges and its highlight, not by any fill.
-    t.fill([214, 236, 244], 0, 18);
-    t.border([228, 242, 250], 235);
-    t.line(3, 11, 10, 4, [255, 255, 255], 1);
-    t.line(5, 12, 9, 8, [255, 255, 255], 1);
-  },
-  // Water is seen through, so it stays smooth -- chunky patches read as
-  // debris floating in it rather than as a moving surface.
-  water: (t) => t.fill([58, 110, 200], 5, 170)
-    .patches(6, [46, 94, 186], 4, 5)
-    .patches(4, [78, 130, 216], 4, 4)
-    .posterize(14),
-  glowstone: (t) => t.fill([196, 158, 80], 5)
-    .patches(9, [230, 198, 116], 6, 3)
-    .patches(6, [252, 238, 172], 5, 2)
-    .patches(7, [158, 120, 54], 6, 3)
-    .posterize(8),
-  torch: (t) => {
-    // Drawn on transparent so it reads as a torch rather than a block.
-    t.rect(7, 6, 2, 10, [138, 100, 58], 6);   // stick
-    t.rect(6, 3, 4, 4, [86, 74, 62], 4);      // coal head
-    t.rect(6, 2, 4, 2, [252, 206, 96], 10);   // flame
-    t.rect(7, 1, 2, 2, [255, 240, 170], 8);
-  },
-
-  // Every ore is the same stone base with its own vein colour, so they read
-  // as the same rock with different things in it.
-  coal_ore: (t) => oldStoneBase(t).oreVein([38, 38, 40], 4).posterize(10),
-  iron_ore: (t) => oldStoneBase(t).oreVein([196, 152, 118], 4).posterize(10),
-  gold_ore: (t) => oldStoneBase(t).oreVein([238, 198, 76], 4).posterize(10),
-  diamond_ore: (t) => oldStoneBase(t).oreVein([104, 222, 222], 4).posterize(10),
-  // A worked metal panel: near-flat, with a soft sheen rather than the
-  // speckling that suits rock. Scattered light flecks read as dirt on it.
-  iron_block: (t) => t.fill([206, 206, 212], 3)
-    .patches(6, [194, 194, 200], 3, 4)
-    .patches(4, [222, 222, 228], 3, 3)
-    .posterize(12)
-    .border([176, 176, 182]),
-  quartz: (t) => t.fill([226, 222, 210], 4)
-    .patches(14, [200, 195, 182], 4, 3)
-    .patches(9, [246, 244, 238], 4, 2)
-    .posterize(12),
-
-  // Deliberately unlike plain planks: a dark worktop with a marked-out grid,
-  // and sides showing a tool rack, so it reads at a glance.
-  crafting_top: (t) => {
-    t.fill([124, 92, 54], 6).patches(10, [104, 76, 44], 6, 3).posterize(4);
-    const line: RGB = [56, 38, 20];
-    for (let i = 0; i < TILE; i++) {
-      t.set(i, 5, ...line);
-      t.set(i, 10, ...line);
-      t.set(5, i, ...line);
-      t.set(10, i, ...line);
-    }
-    t.border([74, 52, 30]);
-  },
-  crafting_side: (t) => {
-    t.fill([150, 116, 68], 6).planks(-30).posterize(4);
-    t.rect(2, 2, 12, 6, [92, 66, 38], 4);       // dark tool-rack panel
-    // A saw blade: a bar with teeth, which survives being 12px wide in a way
-    // the old crossed hammer-and-saw lines did not.
-    t.rect(3, 4, 10, 2, [198, 198, 204], 5);
-    for (let x = 3; x < 13; x += 2) t.set(x, 6, 198, 198, 204);
-    t.rect(3, 3, 4, 1, [140, 100, 56]);         // its handle
-    t.border([74, 52, 30]);
-  },
-  furnace_top: (t) => t.fill([112, 112, 116], 4)
-    .patches(12, [94, 94, 98], 5, 3)
-    .patches(8, [134, 134, 138], 5, 3)
-    .posterize(12),
-  furnace_front: (t) => {
-    t.fill([112, 112, 116], 4).patches(10, [94, 94, 98], 5, 3).posterize(9);
-    t.rect(3, 6, 10, 7, [52, 44, 40], 4);      // firebox recess
-    t.rect(4, 7, 8, 5, [30, 24, 22], 3);       // its dark interior
-    t.rect(4, 10, 8, 2, [206, 108, 34], 8);    // embers glowing at the base
-    t.rect(5, 11, 6, 1, [244, 176, 60], 10);
-  },
+const MACHINE_ART: Record<string, Recipe> = {
   // Machines read as machines through hard geometry -- panel, rivets, a
   // direction -- rather than through a decorative repeating lattice.
   conveyor: (t) => beltBase(t),
 
-  // Chest, collector and miner: machine faces built from hard geometry so
-  // each is identifiable at a glance in a wall of similar grey boxes.
-  // A ladder: two rails with rungs between them, drawn on transparent so the
-  // wall behind shows through the gaps.
-  ladder: (t) => {
-    const wood: RGB = [148, 108, 62];
-    const dark: RGB = [104, 74, 40];
-    t.rect(2, 0, 2, TILE, wood, 6);          // left rail
-    t.rect(12, 0, 2, TILE, wood, 6);         // right rail
-    t.rect(2, 0, 1, TILE, dark, 4);          // rail shading
-    t.rect(12, 0, 1, TILE, dark, 4);
-    for (let y = 2; y < TILE; y += 4) {      // rungs, spaced to tile vertically
-      t.rect(4, y, 8, 2, wood, 5);
-      t.rect(4, y + 1, 8, 1, dark, 3);
-    }
-  },
-  bed_top: (t) => {
-    t.rect(0, 0, TILE, 5, [232, 232, 236], 6);   // pillow
-    t.rect(0, 5, TILE, 11, [186, 58, 54], 7);    // blanket
-    t.rect(0, 5, TILE, 1, [140, 40, 38], 4);     // fold line
-    t.patches(8, [166, 46, 44], 5, 3);
-    t.posterize(10);
-  },
-  bed_side: (t) => {
-    t.rect(0, 0, TILE, 4, [186, 58, 54], 7);     // blanket edge
-    t.rect(0, 4, TILE, 3, [232, 232, 236], 6);   // mattress
-    t.rect(0, 7, TILE, 9, [136, 100, 58], 7);    // wooden frame
-    t.rect(0, 7, TILE, 1, [98, 70, 38], 4);
-    t.rect(1, 13, 3, 3, [98, 70, 38], 4);        // legs
-    t.rect(12, 13, 3, 3, [98, 70, 38], 4);
-    t.posterize(10);
-  },
-  chest_top: (t) => {
-    t.fill([148, 108, 58], 5).patches(9, [124, 88, 46], 5, 3).posterize(9);
-    t.border([78, 54, 28]);
-    t.rect(6, 6, 4, 4, [176, 148, 62]);   // latch plate
-    t.rect(7, 7, 2, 2, [92, 74, 30]);
-  },
-  chest_side: (t) => {
-    t.fill([148, 108, 58], 5).patches(9, [124, 88, 46], 5, 3).posterize(9);
-    t.border([78, 54, 28]);
-    t.rect(0, 6, TILE, 2, [78, 54, 28]);  // lid seam
-    t.rect(6, 5, 4, 5, [176, 148, 62]);   // clasp
-    t.rect(7, 7, 2, 2, [60, 46, 20]);     // keyhole
-  },
   collector_top: (t) => {
     t.fill([64, 64, 70], 5).patches(8, [52, 52, 58], 6, 3).posterize(9);
     t.border([36, 36, 42]);
@@ -2098,70 +1903,12 @@ const LEGACY_ART: Record<string, Recipe> = {
     t.rect(0, 9, TILE, 1, [112, 74, 34], 4);    // shadowed underside
     for (let x = 2; x < TILE; x += 5) t.blot(x, 5, 2, 6, [96, 96, 104], 5); // clamps
   },
-
-  netherrack: (t) => t.fill([116, 46, 44], 5)
-    .patches(18, [82, 28, 28], 5, 3)
-    .patches(13, [150, 66, 62], 5, 3)
-    .patches(7, [58, 18, 18], 5, 2)
-    .posterize(9),
-  soul_sand: (t) => {
-    t.fill([88, 68, 56], 6).patches(14, [72, 54, 44], 8, 3).posterize(4);
-    // The sunken hollows that give the block its name.
-    for (const [hx, hy] of [[3, 4], [10, 3], [6, 10], [12, 11]] as const) {
-      t.blot(hx, hy, 3, 3, [54, 40, 32], 5);
-      t.blot(hx + 1, hy + 1, 1, 1, [38, 28, 22], 3);
-    }
-  },
-  // Mostly molten rock with a bit of crust and only a few bright veins --
-  // flooding it with yellow loses the deep red that says "lava".
-  lava: (t) => t.fill([198, 74, 18], 7)
-    .patches(11, [228, 118, 26], 8, 4)
-    .patches(9, [128, 40, 12], 8, 3)     // cooled crust
-    .patches(4, [250, 196, 66], 6, 2)    // the hot veins
-    .posterize(8),
-  obsidian: (t) => t.fill([26, 20, 38], 4)
-    .patches(9, [40, 30, 58], 5, 4)
-    .patches(4, [58, 44, 88], 4, 2)
-    .patches(5, [14, 10, 22], 4, 3)
-    .posterize(8),
-  nether_brick: (t) => t.fill([70, 34, 38], 4).courses([50, 24, 28]).posterize(10),
-  // Portals are chaotic light, not a tidy spiral: broken bright patches over
-  // a dark field read far better than a regular swirl repeating across a frame.
-  portal: (t) => t.fill([78, 28, 140], 10, 220)
-    .patches(20, [128, 54, 206], 16, 3)
-    .patches(14, [176, 104, 240], 16, 2)
-    .patches(10, [48, 14, 92], 12, 3)
-    .posterize(5),
-
-  end_stone: (t) => t.fill([218, 220, 168], 6)
-    .patches(16, [198, 200, 148], 8, 3)
-    .patches(10, [238, 240, 194], 6, 2)
-    .posterize(9),
-  end_frame_top: (t) => t.fill([218, 220, 168], 6)
-    .patches(10, [198, 200, 148], 6, 3).posterize(9).border([120, 148, 116]),
-  end_frame_side: (t) => t.fill([196, 198, 150], 6)
-    .patches(10, [176, 178, 132], 6, 3).posterize(9).courses([150, 156, 118], 8, 8),
-  // A night sky: mostly deep black, a few faint nebulae, sparse stars.
-  end_portal: (t) => t.fill([10, 8, 28], 4, 240)
-    .patches(8, [34, 22, 82], 8, 4)
-    .patches(4, [72, 54, 140], 6, 2)
-    .patches(5, [210, 224, 244], 4, 1)   // the starfield glints
-    .posterize(8),
-  end_frame_eye: (t) => {
-    t.fill([196, 198, 150], 6).patches(8, [176, 178, 132], 6, 3).posterize(4);
-    t.border([120, 148, 116]);
-    t.disc(7.5, 7.5, 4, [42, 132, 122], 10);
-    t.disc(7.5, 7.5, 2, [220, 240, 160], 8);
-  },
-  // A C-shaped steel striker over a wedge of flint, with sparks between
-  // them -- the two parts and the spark are what name the item.
-  purpur: (t) => t.fill([170, 124, 172], 6)
-    .patches(16, [150, 104, 152], 8, 3)
-    .patches(10, [192, 150, 194], 6, 2)
-    .posterize(9),
 };
 
-export const BLOCK_ART: Record<string, Recipe> = { ...LEGACY_ART, ...TERRAIN_ART, ...WOOD_ART, ...ORE_ART, ...GLOW_ART, ...MATERIAL_ART, ...FURNITURE_ART, ...DIMENSION_ART };
+export const BLOCK_ART: Record<string, Recipe> = {
+  ...TERRAIN_ART, ...WOOD_ART, ...ORE_ART, ...GLOW_ART, ...MATERIAL_ART, ...FURNITURE_ART,
+  ...DIMENSION_ART, ...MACHINE_ART,
+};
 
 BLOCK_ART.conveyor_n = conveyorTile(0, -1);
 BLOCK_ART.conveyor_e = conveyorTile(1, 0);
