@@ -90,15 +90,18 @@ function cropDrops(crop: CropKind, stage: number): DropFn {
 /**
  * A crop is four thin planes in a '#', the way a row of stalks looks from
  * any side, rather than the X a flower uses: a field of them lines up into
- * rows instead of a haze. Each plane is a zero-thickness box, so the mesher
- * draws it from both sides and the sprite's transparent texels drop out.
- * They run the full height; the sprite decides how tall the plant looks.
+ * rows instead of a haze. Each plane is a box a hair thick, so the mesher
+ * draws both of its faces -- the plant shows from either side -- and the
+ * sprite's transparent texels drop out. (Not quite zero: a box with no
+ * volume is refused as degenerate.) They run the full height; the sprite
+ * decides how tall the plant looks.
  */
+const HAIR = 1 / 1024;
 const CROP_PLANES: Box[] = [
-  px(4, 0, 0, 4, 16, 16),
-  px(12, 0, 0, 12, 16, 16),
-  px(0, 0, 4, 16, 16, 4),
-  px(0, 0, 12, 16, 16, 12),
+  px(4, 0, 0, 4 + HAIR, 16, 16),
+  px(12 - HAIR, 0, 0, 12, 16, 16),
+  px(0, 0, 4, 16, 16, 4 + HAIR),
+  px(0, 0, 12 - HAIR, 16, 16, 12),
 ];
 
 function cropShape(height: number): ShapeEntry {
