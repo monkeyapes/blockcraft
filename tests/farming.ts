@@ -54,7 +54,7 @@ interface Fake extends GameContext {
 /** The parts of the player the trample watch reads. */
 interface FakePlayer {
   x: number; y: number; z: number; vy: number;
-  onGround: boolean; flying: boolean; sneaking?: boolean;
+  onGround: boolean; flying: boolean; isSneaking?: boolean;
 }
 
 function fakeGame(seed = 1): Fake {
@@ -298,7 +298,7 @@ function landing(vy: number, opts: { sneaking?: boolean; flying?: boolean } = {}
   g.put(0, Y + 1, 0, Block.Wheat2);
   const p = g.player as unknown as FakePlayer;
   p.x = 0.5; p.z = 0.5; p.y = Y + 15 / 16;
-  p.sneaking = opts.sneaking ?? false;
+  p.isSneaking = opts.sneaking ?? false;
   p.flying = opts.flying ?? false;
   // A frame in the air, falling, then the frame the physics lands it.
   p.onGround = true; p.vy = 0;

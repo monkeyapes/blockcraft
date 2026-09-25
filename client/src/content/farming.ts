@@ -209,8 +209,7 @@ export function createTrampleWatch(): { update(ctx: GameContext): void; reset():
       wasOnGround = p.onGround;
       lastVy = p.vy;
       if (!landed || p.flying || impact > -TRAMPLE_SPEED) return;
-      // Player keeps `sneaking` private; it is read here rather than widened.
-      if ((p as unknown as { sneaking?: boolean }).sneaking) return;
+      if (p.isSneaking) return;
       const x = Math.floor(p.x);
       const y = Math.floor(p.y - 0.25);
       const z = Math.floor(p.z);

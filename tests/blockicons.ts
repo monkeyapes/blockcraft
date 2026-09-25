@@ -192,8 +192,13 @@ const se = extent(stone);
 {
   const blank: string[] = [];
   let models = 0;
+  let considered = 0;
   for (const d of BLOCKS) {
     if (!d || d.id === Block.Air) continue;
+    // States of one thing with no creative tab -- a crop's growth stages, an
+    // open door -- never sit in an inventory, so they need no icon.
+    if (d.family && !d.category) continue;
+    considered++;
     const px = renderBlockIcon(d.id, tiles);
     if (blockIconKind(d.id, tiles) === 'model') models++;
     let opaque = 0;
@@ -201,7 +206,7 @@ const se = extent(stone);
     if (opaque < N * N * 0.03) blank.push(d.name);
   }
   check('every block renders a visible icon', blank.length === 0, blank.join(', '));
-  check('most blocks are drawn as models', models > (BLOCKS.filter(Boolean).length - 1) * 0.7, `${models} models`);
+  check('most blocks are drawn as models', models > considered * 0.7, `${models} models of ${considered} inventory blocks`);
 }
 
 // --- the browser cache -----------------------------------------------------

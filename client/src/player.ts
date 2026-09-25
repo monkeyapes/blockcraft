@@ -145,6 +145,11 @@ export class Player {
   contactDamage = 0;
   private sneaking = false;
 
+  /** Whether the player was sneaking on the last update: sneaking spares farmland and bounce pads. */
+  get isSneaking(): boolean {
+    return this.sneaking;
+  }
+
   get eye(): Vec3 {
     return [this.x, this.y + EYE_HEIGHT, this.z];
   }
