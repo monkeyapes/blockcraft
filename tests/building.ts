@@ -274,9 +274,15 @@ function walkNorth(g: Game, seconds: number, jump = false): Player {
     st.put(x, GROUND + 1, 5, Block.CobblestoneStairsN);
     for (let z = 0; z <= 4; z++) st.put(x, GROUND + 1, z, Block.Cobblestone);
   }
-  const climber = walkNorth(st, 5);
+  // Stop on the landing rather than after a fixed time: walked for too long,
+  // the climber strolls off the far edge and the height says nothing.
+  const climber = new Player();
+  climber.x = 0.5; climber.y = GROUND + 1; climber.z = 8.5; climber.yaw = -90;
+  for (let i = 0; i < 5 * 60 && climber.z > 2; i++) {
+    climber.update(1 / 60, st.world as never, keys({ forward: true }));
+  }
   check('walking into a stair from its low side climbs it without jumping',
-    Math.abs(climber.y - (GROUND + 2)) < 1e-6 && climber.z < 4, `y=${climber.y.toFixed(3)} z=${climber.z.toFixed(2)}`);
+    Math.abs(climber.y - (GROUND + 2)) < 1e-6 && climber.z <= 2, `y=${climber.y.toFixed(3)} z=${climber.z.toFixed(2)}`);
   const back = makeGame();
   for (let x = -3; x <= 3; x++) back.put(x, GROUND + 1, 5, Block.CobblestoneStairsS);
   const stopped = walkNorth(back, 3);
