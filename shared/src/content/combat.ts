@@ -106,6 +106,7 @@ const SPIKES_SHAPE: ShapeEntry = {
     ...spike(4, 4, 9), ...spike(12, 4, 9), ...spike(4, 12, 9), ...spike(12, 12, 9),
     ...spike(8, 8, 12),
   ],
+  collision: [],
   selection: [px(1, 0, 1, 15, 12, 15)],
 };
 
