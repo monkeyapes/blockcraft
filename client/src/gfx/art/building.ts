@@ -506,11 +506,13 @@ const ICONS: Record<string, Recipe> = {
   icon_slab_cobble: modelIcon(Block.CobblestoneSlab),
   icon_slab_planks: modelIcon(Block.PlankSlab),
   icon_slab_stone_bricks: modelIcon(Block.StoneBrickSlab),
+  icon_slab_brick: modelIcon(Block.BrickSlab),
   icon_slab_sandstone: modelIcon(Block.SandstoneSlab),
   // Seen from the south-east, a stair rising west shows its steps in profile.
   icon_stairs_planks: modelIcon(Block.PlankStairsW),
   icon_stairs_cobble: modelIcon(Block.CobblestoneStairsW),
   icon_stairs_stone_bricks: modelIcon(Block.StoneBrickStairsW),
+  icon_stairs_brick: modelIcon(Block.BrickStairsW),
   icon_fence: posedIcon([
     px(0, 0, 6, 4, 16, 10), px(12, 0, 6, 16, 16, 10),
     px(4, 4, 7, 12, 7, 9), px(4, 10, 7, 12, 13, 9),

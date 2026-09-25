@@ -156,6 +156,7 @@ const top = (boxes: Box[]) => Math.max(...boxes.map((b) => b.y1));
     [Block.CobblestoneSlab, Block.Cobblestone],
     [Block.PlankSlab, Block.Planks],
     [Block.StoneBrickSlab, Block.StoneBricks],
+    [Block.BrickSlab, Block.Bricks],
   ];
   // Sandstone itself is the nature pack's block; stacking into it can only
   // be checked once that pack is in the build.
@@ -224,6 +225,12 @@ const top = (boxes: Box[]) => Math.max(...boxes.map((b) => b.y1));
   check('an east stair has its upper step on the east half', riser(Block.PlankStairsE).x0 === 0.5);
   check('a south stair has its upper step on the south half', riser(Block.PlankStairsS).z0 === 0.5);
   check('a west stair has its upper step on the west half', riser(Block.PlankStairsW).x1 === 0.5);
+  for (const [yaw, id] of [[-90, Block.BrickStairsN], [0, Block.BrickStairsE], [90, Block.BrickStairsS], [180, Block.BrickStairsW]]) {
+    const g = makeGame();
+    g.held.id = Block.BrickStairsN; g.held.count = 1;
+    g.place(0, GROUND, 0, UP, yaw);
+    check(`brick stairs face the way the player looks too (yaw ${yaw})`, g.get(0, GROUND + 1, 0) === id);
+  }
   check('every facing breaks back into the one stair item',
     [Block.CobblestoneStairsE, Block.CobblestoneStairsS, Block.CobblestoneStairsW]
       .every((id) => blockDrops(id)[0]?.id === Block.CobblestoneStairsN));
@@ -518,6 +525,9 @@ const _ = null;
   yields('six glass make 16 panes', craft([[Block.Glass, Block.Glass, Block.Glass], [Block.Glass, Block.Glass, Block.Glass]]),
     Block.GlassPane, 16);
   yields('six planks make 3 doors', craft([[P, P], [P, P], [P, P]]), Item.WoodDoor, 3);
+  yields('six bricks stairs-wise make 4 brick stairs', craft([[Block.Bricks, _, _], [Block.Bricks, Block.Bricks, _],
+    [Block.Bricks, Block.Bricks, Block.Bricks]]), Block.BrickStairsN, 4);
+  yields('three bricks in a row make 6 brick slabs', craft([[Block.Bricks, Block.Bricks, Block.Bricks]]), Block.BrickSlab, 6);
   yields('four stone make 4 stone bricks', craft([[Block.Stone, Block.Stone], [Block.Stone, Block.Stone]]), Block.StoneBricks, 4);
   const nine = (id: number) => [[id, id, id], [id, id, id], [id, id, id]];
   yields('nine gold ingots make a gold block', craft(nine(Item.GoldIngot)), Block.GoldBlock, 1);

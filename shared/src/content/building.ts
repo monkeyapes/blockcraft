@@ -248,6 +248,7 @@ export const SLAB_FULL: ReadonlyArray<readonly [number, number]> = [
   [Block.PlankSlab, Block.Planks],
   [Block.StoneBrickSlab, Block.StoneBricks],
   [Block.SandstoneSlab, Block.Sandstone],
+  [Block.BrickSlab, Block.Bricks],
 ];
 
 /** Each stair material's four facings, north first -- the north one is the item. */
@@ -255,6 +256,7 @@ export const STAIRS: ReadonlyArray<readonly [number, number, number, number]> = 
   [Block.PlankStairsN, Block.PlankStairsE, Block.PlankStairsS, Block.PlankStairsW],
   [Block.CobblestoneStairsN, Block.CobblestoneStairsE, Block.CobblestoneStairsS, Block.CobblestoneStairsW],
   [Block.StoneBrickStairsN, Block.StoneBrickStairsE, Block.StoneBrickStairsS, Block.StoneBrickStairsW],
+  [Block.BrickStairsN, Block.BrickStairsE, Block.BrickStairsS, Block.BrickStairsW],
 ];
 
 export const DOORS_CLOSED = [Block.WoodDoorN, Block.WoodDoorE, Block.WoodDoorS, Block.WoodDoorW];
@@ -275,6 +277,7 @@ const STONE_LIKE: Material = { textures: 'stone', hardness: 3, tool: 'pickaxe', 
 const COBBLE_LIKE: Material = { textures: 'cobble', hardness: 3, tool: 'pickaxe', tier: 1 };
 const PLANK_LIKE: Material = { textures: 'planks', hardness: 2, tool: 'axe' };
 const BRICK_LIKE: Material = { textures: 'stone_bricks', hardness: 3, tool: 'pickaxe', tier: 1 };
+const CLAY_BRICK_LIKE: Material = { textures: 'brick', hardness: 3, tool: 'pickaxe', tier: 1 };
 const SANDSTONE_LIKE: Material = {
   textures: ['sandstone_top', 'sandstone_bottom', 'sandstone_side'], hardness: 1.2, tool: 'pickaxe', tier: 1,
 };
@@ -295,12 +298,14 @@ const blocks: BlockSpec[] = [
   { id: Block.PlankSlab, name: 'Plank Slab', ...PLANK_LIKE, opaque: false, icon: 'icon_slab_planks', category: 'building' },
   { id: Block.StoneBrickSlab, name: 'Stone Brick Slab', ...BRICK_LIKE, opaque: false, icon: 'icon_slab_stone_bricks', category: 'building' },
   { id: Block.SandstoneSlab, name: 'Sandstone Slab', ...SANDSTONE_LIKE, opaque: false, icon: 'icon_slab_sandstone', category: 'building' },
+  { id: Block.BrickSlab, name: 'Brick Slab', ...CLAY_BRICK_LIKE, opaque: false, icon: 'icon_slab_brick', category: 'building' },
 
   ...STAIRS.flatMap(([n, e, s, w], i) => {
     const [label, material, icon] = ([
       ['Plank Stairs', PLANK_LIKE, 'icon_stairs_planks'],
       ['Cobblestone Stairs', COBBLE_LIKE, 'icon_stairs_cobble'],
       ['Stone Brick Stairs', BRICK_LIKE, 'icon_stairs_stone_bricks'],
+      ['Brick Stairs', CLAY_BRICK_LIKE, 'icon_stairs_brick'],
     ] as const)[i];
     // One item per material: only the north facing is listed, and every
     // facing breaks back into it, so the other three never show up loose.
@@ -468,6 +473,8 @@ const recipes: Recipe[] = [
   slabRecipe(Block.Sandstone, Block.SandstoneSlab),
   stairRecipe(Block.Cobblestone, Block.CobblestoneStairsN),
   stairRecipe(Block.StoneBricks, Block.StoneBrickStairsN),
+  slabRecipe(Block.Bricks, Block.BrickSlab),
+  stairRecipe(Block.Bricks, Block.BrickStairsN),
 
   // Anything wooden can be made from any kind of plank.
   ...PLANK_KINDS.flatMap((P): Recipe[] => [
