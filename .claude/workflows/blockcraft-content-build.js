@@ -247,6 +247,9 @@ const results = await parallel(BRIEFS.map((b) => () =>
     phase: 'Build',
     schema: RESULT,
     isolation: 'worktree',
+    // High rather than the session's xhigh: this is long, well-specified
+    // work, and the plan's usage limit is the real bottleneck.
+    effort: 'high',
   }).then((r) => ({ key: b.key, ...(r || { missing: true }) }))
 ))
 return results.filter(Boolean)
