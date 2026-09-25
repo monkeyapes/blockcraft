@@ -84,7 +84,6 @@ function ear(t: Tile, x: number, top: number, len: number, grain: RGB, dark: RGB
 function wheat(stage: number): Recipe {
   return (t) => {
     if (stage === 0) {
-      // Green shoots just through the soil.
       // A few green shoots just through the soil, kept clear of the
       // corners where the planes cross so they stand apart rather than
       // joining into a square.
@@ -143,12 +142,17 @@ function plant(t: Tile, cx: number, rows: readonly string[]): void {
   });
 }
 
-/** Carrot tops by stage: fronds with daylight through them, orange at the crown once ripe. */
+/**
+ * Carrot tops by stage: fronds fanning up and out from one crown, daylight
+ * between them, and the orange shoulders of the root showing through the
+ * soil once ripe. The fans keep their tips apart; a row of level tips reads
+ * as a fence rail once the '#' planes put four of them round a square.
+ */
 const CARROT_TOPS: ReadonlyArray<readonly string[]> = [
-  ['.l.l.', '..d..'],
-  ['l.l.l', '.g.g.', '..g..', '..d..'],
-  ['.l.l.', 'l.g.l', '.g.g.', 'g.g.g', '.ggg.', '..d..'],
-  ['l.l.l', '.l.g.', 'g.g.g', '.g.g.', 'l.g.l', '.ggg.', '..d..', '.oOo.'],
+  ['l...l', '.g.g.', '..d..'],
+  ['l...l', '.g.l.', 'l.g.g', '.gdg.', '..d..'],
+  ['.l..l', 'lg.g.', '.g.gl', 'g.lg.', '.gdg.', '..d..'],
+  ['l..l.', '.g.gl', 'lg.g.', '.gl.g', 'g.gg.', '.gdg.', '..d..', '.oOo.', '.ooo.'],
 ];
 
 /** Potato plants by stage: broad paired leaves, pale flowers and tubers once ripe. */
@@ -176,6 +180,23 @@ function potatoes(stage: number): Recipe {
 
 const STRAW: RGB = [206, 172, 72];
 const TWINE: RGB = [120, 84, 40];
+const TWINE_LIT: RGB = [158, 118, 64];
+
+/**
+ * Bands of twine across a bale, one unit wide: the strand alternates lit
+ * and dark every unit, which is what makes it read as twisted cord rather
+ * than a painted stripe, with the straw pressed into shadow just under it.
+ */
+function twine(t: Tile, at: readonly number[], vertical: boolean): void {
+  for (const a of at) {
+    for (let i = 0; i < 16; i++) {
+      const [x, y] = vertical ? [a, i] : [i, a];
+      dot(t, x, y, i % 2 === 0 ? TWINE : TWINE_LIT, 6);
+      const [sx, sy] = vertical ? [a + 1, i] : [i, a + 1];
+      t.shade(sx, sy, -26);
+    }
+  }
+}
 
 export const FARMING_ART: Record<string, Recipe> = {
   farmland_dry: (t) => farmland(t, DRY_SOIL, 10),
@@ -203,25 +224,29 @@ export const FARMING_ART: Record<string, Recipe> = {
   potatoes_stage2: potatoes(2),
   potatoes_stage3: potatoes(3),
 
-  // Straw runs top to bottom in strands of slightly different gold, held
-  // by two bands of twine. The bands sit a whole half-tile apart so a
-  // stack of bales repeats them evenly.
+  // Straw lies along the bale in short overlapping strands of slightly
+  // different gold -- whole-length stripes read as planks -- with dark gaps
+  // where one strand ends under the next. Two bands of twisted twine loop
+  // round it top to bottom, a half-tile apart so a row of bales repeats
+  // them evenly and they carry straight on over the top face.
   hay_side: (t) => {
     t.fill(STRAW, 6);
-    for (let x = 0; x < 16; x++) {
-      const tone = (t.rng() * 2 - 1) * 22;
-      for (let y = 0; y < 16; y++) {
-        const j = (t.rng() * 2 - 1) * 6;
-        t.set(x, y, STRAW[0] + tone + j, STRAW[1] + tone + j, STRAW[2] + tone * 0.6 + j);
+    for (let i = 0; i < 64; i++) {
+      const x0 = Math.floor(t.rng() * 16);
+      const y = Math.floor(t.rng() * 16);
+      const len = 2 + Math.floor(t.rng() * 5);
+      const tone = (t.rng() * 2 - 1) * 36;
+      for (let k = 0; k < len; k++) {
+        dot(t, (x0 + k) & 15, y, [STRAW[0] + tone, STRAW[1] + tone, STRAW[2] + tone * 0.6], 5);
       }
     }
-    t.patches(8, [176, 142, 56], 6, 2);
-    for (const y of [3, 11]) {
-      for (let x = 0; x < 16; x++) {
-        dot(t, x, y, TWINE, 8);
-        dot(t, x, y + 1, [96, 66, 32], 6);
-      }
+    for (let i = 0; i < 14; i++) {
+      const x0 = Math.floor(t.rng() * 16);
+      const y = Math.floor(t.rng() * 16);
+      dot(t, x0, y, [150, 118, 44], 6);
+      dot(t, (x0 + 1) & 15, y, [168, 134, 52], 6);
     }
+    twine(t, [4, 12], true);
     t.posterize(12);
   },
   // Cut ends of straw: a golden mat with the dark hollows of stalk ends
@@ -230,11 +255,8 @@ export const FARMING_ART: Record<string, Recipe> = {
     t.fill([198, 164, 70], 8);
     t.patches(22, [222, 190, 94], 8, 2);
     t.patches(18, [164, 130, 50], 8, 2);
-    t.patches(10, [138, 106, 40], 6, 1);
-    for (let i = 0; i < 16; i++) {
-      dot(t, 3, i, TWINE, 8);
-      dot(t, 11, i, TWINE, 8);
-    }
+    t.flecks(26, [138, 106, 40], 0);
+    twine(t, [4, 12], true);
     t.posterize(12);
   },
 };
