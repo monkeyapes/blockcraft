@@ -241,7 +241,10 @@ function resumeText(r) {
     (r.tar ? ' && tar -xf "' + r.tar + '"' : '') +
     ' -- then read what is already there (git log, git diff, the files you own), commit it as a WIP checkpoint, and continue from where it stopped.'
 }
-const results = await parallel(BRIEFS.map((b) => () =>
+// args.only limits the run to some areas -- the ones still unfinished after
+// the others were merged.
+const ONLY = (args && args.only) || null
+const results = await parallel(BRIEFS.filter((b) => !ONLY || ONLY.includes(b.key)).map((b) => () =>
   agent(PREAMBLE + (RESUME[b.key] ? resumeText(RESUME[b.key]) : '') + '\n\n=====================================================\nYOUR AREA KEY: ' + b.key + '\n' + b.brief, {
     label: 'build:' + b.key,
     phase: 'Build',
