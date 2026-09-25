@@ -512,9 +512,21 @@ function dropped(id: number, x: number, y: number, z: number): DroppedItem {
   check('a held tool is gripped with its head up', yOf(0.45, 0.45) - yOf(-0.45, -0.45) > 0.25,
     `tip ${yOf(0.45, 0.45).toFixed(2)} vs pommel ${yOf(-0.45, -0.45).toFixed(2)}`);
 
-  const panel = buildHeldMesh(atlas, { item: Block.SolarPanel, swing: 0, bob: 0 });
-  check('a held block is drawn as its model',
-    panel.vertices.length === blockModel(Block.SolarPanel)!.quads * 4 * F);
+  // Every vertex of the held panel is a corner of the panel's model run
+  // through the block pose -- not the corners of some flat picture of it.
+  const panelState = { item: Block.SolarPanel, swing: 0, bob: 0 };
+  const panel = buildHeldMesh(atlas, panelState);
+  const pm = blockModel(Block.SolarPanel)!;
+  const bm = heldTransform(panelState, 'block');
+  let off = pm.quads * 4 * F === panel.vertices.length ? 0 : 1;
+  for (let c = 0; c < pm.quads * 4 && off === 0; c++) {
+    const [x, y, z] = [pm.pos[c * 3], pm.pos[c * 3 + 1], pm.pos[c * 3 + 2]];
+    for (let r = 0; r < 3; r++) {
+      const want = bm[r * 4] * x + bm[r * 4 + 1] * y + bm[r * 4 + 2] * z + bm[r * 4 + 3];
+      if (Math.abs(panel.vertices[c * F + r] - want) > 1e-5) off++;
+    }
+  }
+  check('a held block is drawn as its model', off === 0, `${off} coordinates off`);
 
   const hand = buildHeldMesh(atlas, { item: null, swing: 0.3, bob: 1 });
   check('an empty hand still draws an arm', hand.indices.length === 36);
