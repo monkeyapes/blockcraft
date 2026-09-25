@@ -26,7 +26,7 @@ HARD RULES
 8. COMMIT on your worktree branch (git add only your files; never node_modules, never PNGs):
    GIT_AUTHOR_NAME=monkeyapes GIT_AUTHOR_EMAIL=muratmeteyildiz580@gmail.com GIT_COMMITTER_NAME=monkeyapes GIT_COMMITTER_EMAIL=muratmeteyildiz580@gmail.com git commit -m "<summary line>" -m "<body>" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
    Then report the branch name (git rev-parse --abbrev-ref HEAD) and the final commit hash (git rev-parse HEAD). A worktree with no commit is lost work.
-   COMMIT EARLY AND OFTEN: make a work-in-progress commit (same author env vars) after every meaningful milestone — e.g. after the pack data, after the art, after the tests — not only at the end. The account's usage limit can cut a run off mid-task; committed work survives in your branch and can be resumed, uncommitted work is lost. Each WIP commit must at least typecheck.
+   COMMIT EARLY AND OFTEN: make a work-in-progress commit (same author env vars) after every meaningful milestone — e.g. after the pack data, after the art, after the tests — not only at the end. The account's usage limit can cut a run off mid-task; committed work survives in your branch and can be resumed, uncommitted work is lost. Each WIP commit must at least typecheck. After EVERY commit, also push it to GitHub so it survives this machine: git push -f origin HEAD:refs/heads/wip/<your area key> (your key is given at the top of your brief).
 9. The shell may be Linux bash or Git Bash on Windows. Ignore line-ending warnings.
 10. Be ambitious — the user asked for an "insane" improvement — but finished and correct beats sprawling and broken. Prioritise: correctness, then the visual quality a player sees, then breadth.
 
@@ -242,7 +242,7 @@ function resumeText(r) {
     ' -- then read what is already there (git log, git diff, the files you own), commit it as a WIP checkpoint, and continue from where it stopped.'
 }
 const results = await parallel(BRIEFS.map((b) => () =>
-  agent(PREAMBLE + (RESUME[b.key] ? resumeText(RESUME[b.key]) : '') + '\n\n=====================================================\n' + b.brief, {
+  agent(PREAMBLE + (RESUME[b.key] ? resumeText(RESUME[b.key]) : '') + '\n\n=====================================================\nYOUR AREA KEY: ' + b.key + '\n' + b.brief, {
     label: 'build:' + b.key,
     phase: 'Build',
     schema: RESULT,
