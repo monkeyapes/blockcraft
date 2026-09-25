@@ -225,7 +225,8 @@ export enum Block {
   // --- mechanics and combat: 190-199 (shared/src/content/combat.ts) ---------
   TNT = 190,
   BouncePad = 191,
-  // 192-199 free for the combat pack.
+  IronSpikes = 192,
+  // 193-199 free for the combat pack.
 
   // --- creatures: 200-209 (shared/src/content/creatures.ts) -----------------
   Cobweb = 200,
