@@ -10,6 +10,7 @@ import {
   type Grid, type Recipe,
 } from '@shared/recipes.js';
 import type { Atlas } from '../gfx/atlas.js';
+import { itemIconURL } from '../gfx/blockicon.js';
 
 export class InventoryUI {
   private root: HTMLDivElement;
@@ -354,7 +355,7 @@ export class InventoryUI {
 
       const icon = document.createElement('span');
       icon.className = 'book-icon';
-      icon.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+      icon.style.backgroundImage = `url(${itemIconURL(this.atlas, recipe.result.id)})`;
 
       const label = document.createElement('span');
       label.className = 'book-label';
@@ -416,7 +417,7 @@ export class InventoryUI {
       return;
     }
     const def = itemDef(stack.id);
-    slot.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+    slot.style.backgroundImage = `url(${itemIconURL(this.atlas, stack.id)})`;
     slot.textContent = stack.count > 1 ? String(stack.count) : '';
     slot.title = def.name;
   }
@@ -461,9 +462,8 @@ export class InventoryUI {
     }
 
     if (this.cursor) {
-      const def = itemDef(this.cursor.id);
       this.cursorEl.hidden = false;
-      this.cursorEl.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+      this.cursorEl.style.backgroundImage = `url(${itemIconURL(this.atlas, this.cursor.id)})`;
       this.cursorEl.textContent = this.cursor.count > 1 ? String(this.cursor.count) : '';
     } else {
       this.cursorEl.hidden = true;
