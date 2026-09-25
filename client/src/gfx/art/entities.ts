@@ -1,6 +1,7 @@
 /**
- * Creature, player and vehicle skins, plus the overlays the renderer draws
- * on top of the world (break cracks, the bare hand).
+ * Player and vehicle skins, plus the overlays the renderer draws on top of
+ * the world (break cracks, the bare hand). Mob skins live with the rest of
+ * the creatures pack in ./creatures.ts.
  */
 
 import { TILE, type RGB, type Recipe, Tile, mulberry32 } from '../tile.js';
@@ -12,47 +13,15 @@ export const EXTRA_TILES = [
   'crack_5', 'crack_6', 'crack_7', 'crack_8', 'crack_9',
   'paint_red', 'paint_dark', 'chrome', 'tire', 'headlight', 'taillight', 'rotor',
   'skin', 'face', 'hair', 'shirt', 'sleeve', 'pants', 'boots',
-  'pig', 'pig_face', 'cow', 'cow_head', 'cow_face', 'wool', 'sheep_face',
-  'sheep_leg', 'chicken', 'chicken_face', 'beak', 'bone',
-  'zombie_head', 'zombie_face', 'zombie_body', 'zombie_legs',
-  'blaze_core', 'blaze_face', 'blaze_rod_mob',
-  'ender_body', 'ender_face',
-  'dragon_body', 'dragon_head', 'dragon_face', 'dragon_wing',
 ];
 
 export const ENTITY_ART: Record<string, Recipe> = {};
 
-// Mob hides. Faces get eyes on the front so you can tell which way one is
-// looking, which matters when something is chasing you.
-/**
- * Animal hide.
- *
- * A flat fill plus white-noise jitter averaged out to a single colour at any
- * distance -- the pig read as 175 brightness with a standard deviation of 4,
- * which is indistinguishable from a blank swatch. Coherent blotching and a
- * bevel give the surface something to catch the light on.
- */
-function hide(base: RGB, jitter = 7) {
-  const darker: RGB = [base[0] * 0.86, base[1] * 0.86, base[2] * 0.86];
-  const lighter: RGB = [
-    Math.min(255, base[0] * 1.12),
-    Math.min(255, base[1] * 1.12),
-    Math.min(255, base[2] * 1.12),
-  ];
-  return (t: Tile) => {
-    t.fill(base, jitter + 8);
-    t.mottle(darker, 0.55, 4);
-    t.mottle(lighter, 0.4, 7);
-    t.grain(16, 12);
-    t.bevel(14);
-  };
-}
-
 /**
  * Woven fabric: a visible weave plus dye unevenness.
  *
- * Used for every cloth surface so shirts, trousers and mob clothing stop
- * being flat colour swatches.
+ * Used for every cloth surface so shirts and trousers stop being flat
+ * colour swatches.
  */
 function fabric(base: RGB) {
   const dark: RGB = [base[0] * 0.82, base[1] * 0.82, base[2] * 0.82];
@@ -70,91 +39,6 @@ function fabric(base: RGB) {
     t.bevel(14);
   };
 }
-
-function faceOf(base: RGB, eye: RGB, snout: RGB | null, jitter = 6) {
-  return (t: Tile) => {
-    t.fill(base, jitter);
-    t.rect(3, 5, 3, 3, eye);
-    t.rect(10, 5, 3, 3, eye);
-    t.set(4, 6, 250, 250, 250);
-    t.set(11, 6, 250, 250, 250);
-    if (snout) t.rect(5, 10, 6, 4, snout);
-  };
-}
-
-ENTITY_ART.pig = hide([224, 148, 152]);
-ENTITY_ART.pig_face = (t) => {
-  faceOf([224, 148, 152], [40, 30, 32], [206, 122, 128])(t);
-  t.set(7, 11, 150, 82, 90);
-  t.set(9, 11, 150, 82, 90);
-};
-ENTITY_ART.cow = hide([70, 54, 46]);
-ENTITY_ART.cow_head = hide([84, 66, 56]);
-ENTITY_ART.cow_face = faceOf([84, 66, 56], [30, 24, 22], [206, 196, 186]);
-// Wool needs visible fibre, not a pale wash. At 235 mean brightness with
-// almost no variation it was the single worst offender for reading as blank
-// white next to a resource pack.
-ENTITY_ART.wool = (t) => {
-  t.fill([226, 226, 222], 7);
-  t.grain(16, 12);                       // fine fleece tooth
-  t.mottle([198, 198, 194], 0.5, 5);     // clumping
-  t.mottle([246, 246, 244], 0.3, 7);     // highlights on the clumps
-  t.bevel(14);
-};
-ENTITY_ART.sheep_face = faceOf([228, 210, 196], [34, 30, 28], null);
-ENTITY_ART.sheep_leg = hide([212, 200, 190], 5);
-ENTITY_ART.chicken = (t) => t.fill([244, 244, 240], 7).flecks(14, [220, 220, 214]);
-ENTITY_ART.chicken_face = (t) => {
-  t.fill([244, 244, 240], 5);
-  t.rect(4, 5, 3, 3, [30, 26, 24]);
-  t.rect(9, 5, 3, 3, [30, 26, 24]);
-  t.rect(6, 1, 4, 3, [216, 62, 54]); // comb
-};
-ENTITY_ART.beak = hide([232, 168, 48], 6);
-ENTITY_ART.bone = hide([226, 224, 208], 5);
-
-ENTITY_ART.zombie_head = hide([84, 124, 76]);
-ENTITY_ART.zombie_face = (t) => {
-  t.fill([84, 124, 76], 6);
-  t.rect(3, 5, 3, 3, [22, 34, 24]); // sunken eyes
-  t.rect(10, 5, 3, 3, [22, 34, 24]);
-  t.rect(5, 11, 6, 1, [46, 60, 42]);
-  t.flecks(14, [66, 100, 60]);
-};
-ENTITY_ART.zombie_body = fabric([58, 108, 148]);
-ENTITY_ART.zombie_legs = fabric([52, 62, 104]);
-
-// Blaze: hot yellow core, glowing rods.
-ENTITY_ART.blaze_core = (t) => t.fill([246, 190, 60], 16).flecks(26, [255, 232, 140]);
-ENTITY_ART.blaze_face = (t) => {
-  t.fill([246, 190, 60], 12);
-  t.rect(3, 5, 3, 3, [60, 34, 8]);
-  t.rect(10, 5, 3, 3, [60, 34, 8]);
-  t.rect(5, 11, 6, 1, [80, 44, 10]);
-};
-ENTITY_ART.blaze_rod_mob = (t) => t.fill([240, 166, 40], 14).flecks(18, [255, 224, 120]);
-
-// Enderman: near-black with lit violet eyes.
-ENTITY_ART.ender_body = (t) => t.fill([18, 16, 24], 5).flecks(16, [30, 26, 40]);
-ENTITY_ART.ender_face = (t) => {
-  t.fill([16, 14, 22], 4);
-  t.rect(2, 6, 5, 3, [206, 150, 250]);
-  t.rect(9, 6, 5, 3, [206, 150, 250]);
-  t.rect(3, 7, 3, 1, [246, 226, 255]);
-  t.rect(10, 7, 3, 1, [246, 226, 255]);
-};
-
-// Dragon: black scales with a purple sheen.
-ENTITY_ART.dragon_body = (t) => t.fill([28, 24, 36], 7).flecks(22, [52, 38, 72]);
-ENTITY_ART.dragon_head = (t) => t.fill([34, 28, 44], 7).flecks(16, [60, 44, 84]);
-ENTITY_ART.dragon_face = (t) => {
-  t.fill([34, 28, 44], 6);
-  t.rect(2, 5, 5, 3, [214, 92, 244]);
-  t.rect(9, 5, 5, 3, [214, 92, 244]);
-  t.rect(4, 11, 8, 2, [16, 12, 20]);
-  for (let x = 4; x < 12; x += 2) t.set(x, 10, 226, 220, 232); // teeth
-};
-ENTITY_ART.dragon_wing = (t) => t.fill([40, 32, 56], 8).flecks(20, [66, 50, 96]);
 
 // Player model materials.
 const SKIN: RGB = [222, 174, 136];
