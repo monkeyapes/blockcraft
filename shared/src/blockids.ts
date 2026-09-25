@@ -131,7 +131,12 @@ export enum Block {
   Pumpkin = 93,
   Melon = 94,
   LilyPad = 95,
-  // 96-99 free for the nature pack.
+  // Grass wearing snow on its sides, the needle-strewn soil of a pine
+  // forest, and one more flower.
+  SnowyGrass = 96,
+  Podzol = 97,
+  Tulip = 98,
+  // 99 free for the nature pack.
 
   // --- building: 100-169 (shared/src/content/building.ts) -------------------
   StoneBricks = 100,
