@@ -9,8 +9,9 @@ import { BLOCKS, Block } from '@shared/blocks.js';
 import { HOTBAR_SIZE, type Inventory } from '@shared/inventory.js';
 import { Item, allItemIds, isBlockItem, itemDef, stackSize } from '@shared/items.js';
 import type { Atlas } from '../gfx/atlas.js';
+import { itemIconURL } from '../gfx/blockicon.js';
 
-interface Tab {
+export interface Tab {
   id: string;
   label: string;
   /** Icon item shown on the tab. */
@@ -21,8 +22,21 @@ interface Tab {
 const B = Block;
 const I = Item;
 
+/**
+ * Does a catalogue entry match what was typed in the search box?
+ *
+ * Every word has to appear somewhere in the name, in any order, so "iron
+ * block" and "block iron" both find Block of Iron, and "ore" narrows the
+ * whole catalogue to the ores. With a few hundred entries a single substring
+ * match stops being enough: "wood door" should not need the exact phrase.
+ */
+export function matchesSearch(name: string, query: string): boolean {
+  const hay = name.toLowerCase();
+  return query.toLowerCase().split(/[\s_]+/).filter(Boolean).every((w) => hay.includes(w));
+}
+
 /** Explicit grouping beats an automatic one: the ordering is the design. */
-function buildTabs(): Tab[] {
+export function buildTabs(): Tab[] {
   const allBlocks = BLOCKS.filter((d) => d && d.id !== B.Air).map((d) => d.id);
 
   const building = [
@@ -76,10 +90,13 @@ function buildTabs(): Tab[] {
   }
   const extra = (id: string, label: string, icon: number): Tab[] =>
     byTab[id].length > 0 ? [{ id, label, icon, ids: byTab[id] }] : [];
+  // Every tab's contents, not a hand-kept list of them: a pack item filed
+  // under Building or Machines is in no list but its own, and search looks
+  // only here, so anything missing from this is unfindable by name.
   const everything = [...new Set([
     ...allBlocks.filter((id) => !BLOCKS[id].family || BLOCKS[id].category),
-    ...tools, ...combat, ...transport, ...materials,
-    ...byTab.food, ...byTab.farming, ...byTab.decoration, ...byTab.redstone,
+    ...Object.values(byTab).flat(),
+    ...portals,
   ])];
 
   return [
@@ -153,7 +170,7 @@ export class CreativeMenu {
 
       const icon = document.createElement('span');
       icon.className = 'cr-tab-icon';
-      icon.style.backgroundImage = `url(${this.atlas.iconURL(itemDef(tab.icon).texture)})`;
+      icon.style.backgroundImage = `url(${itemIconURL(this.atlas, tab.icon)})`;
 
       const label = document.createElement('span');
       label.textContent = tab.label;
@@ -203,7 +220,7 @@ export class CreativeMenu {
         continue;
       }
       const def = itemDef(stack.id);
-      el.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+      el.style.backgroundImage = `url(${itemIconURL(this.atlas, stack.id)})`;
       el.title = def.name;
       el.textContent = stack.count > 1 ? String(stack.count) : '';
     }
@@ -220,7 +237,7 @@ export class CreativeMenu {
     for (const id of source) {
       if (seen.has(id)) continue;
       seen.add(id);
-      if (query && !itemDef(id).name.toLowerCase().includes(query)) continue;
+      if (query && !matchesSearch(itemDef(id).name, query)) continue;
       out.push(id);
     }
     return out;
@@ -243,7 +260,7 @@ export class CreativeMenu {
       const cell = document.createElement('button');
       cell.className = 'islot cr-cell';
       cell.title = `${def.name}${isBlockItem(id) ? '' : ' (item)'}`;
-      cell.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+      cell.style.backgroundImage = `url(${itemIconURL(this.atlas, id)})`;
       cell.addEventListener('click', () => {
         this.picked = id;
         // Put it straight into the selected hotbar slot, like creative does.

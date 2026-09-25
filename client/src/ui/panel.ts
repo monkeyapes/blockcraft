@@ -11,6 +11,7 @@
 import { itemDef } from '@shared/items.js';
 import type { PanelRow, SPanel } from '@shared/protocol.js';
 import type { Atlas } from '../gfx/atlas.js';
+import { itemIconURL } from '../gfx/blockicon.js';
 
 /** What a row's buttons are labelled, so the server sends verbs not text. */
 const ACTION_LABELS: Record<string, string> = {
@@ -102,10 +103,12 @@ export class PanelUI {
     if (r.item !== undefined && this.atlas) {
       const icon = document.createElement('span');
       icon.className = 'panel-icon';
-      // The atlas is keyed by texture name, the same way the inventory and
-      // the creative menu look icons up.
-      const texture = itemDef(r.item).texture;
-      if (texture) icon.style.backgroundImage = `url(${this.atlas.iconURL(texture)})`;
+      // The same icon the inventory and the creative menu show, so a block
+      // for sale looks like the block that lands in your hotbar. An id the
+      // registry does not know has no texture and gets no icon.
+      if (itemDef(r.item).texture) {
+        icon.style.backgroundImage = `url(${itemIconURL(this.atlas, r.item)})`;
+      }
       el.append(icon);
     }
 
