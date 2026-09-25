@@ -220,7 +220,8 @@ export enum Block {
   Potatoes1 = 181,
   Potatoes2 = 182,
   Potatoes3 = 183,
-  // 184-189 free for the farming pack.
+  FarmlandWet = 184,
+  // 185-189 free for the farming pack.
 
   // --- mechanics and combat: 190-199 (shared/src/content/combat.ts) ---------
   TNT = 190,
