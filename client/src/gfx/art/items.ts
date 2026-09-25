@@ -754,17 +754,35 @@ cutPair('raw_fish', 'cooked_fish', {
 });
 
 // Wheat seeds: a scatter of small pointed grains.
+/**
+ * Seeds: a small heap of plump teardrop seeds, one sprouting.
+ *
+ * Eight lone specks spread over the whole icon read as dust at hotbar size.
+ * A heap has one silhouette -- a low mound -- and each seed is big enough to
+ * show its own lit tip and shadowed base, which is what says "seed".
+ */
 ITEM_ART.wheat_seeds = (t) => {
-  const seeds: Array<[number, number]> = [[3, 3], [8, 2], [12, 4], [5, 7], [10, 8], [2, 11], [7, 12], [12, 11]];
-  for (const [x, y] of seeds) {
-    sprite(t, [
-      '.s..............',
-      'SS..............',
-      'Sd..............',
-    ].map((r) => ('.'.repeat(x) + r).slice(0, 16)),
-    { s: [196, 206, 120], S: [150, 166, 74], d: [106, 120, 48] }, 5, y);
+  const seed = [
+    '.l.',
+    'lSs',
+    'SSd',
+    '.d.',
+  ];
+  // Back row first, so the front seeds overlap the ones behind them.
+  const heap: Array<[number, number]> = [
+    [6, 4], [3, 7], [9, 6], [6, 8], [12, 9], [1, 10], [4, 11], [8, 11], [11, 12],
+  ];
+  const pal = { l: [228, 214, 150] as RGB, S: [184, 166, 96] as RGB, s: [156, 138, 74] as RGB, d: [112, 96, 48] as RGB };
+  for (const [x, y] of heap) {
+    sprite(t, seed.map((r) => ('.'.repeat(x) + r + '.'.repeat(16)).slice(0, 16)), pal, 5, y);
   }
-  finish(t, [40, 48, 16]);
+  // A green shoot from the top seed, so it reads as seed and not as grain.
+  sprite(t, [
+    '........g.......',
+    '.......gG.......',
+    '.......G........',
+  ], { g: [140, 196, 84], G: [84, 142, 52] }, 3, 1);
+  finish(t, [48, 40, 16]);
 };
 
 /**

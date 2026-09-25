@@ -54,21 +54,49 @@ function stoneBricks(t: Tile): Tile {
 }
 
 /**
- * A woven face: rows of short stitches, each row offset from the last,
- * with a soft fuzz over it. The weave is what keeps a wall of one colour
- * reading as cloth rather than as painted plaster.
+ * Brightness offsets for one knit stitch, four units square: two strands
+ * leaning in to meet at the bottom (a V), lit on the left strand, with the
+ * dark seam between columns at the edges.
+ */
+const STITCH: number[][] = [
+  [14, -4, -4, 8],
+  [-10, 12, 6, -12],
+  [-12, 8, 4, -14],
+  [-6, -2, -2, -8],
+];
+
+/**
+ * A knitted face: columns of V-shaped stitches stacked like a sweater's,
+ * with a fine fuzz over everything.
+ *
+ * The first version was random blotches with faint rows, which at any
+ * distance read as static; a second pass with a dark furrow under each row
+ * read as corduroy stripes. Real knitting runs in columns of Vs, and a V
+ * has a shape -- two strands meeting in a point -- which is what the eye
+ * reads as cloth. Stitches are staggered by a unit per column so the rows
+ * never line up into stripes. Four stitches of four units tile the sixteen
+ * exactly, so a wall of wool has no seams.
  */
 function wool(base: RGB): Recipe {
   const tone = (d: number): RGB => [base[0] + d, base[1] + d, base[2] + d];
+  // Dark wool needs bigger steps to show its stitches at all; pale wool
+  // would blow out to flat white with the same ones.
+  const lum = (base[0] + base[1] + base[2]) / 3;
+  const k = lum < 60 ? 1.7 : lum > 200 ? 0.8 : 1;
   return (t) => {
-    t.fill(base, 5);
-    t.patches(26, tone(-12), 5, 2).patches(22, tone(12), 5, 2).patches(8, tone(-20), 4, 1);
-    // Faint stitch rows: every other row a touch darker, broken up so they
-    // read as the grain of the cloth and not as ruled lines.
-    for (let y = 1; y < TILE; y += 2) {
-      for (let x = 0; x < TILE; x++) if ((x + y) % 5 !== 0) t.shade(x, y, -5);
+    t.fill(base, 3);
+    for (let col = 0; col < 4; col++) {
+      const stagger = col % 2;
+      for (let row = 0; row < 4; row++) {
+        for (let y = 0; y < 4; y++) {
+          for (let x = 0; x < 4; x++) {
+            t.blot(col * 4 + x, row * 4 + y + stagger, 1, 1, tone(STITCH[y][x] * k), 2);
+          }
+        }
+      }
     }
-    t.posterize(14);
+    // Fuzz at the rendered resolution, so the knit looks soft, not tiled.
+    t.grain(5 * k, 16);
   };
 }
 
