@@ -754,64 +754,59 @@ cutPair('raw_fish', 'cooked_fish', {
 });
 
 // Wheat seeds: a scatter of small pointed grains.
-/**
- * Seeds: a small heap of plump teardrop seeds, one sprouting.
- *
- * Eight lone specks spread over the whole icon read as dust at hotbar size.
- * A heap has one silhouette -- a low mound -- and each seed is big enough to
- * show its own lit tip and shadowed base, which is what says "seed".
- */
 ITEM_ART.wheat_seeds = (t) => {
-  const seed = [
-    '.l.',
-    'lSs',
-    'SSd',
-    '.d.',
-  ];
-  // Back row first, so the front seeds overlap the ones behind them.
-  const heap: Array<[number, number]> = [
-    [6, 4], [3, 7], [9, 6], [6, 8], [12, 9], [1, 10], [4, 11], [8, 11], [11, 12],
-  ];
-  const pal = { l: [228, 214, 150] as RGB, S: [184, 166, 96] as RGB, s: [156, 138, 74] as RGB, d: [112, 96, 48] as RGB };
-  for (const [x, y] of heap) {
-    sprite(t, seed.map((r) => ('.'.repeat(x) + r + '.'.repeat(16)).slice(0, 16)), pal, 5, y);
+  const seeds: Array<[number, number]> = [[3, 3], [8, 2], [12, 4], [5, 7], [10, 8], [2, 11], [7, 12], [12, 11]];
+  for (const [x, y] of seeds) {
+    sprite(t, [
+      '.s..............',
+      'SS..............',
+      'Sd..............',
+    ].map((r) => ('.'.repeat(x) + r).slice(0, 16)),
+    { s: [196, 206, 120], S: [150, 166, 74], d: [106, 120, 48] }, 5, y);
   }
-  // A green shoot from the top seed, so it reads as seed and not as grain.
-  sprite(t, [
-    '........g.......',
-    '.......gG.......',
-    '.......G........',
-  ], { g: [140, 196, 84], G: [84, 142, 52] }, 3, 1);
-  finish(t, [48, 40, 16]);
+  finish(t, [40, 48, 16]);
 };
 
 /**
- * A sheaf: grain heads fanned at the top, a tie round the middle, the
- * stalks splaying out below. Heads and tie are outlined; the stalks go on
- * after, as single strands of straw, so the ring does not swallow them.
+ * One ear of wheat on its stalk, leaning up to the right.
+ *
+ * It used to be a sheaf of three heads, which read as three wheats in one
+ * slot -- the icon has to say "one of these". A single plump ear of paired
+ * kernels with its bristles (awns) at the tip, on a straw stalk with one
+ * leaf, is unmistakably one wheat. Ear, stalk and leaf are one outlined
+ * shape -- the stalk two units thick, since a one-unit diagonal breaks into
+ * separate dots at icon size -- and only the awns go on afterwards, as fine
+ * strands with a light rim.
  */
 ITEM_ART.wheat = (t) => {
   sprite(t, [
     '................',
-    '..h....h....h...',
-    '.hGg..hGg..hGg..',
-    '.GgG..GgG..GgG..',
-    '.hGg..hGg..hGg..',
-    '.GgG..GgG..GgG..',
-    '..Gg...Gg..Gg...',
     '................',
-    '................',
-    '.....TTTTT......',
+    '...........hK...',
+    '..........hKGg..',
+    '..........KGsK..',
+    '.........hKGKg..',
+    '.........KGsK...',
+    '........hKGKg...',
+    '........KGsK....',
+    '.......SgKg.....',
+    '......SSs.......',
+    '.....SSs.LL.....',
+    '....SSsLLl......',
+    '...SSs..........',
+    '..SSs...........',
+    '..Ss............',
   ], {
-    h: [250, 226, 140], G: [226, 180, 70], g: [184, 136, 40], T: [150, 110, 50],
-  }, 4);
+    h: [252, 232, 150], K: [226, 180, 70], G: [242, 208, 110], s: [196, 148, 50],
+    g: [176, 128, 38], S: [220, 186, 96], L: [170, 176, 80], l: [132, 140, 58],
+  }, 3);
   finish(t, [70, 46, 10]);
-  const straw: RGB = [212, 176, 84];
-  for (const [x0, y0, x1, y1] of [
-    [3, 7, 6, 9], [8, 7, 7, 9], [12, 7, 9, 9],
-    [6, 10, 2, 14], [7, 10, 7, 14], [8, 10, 12, 14],
-  ] as const) t.line(x0, y0, x1, y1, straw, 1);
-  rim(t, [70, 46, 10]);
+  // Awns: three bristles up and out from the tip of the ear.
+  const awn: RGB = [240, 212, 128];
+  for (const [x0, y0, x1, y1] of [[12, 2, 14, 0], [13, 3, 15, 1], [11, 2, 11, 0]] as const) {
+    t.line(x0, y0, x1, y1, awn, 1);
+  }
+  rim(t, [70, 46, 10], 0.5);
 };
 
 // A loaf: domed crust with three slashes scored across it.
