@@ -528,16 +528,22 @@ function decorate(
           put(data, ox, oz, x, SEA_LEVEL + 1, z, Block.LilyPad);
         }
       } else if (clear) {
-        // Reeds on any bank that touches water, in every climate but the frozen.
-        const nearWater = h <= SEA_LEVEL + 1 && (ground === Block.Sand || fertile(ground)) &&
+        // Reeds on any bank that touches water, in every climate but the
+        // frozen. Only ground level with the sea has water beside it at its
+        // own height, which is what a reed needs to stay put once placed.
+        const nearWater = h === SEA_LEVEL && (ground === Block.Sand || fertile(ground)) &&
           (heightOf(lx + 1, lz) < SEA_LEVEL || heightOf(lx - 1, lz) < SEA_LEVEL ||
            heightOf(lx, lz + 1) < SEA_LEVEL || heightOf(lx, lz - 1) < SEA_LEVEL);
-        if (nearWater && biome !== Biome.SnowyTaiga && r < (biome === Biome.Swamp ? 0.3 : 0.12)) {
+        if (nearWater && biome !== Biome.SnowyTaiga && r < (biome === Biome.Swamp ? 0.45 : 0.2)) {
           const tall = 1 + Math.floor(pick * 3);
           for (let i = 1; i <= tall; i++) at(i, Block.Reeds);
         } else if (biome === Biome.Desert) {
           if (ground === Block.Sand) {
-            if (r < CACTUS_CHANCE && isCactusSpot(seed, x, z)) {
+            // Level ground only: a dune step beside it would be sand
+            // pressing on its side, which a cactus cannot bear.
+            const level = heightOf(lx + 1, lz) <= h && heightOf(lx - 1, lz) <= h &&
+              heightOf(lx, lz + 1) <= h && heightOf(lx, lz - 1) <= h;
+            if (r < CACTUS_CHANCE && level && isCactusSpot(seed, x, z)) {
               const tall = 1 + Math.floor(pick * 3);
               for (let i = 1; i <= tall; i++) at(i, Block.Cactus);
             } else if (r > 0.985) {
