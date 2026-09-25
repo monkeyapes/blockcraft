@@ -164,6 +164,8 @@ function partsFor(mob: Mob): Part[] {
         { cx: 0, cy: 0.42, cz: 0.11, hx: 0.1, hy: 0.42, hz: 0.1, texture: 'zombie_legs', pivotY: 0.84, swing },
         { cx: 0, cy: 0.42, cz: -0.11, hx: 0.1, hy: 0.42, hz: 0.1, texture: 'zombie_legs', pivotY: 0.84, swing: -swing },
       ];
+    default:
+      return quadruped('pig', 'pig', 'pig_face', 'pig', 0.9, 0.9, 0.6, 0.5, 0.28, swing);
   }
 }
 
