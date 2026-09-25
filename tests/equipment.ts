@@ -20,6 +20,16 @@ import {
 import { BUCKET, HELMET, LEGS } from '../client/src/gfx/art/equipment-maps.js';
 import { TILE, TILE_PX } from '../client/src/gfx/tile.js';
 import { allItemIds, itemDef } from '../shared/src/items.js';
+import { Block } from '../shared/src/blockids.js';
+import { Item } from '../shared/src/itemids.js';
+import {
+  blockModel, extrudeSprite, faceShade, spriteMask, spriteModel, type Model,
+} from '../client/src/gfx/extrude.js';
+import { buildHeldMesh, heldAsTool, heldTransform } from '../client/src/gfx/held.js';
+import { DROPPED_SPRITE, buildItemMesh } from '../client/src/gfx/itemmesh.js';
+import type { DroppedItem } from '../client/src/machines.js';
+import { FLOATS_PER_VERTEX } from '../client/src/mesher.js';
+import { nodeAtlas } from './diagnostics/offscreen.js';
 
 let failures = 0;
 function check(label: string, ok: boolean, extra = ''): void {
@@ -347,6 +357,183 @@ function components(mask: boolean[]): number {
     if (px[i + 3] > 128 && px[i] > 200) light++;
   }
   check('the bow is strung', light >= 36, `${light}/40 samples on the string`);
+}
+
+// --- 3D items: extruded icons and miniature blocks ------------------------------------
+
+/** A quad's own winding normal, from its first three corners. */
+function windingNormal(m: Model, q: number): [number, number, number] {
+  const p = (c: number, k: number): number => m.pos[q * 12 + c * 3 + k];
+  const e1 = [p(1, 0) - p(0, 0), p(1, 1) - p(0, 1), p(1, 2) - p(0, 2)];
+  const e2 = [p(2, 0) - p(0, 0), p(2, 1) - p(0, 1), p(2, 2) - p(0, 2)];
+  const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+  const l = Math.hypot(n[0], n[1], n[2]) || 1;
+  return [n[0] / l, n[1] / l, n[2] / l];
+}
+
+function bounds(pos: Float32Array): { lo: number[]; hi: number[] } {
+  const lo = [Infinity, Infinity, Infinity];
+  const hi = [-Infinity, -Infinity, -Infinity];
+  for (let i = 0; i < pos.length; i++) {
+    lo[i % 3] = Math.min(lo[i % 3], pos[i]);
+    hi[i % 3] = Math.max(hi[i % 3], pos[i]);
+  }
+  return { lo, hi };
+}
+
+function dropped(id: number, x: number, y: number, z: number): DroppedItem {
+  return { id, x, y, z, vx: 0, vy: 0, vz: 0, count: 1, age: 0, pickupDelay: 0 } as DroppedItem;
+}
+
+{
+  const { px, size } = renderTile('sword_diamond');
+  const sword = extrudeSprite(px, size, 'sword_diamond');
+  const { grid: g, solid } = spriteMask(px, size);
+  const at = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < g && y < g && solid[y * g + x] === 1;
+
+  // Front faces cover every opaque cell exactly once and nothing else.
+  const cover = new Int32Array(g * g);
+  let fronts = 0;
+  let wallsX = 0;
+  let wallsY = 0;
+  for (let q = 0; q < sword.quads; q++) {
+    const { lo, hi } = bounds(sword.pos.subarray(q * 12, q * 12 + 12));
+    if (sword.normal[q * 3 + 2] > 0.5) {
+      fronts++;
+      for (let cy = Math.round((0.5 - hi[1]) * g); cy < Math.round((0.5 - lo[1]) * g); cy++) {
+        for (let cx = Math.round((lo[0] + 0.5) * g); cx < Math.round((hi[0] + 0.5) * g); cx++) cover[cy * g + cx]++;
+      }
+    } else if (Math.abs(sword.normal[q * 3]) > 0.5) {
+      wallsX += Math.round((hi[1] - lo[1]) * g);
+    } else if (Math.abs(sword.normal[q * 3 + 1]) > 0.5) {
+      wallsY += Math.round((hi[0] - lo[0]) * g);
+    }
+  }
+  let wrong = 0;
+  for (let i = 0; i < g * g; i++) if (cover[i] !== solid[i]) wrong++;
+  check('an extruded sword has faces only where the icon is opaque, each cell once',
+    wrong === 0 && fronts > 0, `${wrong} cells wrong, ${fronts} front rectangles`);
+
+  // Every opaque/open boundary gets exactly one texel of wall.
+  let edgesX = 0;
+  let edgesY = 0;
+  for (let y = 0; y < g; y++) {
+    for (let x = 0; x < g; x++) {
+      if (!at(x, y)) continue;
+      if (!at(x - 1, y)) edgesX++;
+      if (!at(x + 1, y)) edgesX++;
+      if (!at(x, y - 1)) edgesY++;
+      if (!at(x, y + 1)) edgesY++;
+    }
+  }
+  check('the sword has a side wall along every edge of its silhouette',
+    wallsX === edgesX && wallsY === edgesY && edgesX > 0,
+    `walls ${wallsX}+${wallsY}, edges ${edgesX}+${edgesY}`);
+
+  let badWinding = 0;
+  for (let q = 0; q < sword.quads; q++) {
+    const w = windingNormal(sword, q);
+    const n = [sword.normal[q * 3], sword.normal[q * 3 + 1], sword.normal[q * 3 + 2]];
+    if (w[0] * n[0] + w[1] * n[1] + w[2] * n[2] < 0.99) badWinding++;
+  }
+  check('every quad winds outward (the world pass culls back faces)', badWinding === 0,
+    `${badWinding} of ${sword.quads} wrong`);
+
+  const b = bounds(sword.pos);
+  check('the sword is one texel thick', Math.abs(b.hi[2] - b.lo[2] - 1 / g) < 1e-6,
+    `${(b.hi[2] - b.lo[2]).toFixed(4)} vs ${(1 / g).toFixed(4)}`);
+
+  // Merged runs keep the geometry small enough to rebuild every frame.
+  check('the sword stays a few hundred quads at most', sword.quads < 260, `${sword.quads} quads`);
+
+  // Walls sample the texel just inside their edge, so the rim is the icon's outline.
+  let offEdge = 0;
+  for (let q = 0; q < sword.quads; q++) {
+    if (Math.abs(sword.normal[q * 3 + 2]) > 0.5) continue;
+    const u = (sword.uv[q * 8] + sword.uv[q * 8 + 4]) / 2;
+    const v = (sword.uv[q * 8 + 1] + sword.uv[q * 8 + 5]) / 2;
+    if (!at(Math.floor(u * g), Math.floor(v * g))) offEdge++;
+  }
+  check('side walls are painted from opaque edge texels', offEdge === 0, `${offEdge} sample open cells`);
+
+  const blank = extrudeSprite(new Uint8ClampedArray(64 * 64 * 4), 64);
+  const full = extrudeSprite(new Uint8ClampedArray(64 * 64 * 4).fill(255), 64);
+  check('a blank tile extrudes to nothing, a solid one to a single box',
+    blank.quads === 0 && full.quads === 6, `${blank.quads} and ${full.quads} quads`);
+}
+
+{
+  const stone = blockModel(Block.Stone)!;
+  const sb = bounds(stone.pos);
+  check('a held stone block is a whole cube', stone.quads === 6
+    && sb.lo.every((v) => Math.abs(v + 0.5) < 1e-6) && sb.hi.every((v) => Math.abs(v - 0.5) < 1e-6));
+
+  const panel = blockModel(Block.SolarPanel)!;
+  const pb = bounds(panel.pos);
+  check('a held solar panel is its own flat model, not a cube',
+    Math.abs(pb.hi[1] - pb.lo[1] - 2 / 16) < 1e-6, `height ${(pb.hi[1] - pb.lo[1]).toFixed(3)}`);
+  // The side of a slab shows the slab's share of its texture, as in the world.
+  let sideV = 0;
+  for (let q = 0; q < panel.quads; q++) {
+    if (Math.abs(panel.normal[q * 3 + 1]) > 0.5) continue;
+    const vs = [1, 3, 5, 7].map((k) => panel.uv[q * 8 + k]);
+    sideV = Math.max(sideV, Math.max(...vs) - Math.min(...vs));
+  }
+  check('its sides sample a slab-high strip of the tile', Math.abs(sideV - 2 / 16) < 1e-6, sideV.toFixed(3));
+}
+
+{
+  const atlas = nodeAtlas();
+  const a = spriteModel(atlas, 'sword_iron');
+  check('an extruded sprite is cached between frames', spriteModel(atlas, 'sword_iron') === a);
+  const repainted = { ...atlas, revision: atlas.revision + 1 };
+  check('a resource pack (atlas revision bump) re-extrudes it', spriteModel(repainted, 'sword_iron') !== a);
+
+  const shadeOk = Math.abs(faceShade(0, 1, 0) - 1) < 1e-9 && Math.abs(faceShade(0, -1, 0) - 0.5) < 1e-9
+    && Math.abs(faceShade(0, 0, 1) - 0.8) < 1e-9 && Math.abs(faceShade(1, 0, 0) - 0.65) < 1e-9;
+  check('face shading matches the terrain mesher on the axes', shadeOk);
+
+  const F = FLOATS_PER_VERTEX;
+  const held = buildHeldMesh(atlas, { item: Item.DiamondSword, swing: 0, bob: 0 });
+  const swordQuads = spriteModel(atlas, 'sword_diamond').quads;
+  check('the held sword is its extruded model', held.vertices.length === swordQuads * 4 * F,
+    `${held.vertices.length / F} vertices`);
+  let near = 0;
+  for (let i = 0; i < held.vertices.length; i += F) if (held.vertices[i + 2] > -0.2) near++;
+  check('the held sword sits in front of the camera', near === 0, `${near} vertices too near`);
+
+  check('swords and pickaxes are held like tools; ingots are not',
+    heldAsTool(Item.DiamondSword) && heldAsTool(Item.IronPickaxe) && !heldAsTool(Item.IronIngot));
+
+  // Head up: the icon's top-right (blade tip, tool head) sits above its
+  // bottom-left (pommel, handle end) once in the hand.
+  const m = heldTransform({ item: Item.DiamondSword, swing: 0, bob: 0 }, 'tool');
+  const yOf = (x: number, y: number): number => m[4] * x + m[5] * y + m[7];
+  check('a held tool is gripped with its head up', yOf(0.45, 0.45) - yOf(-0.45, -0.45) > 0.25,
+    `tip ${yOf(0.45, 0.45).toFixed(2)} vs pommel ${yOf(-0.45, -0.45).toFixed(2)}`);
+
+  const panel = buildHeldMesh(atlas, { item: Block.SolarPanel, swing: 0, bob: 0 });
+  check('a held block is drawn as its model',
+    panel.vertices.length === blockModel(Block.SolarPanel)!.quads * 4 * F);
+
+  const hand = buildHeldMesh(atlas, { item: null, swing: 0.3, bob: 1 });
+  check('an empty hand still draws an arm', hand.indices.length === 36);
+
+  // Dropped items never sink into the floor, whatever the spin and bob.
+  let lowest = Infinity;
+  let tallest = 0;
+  for (let t = 0; t < 6; t += 0.05) {
+    const d = buildItemMesh(atlas, [dropped(Item.DiamondSword, 0.5, 10, 0.5), dropped(Block.Stone, 3.5, 10, 0.5)], t);
+    let top = -Infinity;
+    for (let i = 0; i < d.vertices.length; i += F) {
+      lowest = Math.min(lowest, d.vertices[i + 1]);
+      if (d.vertices[i] < 2) top = Math.max(top, d.vertices[i + 1]);
+    }
+    tallest = Math.max(tallest, top - 10);
+  }
+  check('dropped items float clear of the ground', lowest > 10, `lowest ${(lowest - 10).toFixed(3)} above it`);
+  check('a dropped sword stands as tall as its icon', tallest > DROPPED_SPRITE * 0.8,
+    `${tallest.toFixed(2)} blocks tall`);
 }
 
 function rgb3(c: number[]): string {
