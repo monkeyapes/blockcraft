@@ -12,6 +12,7 @@
 
 import { Block, blockDef, isLiquid } from '@shared/blocks.js';
 import { Dimension } from '@shared/constants.js';
+import { isFluidSource, isLava, isWater } from '@shared/fluids.js';
 import { Item, canHarvest, preferredTool, toolSpec } from '@shared/items.js';
 import { selectionOf } from '@shared/shapes.js';
 import { isMachine } from '../machines.js';
@@ -211,10 +212,11 @@ registerBreakWith([...HAMMER_ITEMS], (ctx, x, y, z, id) => {
 const BUCKET_REACH = 5;
 
 /**
- * The first liquid cell along the player's line of sight, unless something
- * solid is in the way first. The ordinary cursor looks straight through
- * water -- you build on the lake bed, not on the surface -- so a bucket
- * has to look for itself.
+ * The first still water or lava along the player's line of sight, unless
+ * something solid is in the way first. The ordinary cursor looks straight
+ * through water -- you build on the lake bed, not on the surface -- so a
+ * bucket has to look for itself. It looks through running water too: only
+ * a source holds a bucketful, and a stream is scooped at its spring.
  */
 export function liquidInSight(ctx: GameContext): { x: number; y: number; z: number; id: number } | null {
   const pl = ctx.player;
@@ -226,10 +228,11 @@ export function liquidInSight(ctx: GameContext): { x: number; y: number; z: numb
   traceCells(ox, oy, oz, dx, dy, dz, BUCKET_REACH, (x, y, z) => {
     const id = ctx.getBlock(x, y, z);
     if (id === Block.Air) return false;
-    if (isLiquid(id)) {
+    if (isFluidSource(id)) {
       found = { x, y, z, id };
       return true;
     }
+    if (isLiquid(id)) return false;
     const boxes = selectionOf(id, aroundAt(ctx.world, x, y, z));
     // Something in the way: stop looking, empty-handed.
     return rayBoxes(ox, oy, oz, dx, dy, dz, x, y, z, boxes, BUCKET_REACH) !== null;
@@ -259,13 +262,15 @@ registerItemUseAir(Item.Bucket, (ctx) => {
 
 /**
  * What pouring a liquid into a cell holding this leaves there. Water on lava
- * cools it to obsidian and lava into water sets to cobblestone; the same
- * liquid into itself does nothing.
+ * cools it -- still lava to obsidian, running lava to cobblestone, the same
+ * rule the fluids pack sets them by where they meet -- and lava into water
+ * sets to cobblestone. A source into itself does nothing; into its own
+ * running water it tops the stream up to a source again.
  */
 export function pourResult(liquid: number, into: number): number | null {
   if (into === liquid) return null;
-  if (liquid === Block.Water && into === Block.Lava) return Block.Obsidian;
-  if (liquid === Block.Lava && into === Block.Water) return Block.Cobblestone;
+  if (liquid === Block.Water && isLava(into)) return isFluidSource(into) ? Block.Obsidian : Block.Cobblestone;
+  if (liquid === Block.Lava && isWater(into)) return Block.Cobblestone;
   return liquid;
 }
 

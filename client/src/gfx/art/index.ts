@@ -15,6 +15,7 @@ import { CREATURE_ART, CREATURE_EXTRA } from './creatures.js';
 import { ENTITY_ART, EXTRA_TILES as ENTITY_TILES } from './entities.js';
 import { EQUIPMENT_ART } from './equipment.js';
 import { FARMING_ART, FARMING_EXTRA } from './farming.js';
+import { FLUID_ART } from './fluids.js';
 import { ITEM_ART } from './items.js';
 import { NATURE_ART, NATURE_EXTRA } from './nature.js';
 
@@ -43,6 +44,7 @@ export const ART: Record<string, Recipe> = merge(
   ['art/farming', FARMING_ART],
   ['art/combat', COMBAT_ART],
   ['art/creatures', CREATURE_ART],
+  ['art/fluids', FLUID_ART],
 );
 
 /** Tiles the block/item registries don't reference but the renderer needs. */

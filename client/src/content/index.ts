@@ -8,3 +8,4 @@ import './building.js';
 import './farming.js';
 import './combat.js';
 import './creatures.js';
+import './fluids.js';

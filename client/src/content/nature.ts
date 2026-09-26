@@ -10,6 +10,7 @@
 
 import { Block, blockDef, isReplaceable } from '@shared/blocks.js';
 import { WORLD_Y } from '@shared/constants.js';
+import { isWater as isAnyWater } from '@shared/fluids.js';
 import { APPLE_CHANCE, SAPLING_CHANCE } from '@shared/content/nature.js';
 import { Item } from '@shared/items.js';
 import { treeCells, treeHeight, type TreeKind } from '@shared/terrain.js';
@@ -42,6 +43,7 @@ export function isSoil(id: number): boolean {
     id === Block.SnowyGrass || id === Block.Farmland;
 }
 
+/** Still water: a lily pad floats on a pond, and running water carries it off. */
 const isWater = (id: number): boolean => id === Block.Water;
 
 /** A full, solid block: what a mushroom or a snow layer can rest on. */
@@ -70,9 +72,9 @@ export function canStay(ctx: Reader, x: number, y: number, z: number, id: number
     case Block.Reeds: {
       if (below === Block.Reeds) return true;
       if (!(isSoil(below) || below === Block.Sand)) return false;
-      // The ground under the bottom reed has to touch water.
-      return isWater(ctx.getBlock(x + 1, y - 1, z)) || isWater(ctx.getBlock(x - 1, y - 1, z)) ||
-        isWater(ctx.getBlock(x, y - 1, z + 1)) || isWater(ctx.getBlock(x, y - 1, z - 1));
+      // The ground under the bottom reed has to touch water, still or running.
+      return isAnyWater(ctx.getBlock(x + 1, y - 1, z)) || isAnyWater(ctx.getBlock(x - 1, y - 1, z)) ||
+        isAnyWater(ctx.getBlock(x, y - 1, z + 1)) || isAnyWater(ctx.getBlock(x, y - 1, z - 1));
     }
     case Block.Cactus: {
       if (below !== Block.Sand && below !== Block.Cactus) return false;

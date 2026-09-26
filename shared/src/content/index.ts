@@ -10,9 +10,12 @@ import { BUILDING } from './building.js';
 import { COMBAT } from './combat.js';
 import { CREATURES } from './creatures.js';
 import { FARMING } from './farming.js';
+import { FLUIDS_PACK } from './fluids.js';
 import { NATURE } from './nature.js';
 import type { ContentPack } from './types.js';
 
-export const PACKS: readonly ContentPack[] = [NATURE, BUILDING, FARMING, COMBAT, CREATURES];
+export const PACKS: readonly ContentPack[] = [
+  NATURE, BUILDING, FARMING, COMBAT, CREATURES, FLUIDS_PACK,
+];
 
 export type { BlockSpec, ContentPack, CreativeTab, ItemSpec, SmeltSpec } from './types.js';

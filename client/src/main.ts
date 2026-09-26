@@ -1,6 +1,7 @@
 /** Blockcraft client entry point: input, streaming, game loop. */
 
 import { Block, blockDef, canReplace } from '@shared/blocks.js';
+import { isFlowing, isLava, isWater } from '@shared/fluids.js';
 import { boundsOf, isDynamicShape, selectionOf } from '@shared/shapes.js';
 import { Dimension, SECTION_COUNT, WORLD_Y } from '@shared/constants.js';
 import { HOTBAR_SIZE, Inventory } from '@shared/inventory.js';
@@ -369,14 +370,21 @@ async function start(
       // NoVolt, nothing running. Edits are the only way a machine gets into
       // a chunk, so registering from them catches every one.
       for (const [index, block] of msg.edits) {
+        const x = msg.cx * 16 + (index & 15);
+        const y = index >> 8;
+        const z = msg.cz * 16 + ((index >> 4) & 15);
+        // Running water saved mid-flow picks up where it left off, rather
+        // than standing frozen until something beside it changes. Still
+        // water is left alone: a settled pond has nothing to do.
+        if (isFlowing(block)) noteBlockChanged(x, y, z);
         if (!isMachine(block)) continue;
-        machines.register(msg.cx * 16 + (index & 15), index >> 8, msg.cz * 16 + ((index >> 4) & 15));
+        machines.register(x, y, z);
       }
     },
     set: (msg) => {
       if (msg.dim !== dimension || msg.by === net.selfId) return;
       world?.setBlock(msg.x, msg.y, msg.z, msg.b);
-      noteBlockChanged(msg.x, msg.y, msg.z);
+      noteBlockChanged(msg.x, msg.y, msg.z, true);
       // Another player built a machine: run it here too.
       if (isMachine(msg.b)) machines.register(msg.x, msg.y, msg.z);
     },
@@ -384,7 +392,7 @@ async function start(
       // Server said no: roll the optimistic edit back to its truth.
       if (msg.dim === dimension) {
         world?.setBlock(msg.x, msg.y, msg.z, msg.b);
-        noteBlockChanged(msg.x, msg.y, msg.z);
+        noteBlockChanged(msg.x, msg.y, msg.z, true);
       }
       hud.toast(`Can't do that (${msg.reason})`);
     },
@@ -1738,9 +1746,9 @@ async function start(
       // their own fixed look.
       const sky = dayNight.state();
       const baseSky = dimension === Dimension.Overworld ? sky.sky : look.sky;
-      renderer.sky.color = head === Block.Water
+      renderer.sky.color = isWater(head)
         ? submergedSky('water')
-        : head === Block.Lava
+        : isLava(head)
           ? submergedSky('lava')
           : baseSky;
       // Overcast: pull the sky toward grey and take the edge off the light,

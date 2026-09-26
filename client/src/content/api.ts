@@ -147,6 +147,7 @@ const onBreak = new Map<number, BlockHandler[]>();
 const breakWith = new Map<number, BlockHandler[]>();
 const randomTick = new Map<number, BlockHandler[]>();
 const neighbourChange = new Map<number, BlockHandler[]>();
+const localNeighbourChange = new Map<number, BlockHandler[]>();
 const mobUse: Array<(ctx: GameContext, mob: Mob) => boolean> = [];
 const systems: GameSystem[] = [];
 
@@ -213,9 +214,19 @@ export function registerRandomTick(blocks: number | number[], fn: BlockHandler):
   add(randomTick, blocks, fn);
 }
 
-/** A block beside one of these changed: sand falls when its support goes. */
-export function registerNeighbourChange(blocks: number | number[], fn: BlockHandler): void {
-  add(neighbourChange, blocks, fn);
+/**
+ * A block beside one of these changed: sand falls when its support goes.
+ *
+ * `localOnly` handlers hear only about changes this client made. Something
+ * that answers a change with more changes -- water spreading, drying up --
+ * must run on one client only, the one that caused it: the others receive
+ * its edits from the server, and simulating them again as well would send
+ * every edit twice.
+ */
+export function registerNeighbourChange(
+  blocks: number | number[], fn: BlockHandler, opts: { localOnly?: boolean } = {},
+): void {
+  add(opts.localOnly ? localNeighbourChange : neighbourChange, blocks, fn);
 }
 
 /** Right-clicking a mob. Return true if handled: shearing a sheep, taming a wolf. */
@@ -359,22 +370,30 @@ export function randomTickAround(ctx: GameContext, px: number, pz: number): void
   }
 }
 
-/** Cells whose neighbours changed, waiting to be told. */
+/** Cells whose neighbours changed, waiting to be told, and whether any change was ours. */
 const pending: Array<[number, number, number]> = [];
-const pendingKeys = new Set<string>();
+const pendingKeys = new Map<string, { local: boolean }>();
 
 /**
  * Records that a block changed, so the blocks around it hear about it next
  * frame. Deferred rather than immediate: a falling block that lands and
  * wakes the one above it would otherwise recurse through a whole tower in a
  * single call.
+ *
+ * `remote` marks a change that arrived from the server -- another player's
+ * edit, or a rollback -- which only the ordinary handlers hear about. See
+ * registerNeighbourChange.
  */
-export function noteBlockChanged(x: number, y: number, z: number): void {
-  if (neighbourChange.size === 0) return;
+export function noteBlockChanged(x: number, y: number, z: number, remote = false): void {
+  if (neighbourChange.size === 0 && localNeighbourChange.size === 0) return;
   for (const [dx, dy, dz] of [[0, 0, 0], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {
     const key = `${x + dx},${y + dy},${z + dz}`;
-    if (pendingKeys.has(key)) continue;
-    pendingKeys.add(key);
+    const queued = pendingKeys.get(key);
+    if (queued) {
+      if (!remote) queued.local = true;
+      continue;
+    }
+    pendingKeys.set(key, { local: !remote });
     pending.push([x + dx, y + dy, z + dz]);
   }
 }
@@ -384,10 +403,14 @@ export function flushNeighbourChanges(ctx: GameContext, budget = 256): void {
   let n = 0;
   while (pending.length > 0 && n < budget) {
     const [x, y, z] = pending.shift()!;
-    pendingKeys.delete(`${x},${y},${z}`);
+    const key = `${x},${y},${z}`;
+    const local = pendingKeys.get(key)?.local ?? false;
+    pendingKeys.delete(key);
     const id = ctx.getBlock(x, y, z);
     const handlers = neighbourChange.get(id);
     if (handlers) for (const fn of handlers) fn(ctx, x, y, z, id);
+    const own = local ? localNeighbourChange.get(id) : undefined;
+    if (own) for (const fn of own) fn(ctx, x, y, z, id);
     n++;
   }
 }
@@ -419,6 +442,6 @@ export function registeredCounts(): Record<string, number> {
     blockUse: blockUse.size, itemUse: itemUse.size, itemUseAir: itemUseAir.size,
     itemRelease: itemRelease.size, placement: placement.size, afterPlace: afterPlace.size,
     onBreak: onBreak.size, breakWith: breakWith.size, randomTick: randomTick.size,
-    neighbourChange: neighbourChange.size, mobUse: mobUse.length, systems: systems.length,
+    neighbourChange: neighbourChange.size + localNeighbourChange.size, mobUse: mobUse.length, systems: systems.length,
   };
 }

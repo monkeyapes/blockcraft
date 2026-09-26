@@ -7,8 +7,9 @@
  * hovers on vertical thrust and tilts to move.
  */
 
-import { Block, isLiquid, isSolid } from '@shared/blocks.js';
+import { isLiquid, isSolid } from '@shared/blocks.js';
 import { WORLD_Y } from '@shared/constants.js';
+import { isWater } from '@shared/fluids.js';
 import type { VehicleKind } from '@shared/items.js';
 import type { InputState } from './player.js';
 import type { ClientWorld } from './world.js';
@@ -307,9 +308,9 @@ export class Vehicle {
         Math.floor(this.x), Math.floor(this.y + 0.15), Math.floor(this.z));
       const atDeck = world.getBlock(
         Math.floor(this.x), Math.floor(this.y + spec.height), Math.floor(this.z));
-      if (atHull === Block.Water) {
+      if (isWater(atHull)) {
         // Stronger lift the deeper it is, so it rises to a stable waterline.
-        const submerged = atDeck === Block.Water ? 1 : 0.35;
+        const submerged = isWater(atDeck) ? 1 : 0.35;
         this.vy += (spec.gravity + 26 * submerged) * dt;
         this.vy *= Math.pow(0.02, dt);
       }

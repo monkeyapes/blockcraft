@@ -12,6 +12,7 @@
  */
 
 import { Block, blockDef, isLiquid, isSolid } from '@shared/blocks.js';
+import { flowVector } from '@shared/fluids.js';
 import { Dimension, WORLD_Y } from '@shared/constants.js';
 import {
   MobKind, SPAWN_CAPS, mobDef, spawnGroupIn, type MobDef, type SpawnGroup,
@@ -23,6 +24,8 @@ import type { ClientWorld } from './world.js';
 
 const GRAVITY = 26;
 const TERMINAL = 50;
+/** How fast running water carries a mob along, in blocks a second: the player's current. */
+const MOB_CURRENT = 1.6;
 const MAX_STEP = 0.3;
 const SKIN = 1e-4;
 /**
@@ -887,10 +890,19 @@ export class Mob {
     this.blocked = blocked;
   }
 
-  /** Moves by walk velocity plus knockback, then lets knockback die away. */
+  /**
+   * Moves by walk velocity plus knockback plus any current it is standing
+   * in, then lets knockback die away. A current is never stored in the
+   * knockback, so leaving the stream leaves it at once.
+   */
   private physics(dt: number, world: ClientWorld, walkX: number, walkZ: number): void {
     this.blocked = false;
-    this.move(world, (walkX + this.vx) * dt, this.vy * dt, (walkZ + this.vz) * dt);
+    const [cx, cz] = this.def.flying
+      ? [0, 0]
+      : flowVector((x, y, z) => world.getBlock(x, y, z),
+        Math.floor(this.x), Math.floor(this.y + Math.min(0.5, this.def.height * 0.5)), Math.floor(this.z));
+    this.move(world, (walkX + this.vx + cx * MOB_CURRENT) * dt, this.vy * dt,
+      (walkZ + this.vz + cz * MOB_CURRENT) * dt);
     // Ground friction kills a shove quickly; in the air it carries.
     const friction = this.onGround ? 10 : this.inWater ? 3 : 0.6;
     const keep = Math.exp(-dt * friction);

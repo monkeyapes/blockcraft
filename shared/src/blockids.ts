@@ -242,4 +242,23 @@ export enum Block {
   // --- creatures: 200-209 (shared/src/content/creatures.ts) -----------------
   Cobweb = 200,
   // 201-209 free for the creatures pack.
+
+  // --- fluids: 210-229 (shared/src/content/fluids.ts) -----------------------
+  // Water and Lava above are the sources. A chunk has no room for a fluid
+  // level beside the block, so, like a conveyor's facing, the level lives in
+  // the id: one id per step away from the source, and one for a column
+  // falling straight down.
+  WaterFlow1 = 210,
+  WaterFlow2 = 211,
+  WaterFlow3 = 212,
+  WaterFlow4 = 213,
+  WaterFlow5 = 214,
+  WaterFlow6 = 215,
+  WaterFlow7 = 216,
+  WaterFalling = 217,
+  LavaFlow1 = 218,
+  LavaFlow2 = 219,
+  LavaFlow3 = 220,
+  LavaFalling = 221,
+  // 222-229 free for the fluids pack.
 }

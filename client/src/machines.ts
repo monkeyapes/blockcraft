@@ -10,6 +10,7 @@
  */
 
 import { Block, blockDef, isSolid } from '@shared/blocks.js';
+import { fluidHeight, flowVector, isFalling, isWater } from '@shared/fluids.js';
 import { blockDrop, smeltResult, fuelValue } from '@shared/items.js';
 import {
   CONVEYOR_FACING, CONVEYOR_SPEED, COLLECTOR_RANGE, MACHINE_HZ, MINER_PERIOD,
@@ -38,6 +39,10 @@ const DESPAWN_S = 300;
 const PICKUP_RANGE = 1.4;
 /** Ceiling on live entities; oldest go first. */
 const MAX_ITEMS = 400;
+/** How fast running water carries a floating item, in blocks a second. */
+const ITEM_DRIFT = 1.8;
+/** How far below the surface a floating item rides. */
+const FLOAT_DEPTH = 0.15;
 
 /** Every way out of a tube. */
 const TUBE_DIRS: ReadonlyArray<readonly [number, number, number]> = [
@@ -317,16 +322,35 @@ export class MachineWorld {
       const below = world.getBlock(
         Math.floor(it.x), Math.floor(it.y - 0.12), Math.floor(it.z));
       const facing = CONVEYOR_FACING[below as Block];
+      // Water holds an item up and carries it with the current; a falling
+      // column only carries it down, so a waterfall delivers its cargo to
+      // the pool below rather than holding it in mid-air.
+      const floating = isWater(inside) && !isFalling(inside);
       if (facing) {
         it.vx += (facing[0] * CONVEYOR_SPEED - it.vx) * Math.min(1, dt * 8);
         it.vz += (facing[1] * CONVEYOR_SPEED - it.vz) * Math.min(1, dt * 8);
+      } else if (floating) {
+        const [fx, fz] = flowVector((x, y, z) => world.getBlock(x, y, z),
+          Math.floor(it.x), Math.floor(it.y), Math.floor(it.z));
+        const k = Math.min(1, dt * 3);
+        it.vx += (fx * ITEM_DRIFT - it.vx) * k;
+        it.vz += (fz * ITEM_DRIFT - it.vz) * k;
       } else {
         const drag = Math.pow(0.02, dt);
         it.vx *= drag;
         it.vz *= drag;
       }
 
-      it.vy -= GRAVITY * dt;
+      if (floating) {
+        // Rise to just under the surface and bob there.
+        const cellY = Math.floor(it.y);
+        const top = isWater(world.getBlock(Math.floor(it.x), cellY + 1, Math.floor(it.z)))
+          ? 1 : fluidHeight(inside);
+        const target = Math.max(-1, Math.min(1.5, (cellY + top - FLOAT_DEPTH - it.y) * 4));
+        it.vy += (target - it.vy) * Math.min(1, dt * 5);
+      } else {
+        it.vy -= GRAVITY * dt;
+      }
       const nx = it.x + it.vx * dt;
       const ny = it.y + it.vy * dt;
       const nz = it.z + it.vz * dt;
@@ -648,10 +672,11 @@ export class MachineWorld {
         output = rated * (solarOutput(this.skyBrightness, exposed, this.raining) / 2);
       } else if (block === Block.WaterWheel) {
         // Needs water touching it to turn at all, which is what stops one
-        // being dropped in the middle of a base for free power.
+        // being dropped in the middle of a base for free power. Still or
+        // running: a wheel set in a stream is the whole idea of one.
         let wet = false;
         for (const [dx, dy, dz] of NEIGHBOURS) {
-          if (world.getBlock(x + dx, y + dy, z + dz) === Block.Water) wet = true;
+          if (isWater(world.getBlock(x + dx, y + dy, z + dz))) wet = true;
         }
         output = wet ? rated : 0;
       } else if (block === Block.Battery) {

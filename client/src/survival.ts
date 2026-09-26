@@ -1,6 +1,7 @@
 /** Survival rules: health, environmental damage, and block-breaking progress. */
 
-import { Block, blockDef } from '@shared/blocks.js';
+import { blockDef } from '@shared/blocks.js';
+import { isLava, isWater } from '@shared/fluids.js';
 import { breakTime, damageAfterArmor } from '@shared/items.js';
 import type { Player } from './player.js';
 import type { ClientWorld } from './world.js';
@@ -127,14 +128,14 @@ export class Survival {
     }
     if (this.dead) return;
 
-    this.trackFall(player);
+    this.trackFall(player, world);
     this.environment(dt, player, world);
     this.consumeFood(dt, player);
     this.regenerate(dt);
   }
 
   /** Fall damage is measured from the highest point of an unsupported drop. */
-  private trackFall(player: Player): void {
+  private trackFall(player: Player, world: ClientWorld): void {
     if (player.flying || this.inVehicle) {
       this.fallStart = null;
       return;
@@ -152,6 +153,11 @@ export class Survival {
 
     const distance = this.fallStart - player.y;
     this.fallStart = null;
+    // Landing in water breaks a fall, however shallow: a stream one step
+    // from its source is still a splash. Checked here as well as below,
+    // because a fast fall can reach the water and the floor in one frame.
+    const feet = world.getBlock(Math.floor(player.x), Math.floor(player.y + 0.1), Math.floor(player.z));
+    if (isWater(feet)) return;
     if (distance > SAFE_FALL) {
       this.damage(Math.floor(distance - SAFE_FALL), 'fell from a high place');
     }
@@ -164,7 +170,7 @@ export class Survival {
       Math.floor(player.x), Math.floor(player.y + 1.6), Math.floor(player.z));
 
     // Lava burns steadily while you are standing in it.
-    if (feet === Block.Lava || head === Block.Lava) {
+    if (isLava(feet) || isLava(head)) {
       this.lavaTimer += dt;
       while (this.lavaTimer >= 0.5) {
         this.lavaTimer -= 0.5;
@@ -175,8 +181,11 @@ export class Survival {
       this.lavaTimer = 0;
     }
 
+    // Water breaks a fall, from the moment you are in it.
+    if (isWater(feet) || isWater(head)) this.fallStart = null;
+
     // Breath, then drowning.
-    if (head === Block.Water) {
+    if (isWater(head)) {
       this.air = Math.max(0, this.air - dt);
       if (this.air === 0) {
         this.drownTimer += dt;

@@ -11,6 +11,7 @@
  */
 
 import { Block, isSolid } from '@shared/blocks.js';
+import { isWater } from '@shared/fluids.js';
 import { Item } from '@shared/items.js';
 import { CROPS, CROP_BLOCKS, cropAt, isFarmland, type CropKind } from '@shared/content/farming.js';
 import {
@@ -46,7 +47,8 @@ export function isHydrated(ctx: GameContext, x: number, y: number, z: number): b
   for (let dy = 0; dy <= 1; dy++) {
     for (let dz = -HYDRATION_RANGE; dz <= HYDRATION_RANGE; dz++) {
       for (let dx = -HYDRATION_RANGE; dx <= HYDRATION_RANGE; dx++) {
-        if (ctx.getBlock(x + dx, y + dy, z + dz) === Block.Water) return true;
+        // Running water counts: an irrigation channel is a stream.
+        if (isWater(ctx.getBlock(x + dx, y + dy, z + dz))) return true;
       }
     }
   }

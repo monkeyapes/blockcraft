@@ -8,6 +8,7 @@ import { WebSocketServer, type WebSocket } from 'ws';
 
 import { Block } from '@shared/blocks.js';
 import { Dimension, SEA_LEVEL, dimChunkKey } from '@shared/constants.js';
+import { isFluidEdit } from '@shared/fluids.js';
 import { travelThroughPortal, useItemOnWorld } from '@shared/portal.js';
 import { columnHeight, surfaceY } from '@shared/terrain.js';
 import { adminEnabled, handleAdmin, type AdminHooks } from './admin.js';
@@ -36,6 +37,14 @@ function findClientDir(): string {
 
 const CLIENT_DIR = findClientDir();
 const REACH = 8; // generous: covers latency and creative-mode reach
+/**
+ * How far from a player the water and lava it set running may change the
+ * world. Flow is simulated by the client that caused it and arrives as
+ * ordinary edits, but a stream runs well past arm's reach -- a bucket
+ * poured on a clifftop lands twenty blocks down. Only the edits a fluid
+ * makes by itself get this range; see isFluidEdit.
+ */
+const FLUID_REACH = 96;
 const MAX_NAME = 16;
 const SAVE_INTERVAL_MS = 30_000;
 /** Stops a player bouncing straight back through the portal they arrived in. */
@@ -384,7 +393,8 @@ function handle(player: Player, msg: ClientMessage): void {
       const dx = x + 0.5 - player.x;
       const dy = y + 0.5 - (player.y + 1.62);
       const dz = z + 0.5 - player.z;
-      const tooFar = dx * dx + dy * dy + dz * dz > REACH * REACH;
+      const reach = isFluidEdit(world.getBlock(dim, x, y, z), b) ? FLUID_REACH : REACH;
+      const tooFar = dx * dx + dy * dy + dz * dz > reach * reach;
 
       if (dim !== player.dim || tooFar || !world.canPlace(dim, x, y, z, b)) {
         send(player, {

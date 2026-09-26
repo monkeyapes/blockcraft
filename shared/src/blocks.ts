@@ -103,8 +103,11 @@ def(Block.Leaves, 'Leaves', 'leaves', { hardness: 0.3, tool: 'shears' });
 def(Block.Planks, 'Planks', 'planks', { hardness: 2 });
 def(Block.Bricks, 'Bricks', 'brick', { hardness: 3 });
 def(Block.Glass, 'Glass', 'glass', { opaque: false, translucent: true, hardness: 0.5 });
+// The sources. The fluids pack (shared/src/content/fluids.ts) adds the states
+// they flow and fall as, all in the source's family.
 def(Block.Water, 'Water', 'water', {
   solid: false, opaque: false, translucent: true, liquid: true, breakable: false, hardness: 0,
+  family: 'water',
 });
 def(Block.Glowstone, 'Glowstone', 'glowstone', { light: 15, hardness: 0.6 });
 // The inventory shows the flat torch sprite: the placed model is a thin stick
@@ -191,7 +194,7 @@ def(Block.Netherrack, 'Netherrack', 'netherrack', { hardness: 0.7 });
 def(Block.SoulSand, 'Soul Sand', 'soul_sand', { hardness: 1, speedFactor: 0.55 });
 def(Block.Lava, 'Lava', 'lava', {
   solid: false, opaque: false, translucent: true, liquid: true, breakable: false,
-  light: 15, hardness: 0,
+  light: 15, hardness: 0, family: 'lava',
 });
 def(Block.Obsidian, 'Obsidian', 'obsidian', { hardness: 12 });
 def(Block.NetherPortal, 'Nether Portal', 'portal', {

@@ -3,6 +3,7 @@
 import { blockDef, isLiquid, isReplaceable, isSolid } from '@shared/blocks.js';
 import { collisionOf, isDynamicShape, selectionOf, type Around, type Box } from '@shared/shapes.js';
 import { WORLD_Y } from '@shared/constants.js';
+import { flowVector } from '@shared/fluids.js';
 import type { Vec3 } from './math.js';
 import type { ClientWorld } from './world.js';
 
@@ -22,6 +23,12 @@ const FLY_SPRINT = 28;
 const CLIMB_SPEED = 4.0;
 const CLIMB_MOVE_SPEED = 2.6;
 const SWIM_SPEED = 3.6;
+/**
+ * How fast running water carries a body, in blocks a second. Well under
+ * swimming speed, so a player can always swim upstream -- slowly -- and a
+ * river is something to ride rather than a trap.
+ */
+export const CURRENT_SPEED = 1.6;
 const REACH = 6;
 /** Longest distance any single collision step may cover, in blocks. */
 const MAX_STEP = 0.35;
@@ -258,7 +265,31 @@ export class Player {
     this.vx += (tx - this.vx) * response;
     this.vz += (tz - this.vz) * response;
 
-    this.move(world, this.vx * dt, this.vy * dt, this.vz * dt);
+    // Running water carries the body along. Added to the move rather than
+    // to the velocity, which the controls overwrite every frame on ordinary
+    // ground: a current is felt as a steady drift whatever you are doing.
+    const [cx, cz] = this.current(world);
+    this.move(world, (this.vx + cx) * dt, this.vy * dt, (this.vz + cz) * dt);
+  }
+
+  /**
+   * The push of any current around the body, in blocks a second: the flow
+   * at the feet and at the chest, averaged, so wading through the thin edge
+   * of a stream drags a little and being swept down a river a lot.
+   */
+  current(world: ClientWorld): [number, number] {
+    const get = (x: number, y: number, z: number): number => world.getBlock(x, y, z);
+    const bx = Math.floor(this.x);
+    const bz = Math.floor(this.z);
+    const [ax, az] = flowVector(get, bx, Math.floor(this.y + 0.1), bz);
+    const [bx2, bz2] = flowVector(get, bx, Math.floor(this.y + 1.1), bz);
+    const fx = ax + bx2;
+    const fz = az + bz2;
+    const len = Math.hypot(fx, fz);
+    if (len < 1e-6) return [0, 0];
+    // Full speed when both agree, half when only one cell is running.
+    const strength = Math.min(1, len / 2) * CURRENT_SPEED;
+    return [(fx / len) * strength, (fz / len) * strength];
   }
 
   /** The worst contact damage of anything the body is pressed against. */
