@@ -660,6 +660,14 @@ CREATURE_ART.mob_blaze_face = face(CREATURE_ART.mob_blaze_skin, [
   '........',
   '........',
 ], { k: [70, 30, 8], o: [255, 240, 180] });
+/** Churning heat: pale yellow licked through with orange, hottest in the middle. */
+CREATURE_ART.mob_blaze_core = (t) => {
+  t.fill([255, 236, 150], 10);
+  t.mottle([255, 170, 60], 0.45, 3);
+  t.mottle([255, 250, 214], 0.3, 5);
+  for (let y = 0; y < 16; y += 4) for (let x = 0; x < 16; x++) t.shade(x, y + ((x >> 2) % 2), -18);
+  t.posterize(5);
+};
 CREATURE_ART.mob_blaze_rod = (t) => {
   t.fill([246, 158, 36], 10);
   for (let y = 0; y < 16; y += 3) for (let x = 0; x < 16; x++) t.shade(x, y, 30);

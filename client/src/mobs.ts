@@ -11,7 +11,7 @@
  * swells and bursts, a slime hops and splits, a wolf can be tamed.
  */
 
-import { Block, isLiquid, isSolid } from '@shared/blocks.js';
+import { Block, blockDef, isLiquid, isSolid } from '@shared/blocks.js';
 import { Dimension, WORLD_Y } from '@shared/constants.js';
 import {
   MobKind, SPAWN_CAPS, mobDef, spawnGroupIn, type MobDef, type SpawnGroup,
@@ -422,10 +422,17 @@ export class Mob {
     this.inWater = isLiquid(mid);
   }
 
+  /**
+   * The same pace rule the player walks by: whatever the feet are in (a web)
+   * or standing on (soul sand) sets the speed. A spider is at home in a web.
+   */
   private slowdown(world: ClientWorld): number {
-    const id = world.getBlock(Math.floor(this.x), Math.floor(this.y + 0.1), Math.floor(this.z));
-    if (id === Block.Cobweb) return this.def.brain === 'spider' ? 1 : 0.15;
-    return 1;
+    const x = Math.floor(this.x);
+    const z = Math.floor(this.z);
+    const feet = world.getBlock(x, Math.floor(this.y + 0.1), z);
+    if (feet === Block.Cobweb && this.def.brain === 'spider') return 1;
+    const under = world.getBlock(x, Math.floor(this.y - 0.05), z);
+    return Math.min(blockDef(feet).speedFactor, this.onGround ? blockDef(under).speedFactor : 1);
   }
 
   /** Turns the head toward a player who is close, the way animals do. */

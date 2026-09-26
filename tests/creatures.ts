@@ -598,6 +598,21 @@ check('big and medium slimes drop nothing themselves',
   check('and hops up a full block', block > 6, `x ${block.toFixed(2)}`);
   check('the step height clears a block but not a fence', STEP_UP >= 1 && STEP_UP < 1.5, `${STEP_UP}`);
 
+  // A band of webs: a zombie wades through at a crawl, a spider does not notice.
+  const through = (kind: MobKind, webs: boolean): number => {
+    const world = makeWorld(() => 0);
+    if (webs) for (let x = 3; x <= 12; x++) for (let z = -3; z <= 3; z++) world.put(x, GROUND + 1, z, Block.Cobweb);
+    const mob = new Mob(kind, 2.5, GROUND + 1, 0.5, 0);
+    sim(mob, world, { x: 14.5, y: GROUND + 1, z: 0.5 }, 2, NIGHT);
+    return mob.x - 2.5;
+  };
+  const clear = through(MobKind.Zombie, false);
+  const webbed = through(MobKind.Zombie, true);
+  check('webs slow a zombie to a crawl', webbed < clear * 0.4, `${webbed.toFixed(1)} vs ${clear.toFixed(1)} blocks`);
+  const spiderClear = through(MobKind.Spider, false);
+  const spiderWebbed = through(MobKind.Spider, true);
+  check('but not a spider', spiderWebbed > spiderClear * 0.9, `${spiderWebbed.toFixed(1)} vs ${spiderClear.toFixed(1)} blocks`);
+
   // No tunnelling: a mob flung hard at a wall stops at it.
   const world = makeWorld();
   for (let z = -4; z <= 4; z++) for (let y = GROUND + 1; y <= GROUND + 3; y++) world.put(3, y, z, Block.Stone);

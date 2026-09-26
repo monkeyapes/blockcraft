@@ -534,8 +534,12 @@ function blaze(mob: Mob): Part[] {
   const head = pose([
     box(-4, 20, -4, 4, 28, 4, 'mob_blaze_skin', { faces: { front: 'mob_blaze_face' }, glow: true }),
   ], headXf(mob, [0, 20, 0]));
+  // A white-hot core under the head, pulsing: the heart the rods circle.
+  const pulse = 1 + Math.sin(mob.age * 7) * 0.12;
+  const core = 2.2 * pulse;
   return [
-    box(-1.5, 12, -1.5, 1.5, 20, 1.5, 'mob_blaze_rod', { glow: true }),
+    box(-core, 11, -core, core, 20, core, 'mob_blaze_core', { glow: true }),
+    box(-1, 6, -1, 1, 11, 1, 'mob_blaze_rod', { glow: true }),
     ...head, ...rods,
   ];
 }
@@ -784,16 +788,22 @@ export interface WorldMesh {
   indices: Uint32Array;
 }
 
-/** Pose for this frame's corpse: tipped over onto its side, shrinking at the end. */
-function deathPose(mob: Mob): { roll: Xf | null; scale: number; fade: number } {
+/**
+ * Pose for this frame's corpse: tipped over onto its right side, shrinking
+ * at the end. It rolls about the outermost edge of the model rather than of
+ * the collision box, so arms held out in front of a zombie, or a sheep's
+ * fleece, come to rest on the ground instead of sinking into it.
+ */
+function deathPose(mob: Mob, parts: Part[]): { roll: Xf | null; scale: number; fade: number } {
   if (!mob.dead || mob.def.boss) return { roll: null, scale: 1, fade: 1 };
   const t = Math.min(1, mob.deathTime / DEATH_TIME);
   const tip = Math.min(1, t / 0.55);
   const eased = 1 - (1 - tip) * (1 - tip);
-  const halfWidth = (mob.def.width / 2) / P;
+  let edge = (mob.def.width / 2) / P;
+  for (const part of parts) edge = Math.max(edge, part.hi[2]);
   const late = Math.max(0, (t - 0.6) / 0.4);
   return {
-    roll: rot([0, 0, halfWidth], eased * Math.PI / 2, 0, 0),
+    roll: rot([0, 0, edge], eased * Math.PI / 2, 0, 0),
     scale: 1 - late * 0.85,
     fade: 1 - t * 0.6,
   };
@@ -816,7 +826,8 @@ export function buildMobMesh(atlas: Atlas, mobs: Mob[]): WorldMesh {
     if (mob.gone) continue;
     if (mob.dead && (mob.def.boss || mob.deathTime >= DEATH_TIME)) continue;
     const yaw = (mob.yaw * Math.PI) / 180;
-    const death = deathPose(mob);
+    let parts = partsFor(mob);
+    const death = deathPose(mob, parts);
     const scale = death.scale * bodyScale(mob);
     const frame: Frame = {
       x: mob.x,
@@ -830,7 +841,6 @@ export function buildMobMesh(atlas: Atlas, mobs: Mob[]): WorldMesh {
       height: mob.def.height,
     };
 
-    let parts = partsFor(mob);
     if (mob.def.brain === 'slime' && mob.squash > 0) {
       // Squash: flatter and wider for a moment after landing.
       const sy = 1 - mob.squash * 0.3;
