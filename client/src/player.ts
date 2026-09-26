@@ -300,6 +300,11 @@ export class Player {
     this.y += dy;
     const hit = this.resolve(world, 1, dy);
     if (hit) {
+      // Already bounced earlier in this frame: the later sub-steps still
+      // carry the frame's downward travel, and without this they would land
+      // on the pad again and kill the bounce -- so any long or low-frame-rate
+      // fall landed dead. Only a bounce makes vy positive while moving down.
+      if (dy < 0 && this.vy > 0) return;
       const bounce = dy < 0 && !this.sneaking ? this.bounceUnder(world) : 0;
       if (bounce > 0 && this.vy < -3) {
         // Thrown back up. Sneaking lands normally, so a pad can be stood on.

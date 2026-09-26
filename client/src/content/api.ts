@@ -67,6 +67,14 @@ export interface GameContext {
   toast(text: string): void;
   chat(text: string): void;
   breakParticles(x: number, y: number, z: number, id: number): void;
+  /** How many of an item the player carries, anywhere in the inventory. */
+  countItem(id: number): number;
+  /**
+   * Takes items from anywhere in the inventory: a bow drawing arrows from the
+   * bag, not just the hand. False, taking nothing, if there are not enough.
+   * Always succeeds in creative without taking.
+   */
+  takeItem(id: number, count: number): boolean;
   /** Plays the held-item swing. */
   swing(): void;
   random(): number;
