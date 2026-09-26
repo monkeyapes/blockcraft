@@ -348,6 +348,11 @@ mod tests {
         );
         let below = g.streamer.world.block(0, start_y as i32 - 1, 0);
         assert!(g.table.get(below).solid);
+        // And stays put with no input: nothing drifts.
+        for _ in 0..120 {
+            g.tick(1.0 / 60.0);
+        }
+        assert_eq!(g.player.pos, Vec3::new(0.5, start_y, 0.5));
     }
 
     #[test]

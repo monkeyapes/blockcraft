@@ -34,6 +34,7 @@ pub struct ContentFile {
     pub items: Vec<ItemJson>,
 }
 
+#[allow(dead_code)] // tile_px: part of the format, for tools and Phase 2 UI
 #[derive(Debug, Deserialize, Clone)]
 pub struct AtlasInfo {
     pub file: String,
@@ -95,6 +96,8 @@ pub struct BoxJson {
     pub tex: Option<[u16; 3]>,
 }
 
+/// Items are read and checked now, and used by the inventory in Phase 2.
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct ItemJson {
     pub id: u16,
@@ -126,6 +129,11 @@ pub struct ModelBox {
 }
 
 /// Everything the game knows about one block id.
+///
+/// `hardness` (mining time) and `dynamic` (neighbour-aware shapes) are
+/// carried for Phase 2; creative-style instant breaking and stand-alone
+/// shapes need neither yet.
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct BlockInfo {
     pub name: String,

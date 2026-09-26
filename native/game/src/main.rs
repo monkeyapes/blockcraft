@@ -73,6 +73,8 @@ pub struct Options {
     pub stress_world: bool,
     /// Build a row of sample blocks at the spawn (screenshots).
     pub showcase: bool,
+    /// Once loaded, fly straight ahead at full speed (benchmarking).
+    pub autopilot: bool,
 }
 
 impl Options {
@@ -107,6 +109,7 @@ impl Default for Options {
             log: None,
             stress_world: false,
             showcase: false,
+            autopilot: false,
         }
     }
 }
@@ -135,6 +138,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Options, String> {
             "--no-vsync" => o.vsync = false,
             "--stress-world" => o.stress_world = true,
             "--showcase" => o.showcase = true,
+            "--autopilot" => o.autopilot = true,
             "--assets" => o.assets = Some(value("--assets")?.into()),
             "--screenshot" => o.screenshot = Some(value("--screenshot")?.into()),
             "--camera" => {
@@ -155,7 +159,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Options, String> {
                 return Err(
                     "usage: blockcraft-native [--seed N] [--distance N] [--size WxH] \
                     [--no-vsync] [--threads N] [--assets DIR] [--run-for SECONDS] \
-                    [--screenshot PATH [--camera X,Y,Z,YAW,PITCH] [--showcase]] [--stress-world] [--log PATH]"
+                    [--screenshot PATH [--camera X,Y,Z,YAW,PITCH] [--showcase]] [--stress-world] [--autopilot] [--log PATH]"
                         .into(),
                 )
             }

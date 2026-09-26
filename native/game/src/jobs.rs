@@ -160,11 +160,6 @@ impl JobPool {
         }
     }
 
-    pub fn submit(&self, job: Job) {
-        self.queue.state.lock().unwrap().jobs.push(job);
-        self.queue.ready.notify_one();
-    }
-
     pub fn submit_all(&self, jobs: impl IntoIterator<Item = Job>) {
         let mut s = self.queue.state.lock().unwrap();
         let before = s.jobs.len();
@@ -189,6 +184,7 @@ impl JobPool {
         self.queue.state.lock().unwrap().jobs.retain(|j| keep(j));
     }
 
+    #[cfg(test)]
     pub fn queued(&self) -> usize {
         self.queue.state.lock().unwrap().jobs.len()
     }

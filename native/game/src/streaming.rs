@@ -265,11 +265,7 @@ impl Streamer {
                 heights[k] = Some(c.heights.clone());
             }
         }
-        Some(Neighbourhood {
-            center: pos,
-            chunks,
-            heights,
-        })
+        Some(Neighbourhood { chunks, heights })
     }
 
     /// Writes a block and re-meshes whatever it changes, ahead of the queue.

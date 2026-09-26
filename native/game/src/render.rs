@@ -118,6 +118,7 @@ pub struct Renderer {
     free_slots: Vec<u32>,
     next_slot: u32,
     sections: HashMap<(ChunkPos, usize), GpuSection>,
+    pending: std::collections::VecDeque<Event>,
     depth: Option<(wgpu::TextureView, u32, u32)>,
     line_buffer: wgpu::Buffer,
     hud_buffer: wgpu::Buffer,
@@ -421,6 +422,7 @@ impl Renderer {
             free_slots: Vec::new(),
             next_slot: 0,
             sections: HashMap::new(),
+            pending: Default::default(),
             depth: None,
             line_buffer,
             hud_buffer,
@@ -433,9 +435,36 @@ impl Renderer {
         self.format
     }
 
-    /// Applies what the streamer decided: uploads new meshes, frees old ones.
+    /// Applies what the streamer decided, all of it, now. For loading
+    /// screens and screenshots; a running game uses `queue` and `flush`.
     pub fn apply(&mut self, events: Vec<Event>) {
+        self.queue(events);
+        self.flush(None);
+    }
+
+    /// Takes the streamer's events without acting on them yet. A re-mesh of
+    /// a section already on screen (an edit, usually) goes to the front: the
+    /// player is looking at it, and it is one upload, not hundreds.
+    pub fn queue(&mut self, events: Vec<Event>) {
         for event in events {
+            match &event {
+                Event::Mesh { pos, section, .. }
+                    if self.sections.contains_key(&(*pos, *section)) =>
+                {
+                    self.pending.push_front(event)
+                }
+                _ => self.pending.push_back(event),
+            }
+        }
+    }
+
+    /// Uploads queued meshes until `budget` is spent (or all, for None).
+    /// Crossing a chunk border brings in a few hundred sections at once;
+    /// spreading their uploads over frames is what keeps that from being a
+    /// visible hitch.
+    pub fn flush(&mut self, budget: Option<std::time::Duration>) {
+        let start = std::time::Instant::now();
+        while let Some(event) = self.pending.pop_front() {
             match event {
                 Event::Mesh { pos, section, mesh } => self.upload(pos, section, mesh),
                 Event::Unload(pos) => {
@@ -444,7 +473,15 @@ impl Renderer {
                     }
                 }
             }
+            if budget.is_some_and(|b| start.elapsed() >= b) {
+                break;
+            }
         }
+    }
+
+    /// Meshes waiting for their upload.
+    pub fn pending(&self) -> usize {
+        self.pending.len()
     }
 
     fn remove(&mut self, pos: ChunkPos, section: usize) {

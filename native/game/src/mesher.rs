@@ -21,7 +21,7 @@ use bytemuck::{Pod, Zeroable};
 use worldgen::{voxel_index, CHUNK_X, CHUNK_Z, WORLD_Y};
 
 use crate::content::{BlockTable, Cross};
-use crate::world::{ChunkPos, Heightmap, SECTION_Y};
+use crate::world::{Heightmap, SECTION_Y};
 
 /// One corner of a quad. 16 bytes: bandwidth, not arithmetic, is what a
 /// voxel renderer runs out of first, and a million vertices in view is
@@ -57,6 +57,7 @@ impl Vertex {
     }
 
     /// The section-local position this vertex decodes to.
+    #[cfg(test)]
     pub fn position(&self) -> [f32; 3] {
         let d = |v: u16| v as f32 / POS_SCALE - POS_BIAS;
         [d(self.pos[0]), d(self.pos[1]), d(self.pos[2])]
@@ -85,7 +86,6 @@ impl SectionMesh {
 /// Index `(dz + 1) * 3 + (dx + 1)`. A missing chunk reads as air.
 #[derive(Clone)]
 pub struct Neighbourhood {
-    pub center: ChunkPos,
     pub chunks: [Option<Arc<Vec<u8>>>; 9],
     pub heights: [Option<Arc<Heightmap>>; 9],
 }
@@ -613,11 +613,7 @@ mod tests {
                 chunks[k] = Some(Arc::new(b));
             }
         }
-        Neighbourhood {
-            center: (0, 0),
-            chunks,
-            heights,
-        }
+        Neighbourhood { chunks, heights }
     }
 
     fn mesh(t: &BlockTable, section: usize, f: impl Fn(i32, i32, i32) -> u8) -> SectionMesh {

@@ -24,11 +24,13 @@ use crate::log;
 use crate::render::{open_device, Frame, Renderer};
 use crate::Options;
 
+/// Main-thread time per frame for uploading new meshes to the GPU.
+const UPLOAD_BUDGET: Duration = Duration::from_millis(2);
+
 /// Frame times over the last couple of seconds, for FPS and the worst frame.
 pub struct FrameStats {
     times: VecDeque<(Instant, Duration)>,
     pub frames: u64,
-    pub worst_ever: Duration,
 }
 
 impl FrameStats {
@@ -36,17 +38,12 @@ impl FrameStats {
         FrameStats {
             times: VecDeque::new(),
             frames: 0,
-            worst_ever: Duration::ZERO,
         }
     }
 
     pub fn push(&mut self, now: Instant, dt: Duration) {
         self.times.push_back((now, dt));
         self.frames += 1;
-        // The first frames include loading; they are not what play feels like.
-        if self.frames > 30 {
-            self.worst_ever = self.worst_ever.max(dt);
-        }
         while let Some(&(t, _)) = self.times.front() {
             if now.duration_since(t) > Duration::from_secs(1) {
                 self.times.pop_front();
@@ -82,8 +79,9 @@ pub fn debug_lines(game: &Game, renderer: &Renderer, frames: &FrameStats) -> Vec
         format!("{fps} FPS  {avg:.2} MS AVG  {worst:.2} MS MAX"),
         format!("XYZ {:.2} {:.2} {:.2}", p.x, p.y, p.z),
         format!(
-            "CHUNKS {}  QUEUED GEN {gen_q} MESH {mesh_q}  DIST {}",
+            "CHUNKS {}  QUEUED GEN {gen_q} MESH {mesh_q} UPLOAD {}  DIST {}",
             game.streamer.world.chunks.len(),
+            renderer.pending(),
             game.streamer.radius
         ),
         format!(
@@ -161,6 +159,11 @@ struct App {
     started: Instant,
     last_log: Instant,
     settled_at: Option<Duration>,
+    /// Frame times (ms) since the world first finished loading: what play
+    /// feels like, without the loading burst.
+    playing: Vec<f32>,
+    /// Chunks generated when the world first finished loading.
+    generated_at_settle: u64,
     /// Keys held, so the movement flags are the OR of both bindings.
     keys: std::collections::HashSet<KeyCode>,
     error: Option<String>,
@@ -189,20 +192,38 @@ pub fn run(opts: Options, table: Arc<BlockTable>, atlas: Vec<u8>) -> Result<(), 
         started: Instant::now(),
         last_log: Instant::now(),
         settled_at: None,
+        playing: Vec::new(),
+        generated_at_settle: 0,
         keys: Default::default(),
         error: None,
     };
     event_loop
         .run_app(&mut app)
         .map_err(|e| format!("event loop: {e}"))?;
-    let (_, avg, _) = app.frames.summary();
     log!(
-        "exit after {:.1}s: {} frames, last second {:.2} ms avg, worst frame {:.2} ms",
+        "exit after {:.1}s: {} frames",
         app.started.elapsed().as_secs_f32(),
-        app.frames.frames,
-        avg,
-        app.frames.worst_ever.as_secs_f32() * 1000.0
+        app.frames.frames
     );
+    if let Some(settled) = app.settled_at {
+        let mut t = std::mem::take(&mut app.playing);
+        if !t.is_empty() {
+            t.sort_by(f32::total_cmp);
+            let pct = |p: usize| t[(t.len() - 1) * p / 100];
+            let played = app.started.elapsed().saturating_sub(settled).as_secs_f32();
+            let chunks = app.game.streamer.stats.generated - app.generated_at_settle;
+            log!(
+                "after loading: {} frames, {:.2} ms median, {:.2} ms p99, {:.2} ms worst; {} more chunks streamed in {:.1}s ({:.0}/s)",
+                t.len(),
+                pct(50),
+                pct(99),
+                t[t.len() - 1],
+                chunks,
+                played,
+                chunks as f32 / played.max(0.001)
+            );
+        }
+    }
     match app.error {
         Some(e) => Err(e),
         None => Ok(()),
@@ -345,14 +366,29 @@ impl App {
         self.last_frame = now;
         self.frames.push(now, dt);
 
+        if self.opts.autopilot && self.settled_at.is_some() {
+            self.game.input.forward = true;
+            self.game.input.sprint = true;
+        }
         let events = self.game.tick(dt.as_secs_f32());
         let Some(gfx) = &mut self.gfx else {
             return;
         };
-        gfx.renderer.apply(events);
-        if self.settled_at.is_none() && self.game.streamer.settled() {
+        gfx.renderer.queue(events);
+        gfx.renderer.flush(Some(UPLOAD_BUDGET));
+        if self.settled_at.is_some() {
+            self.playing.push(dt.as_secs_f32() * 1000.0);
+        } else if self.game.streamer.settled() && gfx.renderer.pending() == 0 {
             let t = self.started.elapsed();
             self.settled_at = Some(t);
+            self.generated_at_settle = self.game.streamer.stats.generated;
+            if self.opts.autopilot {
+                // A benchmark flight: straight ahead at flying sprint speed,
+                // streaming new chunks the whole way.
+                self.game.player.flying = true;
+                self.game.player.pos.y += 20.0;
+                self.game.player.pitch = -10.0;
+            }
             let s = &self.game.streamer.stats;
             log!(
                 "world loaded in {:.2}s: {} chunks generated, {} sections meshed ({:.1} chunks/s)",
@@ -448,9 +484,18 @@ impl ApplicationHandler for App {
                 }
             }
             WindowEvent::Focused(false) => self.set_captured(false),
-            WindowEvent::KeyboardInput { event, .. } => {
-                if let PhysicalKey::Code(code) = event.physical_key {
-                    self.key(code, event.state == ElementState::Pressed, event.repeat);
+            WindowEvent::KeyboardInput {
+                event,
+                is_synthetic,
+                ..
+            } => {
+                let pressed = event.state == ElementState::Pressed;
+                // Keys already down when the window gains focus arrive as
+                // synthetic presses; they were meant for another window.
+                if let (PhysicalKey::Code(code), false) =
+                    (event.physical_key, is_synthetic && pressed)
+                {
+                    self.key(code, pressed, event.repeat);
                 }
             }
             WindowEvent::MouseInput { state, button, .. } => {
