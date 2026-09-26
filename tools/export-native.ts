@@ -103,6 +103,9 @@ for (let id = 0; id < 256; id++) {
     hardness: d.hardness,
     replaceable: d.replaceable,
     climbable: d.climbable,
+    slipperiness: d.slipperiness,
+    speed_factor: d.speedFactor,
+    bounce: d.bounce,
     cross: cross ? { height: r(cross.height), inset: r(cross.inset) } : null,
     shape,
   });

@@ -452,6 +452,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -469,6 +472,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -486,6 +492,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -503,6 +512,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -520,6 +532,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -537,6 +552,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -554,6 +572,9 @@
       "hardness": 0.9,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -571,6 +592,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -588,6 +612,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -605,6 +632,9 @@
       "hardness": 0.3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -622,6 +652,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -639,6 +672,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -656,6 +692,9 @@
       "hardness": 0.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -673,6 +712,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -690,6 +732,9 @@
       "hardness": 0.6,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -707,6 +752,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -724,6 +772,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -741,6 +792,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -758,6 +812,9 @@
       "hardness": 5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -775,6 +832,9 @@
       "hardness": 5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -792,6 +852,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -809,6 +872,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -826,6 +892,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -863,6 +932,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -912,6 +984,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -949,6 +1024,9 @@
       "hardness": 0.7,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -966,6 +1044,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 0.55,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -983,6 +1064,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1000,6 +1084,9 @@
       "hardness": 12,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1017,6 +1104,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1034,6 +1124,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1051,6 +1144,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1068,6 +1164,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1085,6 +1184,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1102,6 +1204,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1119,6 +1224,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1136,6 +1244,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1153,6 +1264,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1190,6 +1304,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1227,6 +1344,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1264,6 +1384,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1301,6 +1424,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1338,6 +1464,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1375,6 +1504,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1412,6 +1544,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1429,6 +1564,9 @@
       "hardness": 0.4,
       "replaceable": false,
       "climbable": true,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1446,6 +1584,9 @@
       "hardness": 0.4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1483,6 +1624,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1500,6 +1644,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1517,6 +1664,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1554,6 +1704,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1571,6 +1724,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1588,6 +1744,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1637,6 +1796,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1654,6 +1816,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1671,6 +1836,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1688,6 +1856,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1705,6 +1876,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1722,6 +1896,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1739,6 +1916,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1788,6 +1968,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1825,6 +2008,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -1874,6 +2060,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -1891,6 +2080,9 @@
       "hardness": 0,
       "replaceable": true,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -1921,6 +2113,9 @@
       "hardness": 0,
       "replaceable": true,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -1951,6 +2146,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -1981,6 +2179,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2011,6 +2212,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2041,6 +2245,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2071,6 +2278,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2101,6 +2311,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2131,6 +2344,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2161,6 +2377,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2191,6 +2410,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2208,6 +2430,9 @@
       "hardness": 0.3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2225,6 +2450,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2242,6 +2470,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2259,6 +2490,9 @@
       "hardness": 0.3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2276,6 +2510,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2293,6 +2530,9 @@
       "hardness": 0.4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2330,6 +2570,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2360,6 +2603,9 @@
       "hardness": 0,
       "replaceable": true,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2390,6 +2636,9 @@
       "hardness": 0.3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2407,6 +2656,9 @@
       "hardness": 0.1,
       "replaceable": true,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2444,6 +2696,9 @@
       "hardness": 0.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0.9,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2461,6 +2716,9 @@
       "hardness": 0.6,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2478,6 +2736,9 @@
       "hardness": 1.2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2495,6 +2756,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2512,6 +2776,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2529,6 +2796,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2546,6 +2816,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2563,6 +2836,9 @@
       "hardness": 3.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2580,6 +2856,9 @@
       "hardness": 5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2597,6 +2876,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2614,6 +2896,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2631,6 +2916,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2668,6 +2956,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2685,6 +2976,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2702,6 +2996,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
@@ -2732,6 +3029,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2749,6 +3049,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2766,6 +3069,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -2783,6 +3089,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2820,6 +3129,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2857,6 +3169,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2894,6 +3209,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2931,6 +3249,9 @@
       "hardness": 1.2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -2968,6 +3289,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3017,6 +3341,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3066,6 +3393,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3115,6 +3445,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3164,6 +3497,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3213,6 +3549,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3262,6 +3601,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3311,6 +3653,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3360,6 +3705,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3409,6 +3757,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3458,6 +3809,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3507,6 +3861,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3556,6 +3913,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3593,6 +3953,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3662,6 +4025,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3731,6 +4097,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3852,6 +4221,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -3973,6 +4345,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4010,6 +4385,9 @@
       "hardness": 0.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4047,6 +4425,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4084,6 +4465,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4127,6 +4511,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4170,6 +4557,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4213,6 +4603,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4256,6 +4649,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4299,6 +4695,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4342,6 +4741,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4385,6 +4787,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4428,6 +4833,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4465,6 +4873,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4502,6 +4913,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4539,6 +4953,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4576,6 +4993,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4613,6 +5033,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4660,6 +5083,9 @@
       "hardness": 1.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4677,6 +5103,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4694,6 +5123,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4711,6 +5143,9 @@
       "hardness": 5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4728,6 +5163,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4745,6 +5183,9 @@
       "hardness": 5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4762,6 +5203,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4779,6 +5223,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4796,6 +5243,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4813,6 +5263,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4830,6 +5283,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4847,6 +5303,9 @@
       "hardness": 0.8,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -4864,6 +5323,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4901,6 +5363,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4938,6 +5403,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -4975,6 +5443,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5012,6 +5483,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5049,6 +5523,9 @@
       "hardness": 0.1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5086,6 +5563,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5154,6 +5634,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -5171,6 +5654,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5208,6 +5694,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5245,6 +5734,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5294,6 +5786,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5343,6 +5838,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5392,6 +5890,9 @@
       "hardness": 3,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5441,6 +5942,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5478,6 +5982,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5539,6 +6046,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5600,6 +6110,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5661,6 +6174,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5722,6 +6238,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5783,6 +6302,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5844,6 +6366,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5905,6 +6430,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -5966,6 +6494,9 @@
       "hardness": 0.5,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -5983,6 +6514,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6044,6 +6578,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6105,6 +6642,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6166,6 +6706,9 @@
       "hardness": 0,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6227,6 +6770,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6264,6 +6810,9 @@
       "hardness": 0.2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0,
       "cross": null,
       "shape": null
     },
@@ -6281,6 +6830,9 @@
       "hardness": 1,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 1,
+      "bounce": 0.85,
       "cross": null,
       "shape": {
         "visual": [
@@ -6344,6 +6896,9 @@
       "hardness": 2,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 0.45,
+      "bounce": 0,
       "cross": null,
       "shape": {
         "visual": [
@@ -6457,6 +7012,9 @@
       "hardness": 4,
       "replaceable": false,
       "climbable": false,
+      "slipperiness": 0,
+      "speed_factor": 0.15,
+      "bounce": 0,
       "cross": {
         "height": 1,
         "inset": 0
