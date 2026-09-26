@@ -35,3 +35,6 @@ host/dist/
 # Parallel build worktrees and their progress snapshots
 .claude/worktrees/
 .claude/backups/
+
+# Native client build output
+native/target/
