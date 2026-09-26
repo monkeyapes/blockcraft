@@ -135,15 +135,15 @@ CREATURE_ART.cobweb = (t) => {
     plot(s, 8 - (8 - s) * 0.45, dim);
   }
   // Rings that sag between the spokes.
-  for (const r of [2.2, 4.4, 6.4]) {
+  for (const r of [3, 5, 7]) {
     for (let a = 0; a <= Math.PI / 2; a += 0.02) {
       const sag = 0.35 * Math.sin(a * 4) ** 2;
       const rr = r - sag;
-      plot(8 - Math.cos(a) * rr, 8 - Math.sin(a) * rr, r === 4.4 ? silk : dim);
+      plot(8 - Math.cos(a) * rr, 8 - Math.sin(a) * rr, r === 5 ? silk : dim);
     }
   }
   // A few dewy knots where strands cross.
-  for (const [x, y] of [[8 - 4.4 * 0.707, 8 - 4.4 * 0.707], [8 - 2.2, 8]]) plot(x, y, [255, 255, 255]);
+  for (const [x, y] of [[8 - 5 * 0.707, 8 - 5 * 0.707], [8 - 3, 8], [7.6, 7.6]]) plot(x, y, [255, 255, 255]);
 };
 
 // --- pig ---------------------------------------------------------------------------
@@ -253,7 +253,18 @@ CREATURE_ART.mob_sheep_leg = (t) => {
   hide(SHEEP_SKIN, 4)(t);
   for (let x = 0; x < 16; x++) t.set(x, 10, 30, 26, 26); // hooves
 };
-CREATURE_ART.mob_sheep_shorn = hide([226, 200, 184], 5);
+/** Freshly shorn: pinkish skin under a short cream stubble of fleece. */
+CREATURE_ART.mob_sheep_shorn = (t) => {
+  hide([226, 200, 184], 5)(t);
+  // Tufts the shears missed, scattered and a shade paler than the skin.
+  for (let i = 0; i < 70; i++) {
+    const x = (t.rng() * 16) | 0;
+    const y = (t.rng() * 16) | 0;
+    t.set(x, y, ...scaled(WOOL, 0.98));
+    if (t.rng() < 0.5) t.set(x, (y + 1) % 16, ...scaled(WOOL, 0.9));
+  }
+  t.posterize(6);
+};
 CREATURE_ART.mob_sheep_face = face(hide(SHEEP_SKIN, 4), [
   '......',
   '......',
@@ -660,13 +671,27 @@ CREATURE_ART.mob_blaze_face = face(CREATURE_ART.mob_blaze_skin, [
   '........',
   '........',
 ], { k: [70, 30, 8], o: [255, 240, 180] });
-/** Churning heat: pale yellow licked through with orange, hottest in the middle. */
+/**
+ * Tongues of flame: a heat field of waves rising up the tile, bent sideways
+ * by a slower wave, cut into a few hard bands of colour. The waves repeat
+ * every 16 units, so the core wraps round without a seam.
+ */
+function flame(t: Tile, bands: RGB[], phase: number): void {
+  const k = (Math.PI * 2) / 16;
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      const bend = Math.sin(y * k * 2 + phase) * 1.6;
+      const heat = 0.5 + 0.3 * Math.sin((x + bend) * k * 2) + 0.2 * Math.sin((y + x * 0.5) * k * 3 + phase);
+      const band = Math.max(0, Math.min(bands.length - 1, Math.floor(heat * bands.length)));
+      t.set(x, y, ...bands[band]);
+    }
+  }
+}
+
+/** Churning heat: deep orange through to white-hot, the heart the rods circle. */
 CREATURE_ART.mob_blaze_core = (t) => {
-  t.fill([255, 236, 150], 10);
-  t.mottle([255, 170, 60], 0.45, 3);
-  t.mottle([255, 250, 214], 0.3, 5);
-  for (let y = 0; y < 16; y += 4) for (let x = 0; x < 16; x++) t.shade(x, y + ((x >> 2) % 2), -18);
-  t.posterize(5);
+  t.fill([250, 168, 44], 0);
+  flame(t, [[214, 96, 22], [246, 150, 40], [255, 204, 80], [255, 240, 176]], 0.7);
 };
 CREATURE_ART.mob_blaze_rod = (t) => {
   t.fill([246, 158, 36], 10);
