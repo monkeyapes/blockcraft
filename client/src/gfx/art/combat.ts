@@ -156,6 +156,17 @@ export const COMBAT_ART: Record<string, Recipe> = {
     stickEnds(t, [150, 120, 84], STICK_DARK, [40, 12, 10]);
     t.posterize(12);
   },
+  // A lit charge's flash. The shader can only multiply a texture by its
+  // light, so brightening red sticks gives brighter red sticks, never white;
+  // the flash needs a tile of its own. The seams between the sticks and the
+  // band stay faintly visible so it is still the same bundle, blinking.
+  tnt_flash: (t) => {
+    t.fill([252, 248, 242], 2);
+    for (let s = 0; s < 4; s++) t.rect(s * 4, 0, 1, TILE, [238, 222, 216], 2);
+    t.rect(0, 6, TILE, 1, [230, 222, 210], 2);
+    t.rect(0, 9, TILE, 1, [230, 222, 210], 2);
+    t.rect(0, 7, TILE, 2, [250, 242, 214], 2);
+  },
 
   // The cushion from above: a gel mat inside a darker hem, with a raised
   // ring round the middle where you are meant to land.
@@ -279,7 +290,7 @@ export const COMBAT_ART: Record<string, Recipe> = {
  * everything the combat systems draw in flight.
  */
 export const COMBAT_EXTRA: string[] = [
-  'bounce_pad_spring', 'spikes_plate',
+  'bounce_pad_spring', 'spikes_plate', 'tnt_flash',
   'projectile_arrow_shaft', 'projectile_arrow_head', 'projectile_arrow_fletching',
   'projectile_snowball', 'projectile_fireball',
   'fx_smoke', 'fx_flame', 'fx_spark', 'fx_snow',

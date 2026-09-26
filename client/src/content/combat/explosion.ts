@@ -29,6 +29,8 @@ export const FUSE_SECONDS = 4;
 /** A charge set off by another blast goes much sooner, and not all at once. */
 export const CHAIN_FUSE_MIN = 0.5;
 export const CHAIN_FUSE_MAX = 1.5;
+/** What a lit charge shows on the bright half of each blink (art/combat.ts). */
+export const FLASH_TILE = 'tnt_flash';
 /** Share of destroyed blocks that survive as items. */
 export const DROP_CHANCE = 0.3;
 /** Damage at the very centre is power times this (before armour). */
@@ -293,7 +295,8 @@ export class Explosions {
       out.box(
         atlas,
         [c.x + CHARGE_SIZE / 2, c.y + CHARGE_SIZE / 2, c.z + CHARGE_SIZE / 2],
-        WORLD_AXES, [h, h, h], tex, flash ? 3.2 : base,
+        // A flash glows: it is as bright in a cave as in daylight.
+        WORLD_AXES, [h, h, h], flash ? FLASH_TILE : tex, flash ? 1.15 : base,
       );
     }
   }

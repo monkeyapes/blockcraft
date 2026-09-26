@@ -336,8 +336,11 @@ export function drawArrow(
   const back = (d: number): Vec3 => [x - f[0] * d, y - f[1] * d, z - f[2] * d];
   const L = ARROW_LENGTH;
   out.box(atlas, back(L / 2), frame, [0.028, 0.028, L / 2 - 0.04], 'projectile_arrow_shaft', light);
-  out.box(atlas, back(0.07), frame, [0.05, 0.05, 0.07], 'projectile_arrow_head', light);
-  out.box(atlas, back(0.015), frame, [0.025, 0.025, 0.015], 'projectile_arrow_head', light * 1.15);
+  // The head narrows in three steps to a point. One box reads as a blunt
+  // copper plug at any distance; the taper is what says "sharp end".
+  out.box(atlas, back(0.115), frame, [0.055, 0.055, 0.025], 'projectile_arrow_head', light);
+  out.box(atlas, back(0.065), frame, [0.038, 0.038, 0.025], 'projectile_arrow_head', light * 1.08);
+  out.box(atlas, back(0.02), frame, [0.018, 0.018, 0.02], 'projectile_arrow_head', light * 1.18);
   const tail = back(L - 0.11);
   out.box(atlas, tail, frame, [0.1, 0.006, 0.1], 'projectile_arrow_fletching', light);
   out.box(atlas, tail, frame, [0.006, 0.1, 0.1], 'projectile_arrow_fletching', light);
