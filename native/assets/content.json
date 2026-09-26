@@ -1,0 +1,7116 @@
+{
+  "format": 1,
+  "atlas": {
+    "file": "atlas.png",
+    "grid": 21,
+    "tile_px": 64,
+    "size": 1344,
+    "tiles": [
+      "apple",
+      "armor_chest_diamond",
+      "armor_chest_iron",
+      "armor_chest_leather",
+      "armor_feet_diamond",
+      "armor_feet_iron",
+      "armor_feet_leather",
+      "armor_head_diamond",
+      "armor_head_iron",
+      "armor_head_leather",
+      "armor_legs_diamond",
+      "armor_legs_iron",
+      "armor_legs_leather",
+      "arrow",
+      "axe_diamond",
+      "axe_iron",
+      "axe_stone",
+      "axe_wood",
+      "baked_potato",
+      "battery_side",
+      "battery_top",
+      "bed_side",
+      "bed_top",
+      "bedrock",
+      "birch_leaves",
+      "birch_log_side",
+      "birch_log_top",
+      "birch_planks",
+      "blaze_powder",
+      "blaze_rod",
+      "boat",
+      "bone_item",
+      "bone_meal",
+      "bookshelf",
+      "booster_side",
+      "booster_top",
+      "boots",
+      "bounce_pad_bottom",
+      "bounce_pad_side",
+      "bounce_pad_spring",
+      "bounce_pad_top",
+      "bow",
+      "bread",
+      "brick",
+      "bucket",
+      "bucket_lava",
+      "bucket_water",
+      "building_clear",
+      "cable",
+      "cactus_bottom",
+      "cactus_side",
+      "cactus_top",
+      "campfire_embers",
+      "campfire_flame",
+      "campfire_log",
+      "car",
+      "carrot",
+      "carrots_stage0",
+      "carrots_stage1",
+      "carrots_stage2",
+      "carrots_stage3",
+      "chain",
+      "chest_side",
+      "chest_top",
+      "chrome",
+      "clay",
+      "coal",
+      "coal_block",
+      "coal_ore",
+      "cobble",
+      "cobweb",
+      "collector_side",
+      "collector_top",
+      "compressor_side",
+      "compressor_top",
+      "conveyor",
+      "conveyor_e",
+      "conveyor_n",
+      "conveyor_s",
+      "conveyor_w",
+      "cooked_chicken",
+      "cooked_fish",
+      "cooked_mutton",
+      "cooked_porkchop",
+      "cooked_rabbit",
+      "copper_block",
+      "copper_ingot",
+      "copper_ore",
+      "cornflower",
+      "crack_0",
+      "crack_1",
+      "crack_2",
+      "crack_3",
+      "crack_4",
+      "crack_5",
+      "crack_6",
+      "crack_7",
+      "crack_8",
+      "crack_9",
+      "crafting_side",
+      "crafting_top",
+      "crusher_side",
+      "crusher_top",
+      "dandelion",
+      "dead_bush",
+      "diamond",
+      "diamond_block",
+      "diamond_ore",
+      "dirt",
+      "door_wood_item",
+      "door_wood_lower",
+      "door_wood_lower_in",
+      "door_wood_upper",
+      "door_wood_upper_in",
+      "drill",
+      "efurnace_side",
+      "efurnace_top",
+      "elevator_side",
+      "elevator_top",
+      "end_frame_eye",
+      "end_frame_side",
+      "end_frame_top",
+      "end_portal",
+      "end_stone",
+      "ender_pearl",
+      "eye_of_ender",
+      "face",
+      "farmland_dry",
+      "farmland_side_wet",
+      "farmland_wet",
+      "feather",
+      "fern",
+      "filter_side",
+      "filter_top",
+      "flint_steel",
+      "furnace_front",
+      "furnace_top",
+      "fuse_powder",
+      "fx_flame",
+      "fx_smoke",
+      "fx_snow",
+      "fx_spark",
+      "generator_side",
+      "generator_top",
+      "glass",
+      "glass_pane",
+      "glass_pane_top",
+      "glowstone",
+      "gold_block",
+      "gold_ingot",
+      "gold_ore",
+      "granite",
+      "grass_side",
+      "grass_top",
+      "gravel",
+      "hair",
+      "hammer_diamond",
+      "hammer_iron",
+      "hammer_stone",
+      "hand",
+      "hay_side",
+      "hay_top",
+      "headlight",
+      "helicopter",
+      "hoe_diamond",
+      "hoe_iron",
+      "hoe_stone",
+      "hoe_wood",
+      "ice",
+      "icon_campfire",
+      "icon_carpet_black",
+      "icon_carpet_blue",
+      "icon_carpet_green",
+      "icon_carpet_red",
+      "icon_carpet_white",
+      "icon_carpet_yellow",
+      "icon_chain",
+      "icon_fence",
+      "icon_fence_gate",
+      "icon_glass_pane",
+      "icon_iron_bars",
+      "icon_lantern",
+      "icon_slab_brick",
+      "icon_slab_cobble",
+      "icon_slab_planks",
+      "icon_slab_sandstone",
+      "icon_slab_stone",
+      "icon_slab_stone_bricks",
+      "icon_stairs_brick",
+      "icon_stairs_cobble",
+      "icon_stairs_planks",
+      "icon_stairs_stone_bricks",
+      "icon_trapdoor",
+      "icon_wall",
+      "incinerator_side",
+      "incinerator_top",
+      "iron_bars",
+      "iron_bars_top",
+      "iron_block",
+      "iron_ingot",
+      "iron_ore",
+      "ladder",
+      "lantern",
+      "lantern_top",
+      "lava",
+      "leather",
+      "leaves",
+      "lily_pad",
+      "limestone",
+      "log_side",
+      "log_top",
+      "melon_side",
+      "melon_slice",
+      "melon_top",
+      "miner_side",
+      "miner_top",
+      "mob_bat_ear",
+      "mob_bat_face",
+      "mob_bat_fur",
+      "mob_bat_wing",
+      "mob_beak",
+      "mob_blaze_core",
+      "mob_blaze_face",
+      "mob_blaze_rod",
+      "mob_blaze_skin",
+      "mob_bone",
+      "mob_bow",
+      "mob_bowstring",
+      "mob_chicken",
+      "mob_chicken_face",
+      "mob_chicken_leg",
+      "mob_chicken_wing",
+      "mob_collar",
+      "mob_cow_ear",
+      "mob_cow_face",
+      "mob_cow_head",
+      "mob_cow_hide",
+      "mob_cow_leg",
+      "mob_cow_muzzle",
+      "mob_cow_nose",
+      "mob_dragon_belly",
+      "mob_dragon_face",
+      "mob_dragon_horn",
+      "mob_dragon_scale",
+      "mob_dragon_snout",
+      "mob_dragon_spine",
+      "mob_dragon_teeth",
+      "mob_dragon_wing",
+      "mob_ender_face",
+      "mob_ender_face_angry",
+      "mob_ender_jaw",
+      "mob_ender_mouth",
+      "mob_ender_skin",
+      "mob_fang",
+      "mob_fish_eye",
+      "mob_fish_fin",
+      "mob_fish_mouth",
+      "mob_fish_scales",
+      "mob_flash",
+      "mob_horn",
+      "mob_hurt",
+      "mob_pig_ear",
+      "mob_pig_face",
+      "mob_pig_hide",
+      "mob_pig_snout",
+      "mob_rabbit_ear",
+      "mob_rabbit_face",
+      "mob_rabbit_fur",
+      "mob_rabbit_tail",
+      "mob_ribs",
+      "mob_sheep_face",
+      "mob_sheep_leg",
+      "mob_sheep_shorn",
+      "mob_sheep_skin",
+      "mob_shroom_cap",
+      "mob_shroom_cap_top",
+      "mob_shroom_face",
+      "mob_shroom_foot",
+      "mob_shroom_gills",
+      "mob_shroom_stem",
+      "mob_skull",
+      "mob_skull_face",
+      "mob_slime_core",
+      "mob_slime_eye",
+      "mob_slime_shell",
+      "mob_spider_abdomen",
+      "mob_spider_back",
+      "mob_spider_eye",
+      "mob_spider_face",
+      "mob_spider_head",
+      "mob_spider_leg",
+      "mob_udder",
+      "mob_wattle",
+      "mob_wolf_face",
+      "mob_wolf_face_angry",
+      "mob_wolf_fur",
+      "mob_wolf_mane",
+      "mob_wolf_muzzle",
+      "mob_wolf_nose",
+      "mob_wool",
+      "mob_zombie_arm",
+      "mob_zombie_face",
+      "mob_zombie_head",
+      "mob_zombie_legs",
+      "mob_zombie_shirt",
+      "mossy_cobble",
+      "mushroom_brown",
+      "mushroom_red",
+      "nether_brick",
+      "netherrack",
+      "obsidian",
+      "paint_dark",
+      "paint_red",
+      "pants",
+      "pickaxe_diamond",
+      "pickaxe_iron",
+      "pickaxe_stone",
+      "pickaxe_wood",
+      "pine_leaves",
+      "pine_log_side",
+      "pine_log_top",
+      "pine_planks",
+      "plane",
+      "planks",
+      "podzol_side",
+      "podzol_top",
+      "poppy",
+      "portal",
+      "potato",
+      "potatoes_stage0",
+      "potatoes_stage1",
+      "potatoes_stage2",
+      "potatoes_stage3",
+      "projectile_arrow_fletching",
+      "projectile_arrow_head",
+      "projectile_arrow_shaft",
+      "projectile_fireball",
+      "projectile_snowball",
+      "pumpkin_pie",
+      "pumpkin_side",
+      "pumpkin_top",
+      "purpur",
+      "quarry_side",
+      "quarry_top",
+      "quartz",
+      "raw_beef",
+      "raw_chicken",
+      "raw_fish",
+      "raw_mutton",
+      "raw_porkchop",
+      "raw_rabbit",
+      "reeds",
+      "rotor",
+      "ruby",
+      "ruby_block",
+      "ruby_ore",
+      "sand",
+      "sandstone_bottom",
+      "sandstone_side",
+      "sandstone_top",
+      "sapling_birch",
+      "sapling_oak",
+      "sapling_pine",
+      "sawmill_side",
+      "sawmill_top",
+      "shears",
+      "shirt",
+      "shovel_diamond",
+      "shovel_iron",
+      "shovel_stone",
+      "shovel_wood",
+      "skateboard",
+      "skin",
+      "slate",
+      "sleeve",
+      "slimeball",
+      "snow",
+      "snowball",
+      "snowy_grass_side",
+      "solar_side",
+      "solar_top",
+      "sorter",
+      "soul_sand",
+      "spikes",
+      "spikes_plate",
+      "splitter_side",
+      "splitter_top",
+      "steak",
+      "stick",
+      "stone",
+      "stone_bricks",
+      "stone_bricks_cracked",
+      "stone_bricks_mossy",
+      "stonegen_side",
+      "stonegen_top",
+      "string",
+      "sugar",
+      "sword_diamond",
+      "sword_iron",
+      "sword_stone",
+      "sword_wood",
+      "taillight",
+      "tall_grass",
+      "terracotta",
+      "tire",
+      "tnt_bottom",
+      "tnt_flash",
+      "tnt_side",
+      "tnt_top",
+      "torch",
+      "trapdoor",
+      "truck",
+      "tube",
+      "tulip_orange",
+      "water",
+      "waterwheel_side",
+      "waterwheel_top",
+      "wheat",
+      "wheat_seeds",
+      "wheat_stage0",
+      "wheat_stage1",
+      "wheat_stage2",
+      "wheat_stage3",
+      "wool_black",
+      "wool_blue",
+      "wool_green",
+      "wool_red",
+      "wool_white",
+      "wool_yellow"
+    ]
+  },
+  "blocks": [
+    {
+      "id": 0,
+      "name": "Air",
+      "textures": [389, 389, 389],
+      "icon": 389,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": false,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 1,
+      "name": "Grass Block",
+      "textures": [153, 108, 152],
+      "icon": 152,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 2,
+      "name": "Dirt",
+      "textures": [108, 108, 108],
+      "icon": 108,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 3,
+      "name": "Stone",
+      "textures": [389, 389, 389],
+      "icon": 389,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 4,
+      "name": "Cobblestone",
+      "textures": [69, 69, 69],
+      "icon": 69,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 5,
+      "name": "Sand",
+      "textures": [356, 356, 356],
+      "icon": 356,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 6,
+      "name": "Gravel",
+      "textures": [154, 154, 154],
+      "icon": 154,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.9,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 7,
+      "name": "Bedrock",
+      "textures": [23, 23, 23],
+      "icon": 23,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": false,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 8,
+      "name": "Log",
+      "textures": [210, 210, 209],
+      "icon": 209,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 9,
+      "name": "Leaves",
+      "textures": [206, 206, 206],
+      "icon": 206,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 10,
+      "name": "Planks",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 11,
+      "name": "Bricks",
+      "textures": [43, 43, 43],
+      "icon": 43,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 12,
+      "name": "Glass",
+      "textures": [144, 144, 144],
+      "icon": 144,
+      "solid": true,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 13,
+      "name": "Water",
+      "textures": [414, 414, 414],
+      "icon": 414,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": true,
+      "breakable": false,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 14,
+      "name": "Glowstone",
+      "textures": [147, 147, 147],
+      "icon": 147,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 15,
+      "hardness": 0.6,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 15,
+      "name": "Coal Ore",
+      "textures": [68, 68, 68],
+      "icon": 68,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 16,
+      "name": "Iron Ore",
+      "textures": [200, 200, 200],
+      "icon": 200,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 17,
+      "name": "Gold Ore",
+      "textures": [150, 150, 150],
+      "icon": 150,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 18,
+      "name": "Diamond Ore",
+      "textures": [107, 107, 107],
+      "icon": 107,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 19,
+      "name": "Block of Iron",
+      "textures": [198, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 20,
+      "name": "Crafting Table",
+      "textures": [100, 323, 99],
+      "icon": 99,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 21,
+      "name": "Furnace",
+      "textures": [136, 136, 135],
+      "icon": 135,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 22,
+      "name": "Conveyor Belt",
+      "textures": [75, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 23,
+      "name": "Item Sorter",
+      "textures": [381, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.25, 0.4375, 0.25],
+            "max": [0.75, 0.8125, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.25, 0.4375, 0.25],
+            "max": [0.75, 0.8125, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.25, 0.4375, 0.25],
+            "max": [0.75, 0.8125, 0.75]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 24,
+      "name": "NoVolt Conduit",
+      "textures": [48, 48, 48],
+      "icon": 48,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 25,
+      "name": "Netherrack",
+      "textures": [309, 309, 309],
+      "icon": 309,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.7,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 26,
+      "name": "Soul Sand",
+      "textures": [382, 382, 382],
+      "icon": 382,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 27,
+      "name": "Lava",
+      "textures": [204, 204, 204],
+      "icon": 204,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": true,
+      "breakable": false,
+      "light": 15,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 28,
+      "name": "Obsidian",
+      "textures": [310, 310, 310],
+      "icon": 310,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 12,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 29,
+      "name": "Nether Portal",
+      "textures": [327, 327, 327],
+      "icon": 327,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": false,
+      "light": 11,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 30,
+      "name": "Nether Bricks",
+      "textures": [308, 308, 308],
+      "icon": 308,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 31,
+      "name": "Quartz Block",
+      "textures": [344, 344, 344],
+      "icon": 344,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 32,
+      "name": "End Stone",
+      "textures": [123, 123, 123],
+      "icon": 123,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 33,
+      "name": "End Portal Frame",
+      "textures": [121, 123, 120],
+      "icon": 120,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": false,
+      "light": 1,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 34,
+      "name": "End Portal",
+      "textures": [122, 122, 122],
+      "icon": 122,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": false,
+      "light": 15,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 35,
+      "name": "Purpur Block",
+      "textures": [341, 341, 341],
+      "icon": 341,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 36,
+      "name": "End Portal Frame",
+      "textures": [119, 123, 120],
+      "icon": 120,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": false,
+      "light": 6,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 37,
+      "name": "Torch",
+      "textures": [409, 409, 409],
+      "icon": 409,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 14,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 0.625, 0.5625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 0.625, 0.5625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.375, 0, 0.375],
+            "max": [0.625, 0.6875, 0.625]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 38,
+      "name": "Conveyor Belt",
+      "textures": [77, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 39,
+      "name": "Conveyor Belt",
+      "textures": [76, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 40,
+      "name": "Conveyor Belt",
+      "textures": [78, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 41,
+      "name": "Conveyor Belt",
+      "textures": [79, 198, 198],
+      "icon": 198,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 42,
+      "name": "Chest",
+      "textures": [63, 63, 62],
+      "icon": 62,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.875, 0.9375]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.875, 0.9375]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.875, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 43,
+      "name": "Collector",
+      "textures": [72, 198, 71],
+      "icon": 71,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 44,
+      "name": "Miner",
+      "textures": [215, 198, 214],
+      "icon": 214,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 45,
+      "name": "Ladder",
+      "textures": [201, 201, 201],
+      "icon": 201,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.4,
+      "replaceable": false,
+      "climbable": true,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 46,
+      "name": "Bed",
+      "textures": [22, 323, 21],
+      "icon": 21,
+      "solid": true,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 47,
+      "name": "Generator",
+      "textures": [143, 198, 142],
+      "icon": 142,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 48,
+      "name": "Crusher",
+      "textures": [102, 198, 101],
+      "icon": 101,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 49,
+      "name": "Solar Panel",
+      "textures": [380, 198, 379],
+      "icon": 379,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 50,
+      "name": "Battery",
+      "textures": [20, 198, 19],
+      "icon": 19,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 51,
+      "name": "Item Elevator",
+      "textures": [118, 198, 117],
+      "icon": 117,
+      "solid": false,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 52,
+      "name": "NoVolt Booster",
+      "textures": [35, 198, 34],
+      "icon": 34,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 4,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          },
+          {
+            "min": [0.1875, 0.1875, 0.1875],
+            "max": [0.8125, 0.8125, 0.8125]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          },
+          {
+            "min": [0.1875, 0.1875, 0.1875],
+            "max": [0.8125, 0.8125, 0.8125]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 1, 0.6875]
+          },
+          {
+            "min": [0.1875, 0.1875, 0.1875],
+            "max": [0.8125, 0.8125, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 53,
+      "name": "Stone Generator",
+      "textures": [394, 198, 393],
+      "icon": 393,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 54,
+      "name": "Electric Furnace",
+      "textures": [116, 198, 115],
+      "icon": 115,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 3,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 55,
+      "name": "Sawmill",
+      "textures": [364, 198, 363],
+      "icon": 363,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 56,
+      "name": "Compressor",
+      "textures": [74, 198, 73],
+      "icon": 73,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 57,
+      "name": "Quarry",
+      "textures": [343, 198, 342],
+      "icon": 342,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 58,
+      "name": "Water Wheel",
+      "textures": [416, 323, 415],
+      "icon": 415,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 59,
+      "name": "Splitter",
+      "textures": [386, 198, 385],
+      "icon": 385,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.1875, 0.4375, 0.1875],
+            "max": [0.8125, 0.6875, 0.8125]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.1875, 0.4375, 0.1875],
+            "max": [0.8125, 0.6875, 0.8125]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.1875, 0.4375, 0.1875],
+            "max": [0.8125, 0.6875, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 60,
+      "name": "Item Tube",
+      "textures": [412, 412, 412],
+      "icon": 412,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 1, 0.8125]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 1, 0.8125]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 1, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 61,
+      "name": "Line Filter",
+      "textures": [133, 198, 132],
+      "icon": 132,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.0625, 0.4375, 0.375],
+            "max": [0.9375, 0.875, 0.625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.0625, 0.4375, 0.375],
+            "max": [0.9375, 0.875, 0.625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          },
+          {
+            "min": [0.0625, 0.4375, 0.375],
+            "max": [0.9375, 0.875, 0.625]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 62,
+      "name": "Incinerator",
+      "textures": [195, 198, 194],
+      "icon": 194,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 63,
+      "name": "Tall Grass",
+      "textures": [402, 402, 402],
+      "icon": 402,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": true,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.125, 0, 0.125],
+            "max": [0.875, 0.8125, 0.875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 64,
+      "name": "Fern",
+      "textures": [131, 131, 131],
+      "icon": 131,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": true,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.125, 0, 0.125],
+            "max": [0.875, 0.8125, 0.875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 65,
+      "name": "Dandelion",
+      "textures": [103, 103, 103],
+      "icon": 103,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.6875, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 66,
+      "name": "Poppy",
+      "textures": [326, 326, 326],
+      "icon": 326,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.6875, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 67,
+      "name": "Cornflower",
+      "textures": [88, 88, 88],
+      "icon": 88,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.6875, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 68,
+      "name": "Brown Mushroom",
+      "textures": [306, 306, 306],
+      "icon": 306,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.4375, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 69,
+      "name": "Red Mushroom",
+      "textures": [307, 307, 307],
+      "icon": 307,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.4375, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 70,
+      "name": "Oak Sapling",
+      "textures": [361, 361, 361],
+      "icon": 361,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 0.875, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 71,
+      "name": "Birch Sapling",
+      "textures": [360, 360, 360],
+      "icon": 360,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 0.875, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 72,
+      "name": "Pine Sapling",
+      "textures": [362, 362, 362],
+      "icon": 362,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 0.875, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 73,
+      "name": "Birch Log",
+      "textures": [26, 26, 25],
+      "icon": 25,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 74,
+      "name": "Birch Leaves",
+      "textures": [24, 24, 24],
+      "icon": 24,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 75,
+      "name": "Birch Planks",
+      "textures": [27, 27, 27],
+      "icon": 27,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 76,
+      "name": "Pine Log",
+      "textures": [320, 320, 319],
+      "icon": 319,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 77,
+      "name": "Pine Needles",
+      "textures": [318, 318, 318],
+      "icon": 318,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 78,
+      "name": "Pine Planks",
+      "textures": [321, 321, 321],
+      "icon": 321,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 79,
+      "name": "Cactus",
+      "textures": [51, 49, 50],
+      "icon": 50,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 1, 0.9375]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 1, 0.9375]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 1, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 80,
+      "name": "Reeds",
+      "textures": [351, 351, 351],
+      "icon": 351,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.125, 0, 0.125],
+            "max": [0.875, 1, 0.875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 81,
+      "name": "Dead Bush",
+      "textures": [104, 104, 104],
+      "icon": 104,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": true,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.1875, 0, 0.1875],
+            "max": [0.8125, 0.75, 0.8125]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 82,
+      "name": "Snow",
+      "textures": [376, 376, 376],
+      "icon": 376,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 83,
+      "name": "Snow Layer",
+      "textures": [376, 376, 376],
+      "icon": 376,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": true,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.125, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 84,
+      "name": "Ice",
+      "textures": [168, 168, 168],
+      "icon": 168,
+      "solid": true,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 85,
+      "name": "Clay",
+      "textures": [65, 65, 65],
+      "icon": 65,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.6,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 86,
+      "name": "Sandstone",
+      "textures": [359, 357, 358],
+      "icon": 358,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1.2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 87,
+      "name": "Mossy Cobblestone",
+      "textures": [305, 305, 305],
+      "icon": 305,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 88,
+      "name": "Granite",
+      "textures": [151, 151, 151],
+      "icon": 151,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 89,
+      "name": "Slate",
+      "textures": [373, 373, 373],
+      "icon": 373,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 90,
+      "name": "Limestone",
+      "textures": [208, 208, 208],
+      "icon": 208,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 91,
+      "name": "Copper Ore",
+      "textures": [87, 87, 87],
+      "icon": 87,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 92,
+      "name": "Ruby Ore",
+      "textures": [355, 355, 355],
+      "icon": 355,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 93,
+      "name": "Pumpkin",
+      "textures": [340, 340, 339],
+      "icon": 339,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 94,
+      "name": "Melon",
+      "textures": [213, 213, 211],
+      "icon": 211,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 95,
+      "name": "Lily Pad",
+      "textures": [207, 207, 207],
+      "icon": 207,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 96,
+      "name": "Snowy Grass Block",
+      "textures": [376, 108, 378],
+      "icon": 378,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 97,
+      "name": "Podzol",
+      "textures": [325, 108, 324],
+      "icon": 324,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 98,
+      "name": "Orange Tulip",
+      "textures": [413, 413, 413],
+      "icon": 413,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.6875, 0.6875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 100,
+      "name": "Stone Bricks",
+      "textures": [390, 390, 390],
+      "icon": 390,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 101,
+      "name": "Mossy Stone Bricks",
+      "textures": [392, 392, 392],
+      "icon": 392,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 102,
+      "name": "Cracked Stone Bricks",
+      "textures": [391, 391, 391],
+      "icon": 391,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 103,
+      "name": "Stone Slab",
+      "textures": [389, 389, 389],
+      "icon": 186,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 104,
+      "name": "Cobblestone Slab",
+      "textures": [69, 69, 69],
+      "icon": 183,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 105,
+      "name": "Plank Slab",
+      "textures": [323, 323, 323],
+      "icon": 184,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 106,
+      "name": "Stone Brick Slab",
+      "textures": [390, 390, 390],
+      "icon": 187,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 107,
+      "name": "Sandstone Slab",
+      "textures": [359, 357, 358],
+      "icon": 185,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1.2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 108,
+      "name": "Plank Stairs",
+      "textures": [323, 323, 323],
+      "icon": 190,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 109,
+      "name": "Plank Stairs",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 110,
+      "name": "Plank Stairs",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 111,
+      "name": "Plank Stairs",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 112,
+      "name": "Cobblestone Stairs",
+      "textures": [69, 69, 69],
+      "icon": 189,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 113,
+      "name": "Cobblestone Stairs",
+      "textures": [69, 69, 69],
+      "icon": 69,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 114,
+      "name": "Cobblestone Stairs",
+      "textures": [69, 69, 69],
+      "icon": 69,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 115,
+      "name": "Cobblestone Stairs",
+      "textures": [69, 69, 69],
+      "icon": 69,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 116,
+      "name": "Stone Brick Stairs",
+      "textures": [390, 390, 390],
+      "icon": 191,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 117,
+      "name": "Stone Brick Stairs",
+      "textures": [390, 390, 390],
+      "icon": 390,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 118,
+      "name": "Stone Brick Stairs",
+      "textures": [390, 390, 390],
+      "icon": 390,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 119,
+      "name": "Stone Brick Stairs",
+      "textures": [390, 390, 390],
+      "icon": 390,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 120,
+      "name": "Fence",
+      "textures": [323, 323, 323],
+      "icon": 177,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.375, 0, 0.375],
+            "max": [0.625, 1, 0.625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.375, 0, 0.375],
+            "max": [0.625, 1.5, 0.625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.375, 0, 0.375],
+            "max": [0.625, 1, 0.625]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 121,
+      "name": "Fence Gate",
+      "textures": [323, 323, 323],
+      "icon": 178,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0.3125, 0.4375],
+            "max": [0.125, 1, 0.5625]
+          },
+          {
+            "min": [0.875, 0.3125, 0.4375],
+            "max": [1, 1, 0.5625]
+          },
+          {
+            "min": [0.125, 0.375, 0.4375],
+            "max": [0.875, 0.5625, 0.5625]
+          },
+          {
+            "min": [0.125, 0.75, 0.4375],
+            "max": [0.875, 0.9375, 0.5625]
+          },
+          {
+            "min": [0.375, 0.5625, 0.4375],
+            "max": [0.625, 0.75, 0.5625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0.375],
+            "max": [1, 1.5, 0.625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0.3125, 0.4375],
+            "max": [0.125, 1, 0.5625]
+          },
+          {
+            "min": [0.875, 0.3125, 0.4375],
+            "max": [1, 1, 0.5625]
+          },
+          {
+            "min": [0.125, 0.375, 0.4375],
+            "max": [0.875, 0.5625, 0.5625]
+          },
+          {
+            "min": [0.125, 0.75, 0.4375],
+            "max": [0.875, 0.9375, 0.5625]
+          },
+          {
+            "min": [0.375, 0.5625, 0.4375],
+            "max": [0.625, 0.75, 0.5625]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 122,
+      "name": "Fence Gate",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.4375, 0.3125, 0],
+            "max": [0.5625, 1, 0.125]
+          },
+          {
+            "min": [0.4375, 0.3125, 0.875],
+            "max": [0.5625, 1, 1]
+          },
+          {
+            "min": [0.4375, 0.375, 0.125],
+            "max": [0.5625, 0.5625, 0.875]
+          },
+          {
+            "min": [0.4375, 0.75, 0.125],
+            "max": [0.5625, 0.9375, 0.875]
+          },
+          {
+            "min": [0.4375, 0.5625, 0.375],
+            "max": [0.5625, 0.75, 0.625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.375, 0, 0],
+            "max": [0.625, 1.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.4375, 0.3125, 0],
+            "max": [0.5625, 1, 0.125]
+          },
+          {
+            "min": [0.4375, 0.3125, 0.875],
+            "max": [0.5625, 1, 1]
+          },
+          {
+            "min": [0.4375, 0.375, 0.125],
+            "max": [0.5625, 0.5625, 0.875]
+          },
+          {
+            "min": [0.4375, 0.75, 0.125],
+            "max": [0.5625, 0.9375, 0.875]
+          },
+          {
+            "min": [0.4375, 0.5625, 0.375],
+            "max": [0.5625, 0.75, 0.625]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 123,
+      "name": "Fence Gate",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0.3125, 0.4375],
+            "max": [0.125, 1, 0.5625]
+          },
+          {
+            "min": [0.875, 0.3125, 0.4375],
+            "max": [1, 1, 0.5625]
+          },
+          {
+            "min": [0, 0.375, 0.5625],
+            "max": [0.125, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.5625],
+            "max": [0.125, 0.9375, 1]
+          },
+          {
+            "min": [0, 0.5625, 0.8125],
+            "max": [0.125, 0.75, 0.9375]
+          },
+          {
+            "min": [0.875, 0.375, 0.5625],
+            "max": [1, 0.5625, 1]
+          },
+          {
+            "min": [0.875, 0.75, 0.5625],
+            "max": [1, 0.9375, 1]
+          },
+          {
+            "min": [0.875, 0.5625, 0.8125],
+            "max": [1, 0.75, 0.9375]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0.3125, 0.4375],
+            "max": [0.125, 1, 0.5625]
+          },
+          {
+            "min": [0.875, 0.3125, 0.4375],
+            "max": [1, 1, 0.5625]
+          },
+          {
+            "min": [0, 0.375, 0.5625],
+            "max": [0.125, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.5625],
+            "max": [0.125, 0.9375, 1]
+          },
+          {
+            "min": [0, 0.5625, 0.8125],
+            "max": [0.125, 0.75, 0.9375]
+          },
+          {
+            "min": [0.875, 0.375, 0.5625],
+            "max": [1, 0.5625, 1]
+          },
+          {
+            "min": [0.875, 0.75, 0.5625],
+            "max": [1, 0.9375, 1]
+          },
+          {
+            "min": [0.875, 0.5625, 0.8125],
+            "max": [1, 0.75, 0.9375]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0.3125, 0.4375],
+            "max": [0.125, 1, 0.5625]
+          },
+          {
+            "min": [0.875, 0.3125, 0.4375],
+            "max": [1, 1, 0.5625]
+          },
+          {
+            "min": [0, 0.375, 0.5625],
+            "max": [0.125, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.5625],
+            "max": [0.125, 0.9375, 1]
+          },
+          {
+            "min": [0, 0.5625, 0.8125],
+            "max": [0.125, 0.75, 0.9375]
+          },
+          {
+            "min": [0.875, 0.375, 0.5625],
+            "max": [1, 0.5625, 1]
+          },
+          {
+            "min": [0.875, 0.75, 0.5625],
+            "max": [1, 0.9375, 1]
+          },
+          {
+            "min": [0.875, 0.5625, 0.8125],
+            "max": [1, 0.75, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 124,
+      "name": "Fence Gate",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.4375, 0.3125, 0],
+            "max": [0.5625, 1, 0.125]
+          },
+          {
+            "min": [0.4375, 0.3125, 0.875],
+            "max": [0.5625, 1, 1]
+          },
+          {
+            "min": [0, 0.375, 0],
+            "max": [0.4375, 0.5625, 0.125]
+          },
+          {
+            "min": [0, 0.75, 0],
+            "max": [0.4375, 0.9375, 0.125]
+          },
+          {
+            "min": [0.0625, 0.5625, 0],
+            "max": [0.1875, 0.75, 0.125]
+          },
+          {
+            "min": [0, 0.375, 0.875],
+            "max": [0.4375, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.875],
+            "max": [0.4375, 0.9375, 1]
+          },
+          {
+            "min": [0.0625, 0.5625, 0.875],
+            "max": [0.1875, 0.75, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.4375, 0.3125, 0],
+            "max": [0.5625, 1, 0.125]
+          },
+          {
+            "min": [0.4375, 0.3125, 0.875],
+            "max": [0.5625, 1, 1]
+          },
+          {
+            "min": [0, 0.375, 0],
+            "max": [0.4375, 0.5625, 0.125]
+          },
+          {
+            "min": [0, 0.75, 0],
+            "max": [0.4375, 0.9375, 0.125]
+          },
+          {
+            "min": [0.0625, 0.5625, 0],
+            "max": [0.1875, 0.75, 0.125]
+          },
+          {
+            "min": [0, 0.375, 0.875],
+            "max": [0.4375, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.875],
+            "max": [0.4375, 0.9375, 1]
+          },
+          {
+            "min": [0.0625, 0.5625, 0.875],
+            "max": [0.1875, 0.75, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.4375, 0.3125, 0],
+            "max": [0.5625, 1, 0.125]
+          },
+          {
+            "min": [0.4375, 0.3125, 0.875],
+            "max": [0.5625, 1, 1]
+          },
+          {
+            "min": [0, 0.375, 0],
+            "max": [0.4375, 0.5625, 0.125]
+          },
+          {
+            "min": [0, 0.75, 0],
+            "max": [0.4375, 0.9375, 0.125]
+          },
+          {
+            "min": [0.0625, 0.5625, 0],
+            "max": [0.1875, 0.75, 0.125]
+          },
+          {
+            "min": [0, 0.375, 0.875],
+            "max": [0.4375, 0.5625, 1]
+          },
+          {
+            "min": [0, 0.75, 0.875],
+            "max": [0.4375, 0.9375, 1]
+          },
+          {
+            "min": [0.0625, 0.5625, 0.875],
+            "max": [0.1875, 0.75, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 125,
+      "name": "Cobblestone Wall",
+      "textures": [69, 69, 69],
+      "icon": 193,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0.25],
+            "max": [0.75, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0.25],
+            "max": [0.75, 1.5, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.25, 0, 0.25],
+            "max": [0.75, 1, 0.75]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 126,
+      "name": "Glass Pane",
+      "textures": [146, 146, 145],
+      "icon": 179,
+      "solid": true,
+      "opaque": false,
+      "translucent": true,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 127,
+      "name": "Iron Bars",
+      "textures": [197, 197, 196],
+      "icon": 180,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.4375, 0, 0.4375],
+            "max": [0.5625, 1, 0.5625]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 128,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.09375],
+            "tex": [110, 110, 110]
+          },
+          {
+            "min": [0, 0, 0.09375],
+            "max": [1, 1, 0.1875],
+            "tex": [111, 111, 111]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 129,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.90625, 0, 0],
+            "max": [1, 1, 1],
+            "tex": [110, 110, 110]
+          },
+          {
+            "min": [0.8125, 0, 0],
+            "max": [0.90625, 1, 1],
+            "tex": [111, 111, 111]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 130,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0.90625],
+            "max": [1, 1, 1],
+            "tex": [110, 110, 110]
+          },
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 0.90625],
+            "tex": [111, 111, 111]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 131,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.09375, 1, 1],
+            "tex": [110, 110, 110]
+          },
+          {
+            "min": [0.09375, 0, 0],
+            "max": [0.1875, 1, 1],
+            "tex": [111, 111, 111]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 132,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.09375, 1, 1],
+            "tex": [111, 111, 111]
+          },
+          {
+            "min": [0.09375, 0, 0],
+            "max": [0.1875, 1, 1],
+            "tex": [110, 110, 110]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 133,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.09375],
+            "tex": [111, 111, 111]
+          },
+          {
+            "min": [0, 0, 0.09375],
+            "max": [1, 1, 0.1875],
+            "tex": [110, 110, 110]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 134,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.90625, 0, 0],
+            "max": [1, 1, 1],
+            "tex": [111, 111, 111]
+          },
+          {
+            "min": [0.8125, 0, 0],
+            "max": [0.90625, 1, 1],
+            "tex": [110, 110, 110]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 135,
+      "name": "Wooden Door",
+      "textures": [323, 323, 323],
+      "icon": 323,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0.90625],
+            "max": [1, 1, 1],
+            "tex": [111, 111, 111]
+          },
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 0.90625],
+            "tex": [110, 110, 110]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 136,
+      "name": "Trapdoor",
+      "textures": [410, 410, 410],
+      "icon": 192,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 137,
+      "name": "Trapdoor",
+      "textures": [410, 410, 410],
+      "icon": 410,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 0.1875]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 138,
+      "name": "Trapdoor",
+      "textures": [410, 410, 410],
+      "icon": 410,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.8125, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 139,
+      "name": "Trapdoor",
+      "textures": [410, 410, 410],
+      "icon": 410,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0.8125],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 140,
+      "name": "Trapdoor",
+      "textures": [410, 410, 410],
+      "icon": 410,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [0.1875, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 141,
+      "name": "Lantern",
+      "textures": [203, 203, 202],
+      "icon": 181,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 15,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.4375, 0.6875]
+          },
+          {
+            "min": [0.375, 0.4375, 0.375],
+            "max": [0.625, 0.5625, 0.625],
+            "tex": [203, 203, 203]
+          },
+          {
+            "min": [0.46875, 0.5625, 0.40625],
+            "max": [0.53125, 0.6875, 0.59375],
+            "tex": [61, 61, 61]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.5625, 0.6875]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.6875, 0.6875]
+          }
+        ],
+        "dynamic": true
+      }
+    },
+    {
+      "id": 142,
+      "name": "Bookshelf",
+      "textures": [323, 323, 33],
+      "icon": 33,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 143,
+      "name": "Block of Coal",
+      "textures": [67, 67, 67],
+      "icon": 67,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 144,
+      "name": "Block of Gold",
+      "textures": [148, 148, 148],
+      "icon": 148,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 145,
+      "name": "Block of Diamond",
+      "textures": [106, 106, 106],
+      "icon": 106,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 146,
+      "name": "Block of Copper",
+      "textures": [85, 85, 85],
+      "icon": 85,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 147,
+      "name": "Block of Ruby",
+      "textures": [354, 354, 354],
+      "icon": 354,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 148,
+      "name": "White Wool",
+      "textures": [427, 427, 427],
+      "icon": 427,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 149,
+      "name": "Red Wool",
+      "textures": [426, 426, 426],
+      "icon": 426,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 150,
+      "name": "Blue Wool",
+      "textures": [424, 424, 424],
+      "icon": 424,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 151,
+      "name": "Yellow Wool",
+      "textures": [428, 428, 428],
+      "icon": 428,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 152,
+      "name": "Green Wool",
+      "textures": [425, 425, 425],
+      "icon": 425,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 153,
+      "name": "Black Wool",
+      "textures": [423, 423, 423],
+      "icon": 423,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.8,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 154,
+      "name": "White Carpet",
+      "textures": [427, 427, 427],
+      "icon": 174,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 155,
+      "name": "Red Carpet",
+      "textures": [426, 426, 426],
+      "icon": 173,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 156,
+      "name": "Blue Carpet",
+      "textures": [424, 424, 424],
+      "icon": 171,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 157,
+      "name": "Yellow Carpet",
+      "textures": [428, 428, 428],
+      "icon": 175,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 158,
+      "name": "Green Carpet",
+      "textures": [425, 425, 425],
+      "icon": 172,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 159,
+      "name": "Black Carpet",
+      "textures": [423, 423, 423],
+      "icon": 170,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 160,
+      "name": "Campfire",
+      "textures": [54, 54, 54],
+      "icon": 169,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 15,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.1875, 0.3125],
+            "tex": [54, 54, 54]
+          },
+          {
+            "min": [0.0625, 0, 0.6875],
+            "max": [0.9375, 0.1875, 0.9375],
+            "tex": [54, 54, 54]
+          },
+          {
+            "min": [0.0625, 0.1875, 0.0625],
+            "max": [0.3125, 0.375, 0.9375],
+            "tex": [54, 54, 54]
+          },
+          {
+            "min": [0.6875, 0.1875, 0.0625],
+            "max": [0.9375, 0.375, 0.9375],
+            "tex": [54, 54, 54]
+          },
+          {
+            "min": [0.3125, 0, 0.3125],
+            "max": [0.6875, 0.0625, 0.6875],
+            "tex": [52, 52, 52]
+          },
+          {
+            "min": [0.125, 0.0625, 0.46875],
+            "max": [0.875, 0.9375, 0.53125],
+            "tex": [47, 47, 53]
+          },
+          {
+            "min": [0.46875, 0.0625, 0.125],
+            "max": [0.53125, 0.9375, 0.875],
+            "tex": [47, 47, 53]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.375, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.4375, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 161,
+      "name": "Terracotta",
+      "textures": [403, 403, 403],
+      "icon": 403,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 162,
+      "name": "Chain",
+      "textures": [61, 61, 61],
+      "icon": 176,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.40625, 0, 0.40625],
+            "max": [0.59375, 1, 0.59375]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.40625, 0, 0.40625],
+            "max": [0.59375, 1, 0.59375]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.40625, 0, 0.40625],
+            "max": [0.59375, 1, 0.59375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 163,
+      "name": "Brick Slab",
+      "textures": [43, 43, 43],
+      "icon": 182,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 164,
+      "name": "Brick Stairs",
+      "textures": [43, 43, 43],
+      "icon": 188,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [1, 1, 0.5]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 165,
+      "name": "Brick Stairs",
+      "textures": [43, 43, 43],
+      "icon": 43,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0.5, 0.5, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 166,
+      "name": "Brick Stairs",
+      "textures": [43, 43, 43],
+      "icon": 43,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0.5],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 167,
+      "name": "Brick Stairs",
+      "textures": [43, 43, 43],
+      "icon": 43,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 3,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.5, 1]
+          },
+          {
+            "min": [0, 0.5, 0],
+            "max": [0.5, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 170,
+      "name": "Farmland",
+      "textures": [127, 108, 108],
+      "icon": 127,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 171,
+      "name": "Wheat",
+      "textures": [419, 419, 419],
+      "icon": 419,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.25, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 172,
+      "name": "Wheat",
+      "textures": [420, 420, 420],
+      "icon": 420,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.4375, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 173,
+      "name": "Wheat",
+      "textures": [421, 421, 421],
+      "icon": 421,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.6875, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 174,
+      "name": "Wheat",
+      "textures": [422, 422, 422],
+      "icon": 422,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.9375, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 175,
+      "name": "Carrots",
+      "textures": [57, 57, 57],
+      "icon": 57,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.1875, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 176,
+      "name": "Carrots",
+      "textures": [58, 58, 58],
+      "icon": 58,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.3125, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 177,
+      "name": "Carrots",
+      "textures": [59, 59, 59],
+      "icon": 59,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.4375, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 178,
+      "name": "Carrots",
+      "textures": [60, 60, 60],
+      "icon": 60,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.5625, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 179,
+      "name": "Hay Bale",
+      "textures": [161, 161, 160],
+      "icon": 160,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.5,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 180,
+      "name": "Potatoes",
+      "textures": [329, 329, 329],
+      "icon": 329,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.1875, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 181,
+      "name": "Potatoes",
+      "textures": [330, 330, 330],
+      "icon": 330,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.3125, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 182,
+      "name": "Potatoes",
+      "textures": [331, 331, 331],
+      "icon": 331,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.5, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 183,
+      "name": "Potatoes",
+      "textures": [332, 332, 332],
+      "icon": 332,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0.25, 0, 0],
+            "max": [0.250061, 1, 1]
+          },
+          {
+            "min": [0.749939, 0, 0],
+            "max": [0.75, 1, 1]
+          },
+          {
+            "min": [0, 0, 0.25],
+            "max": [1, 1, 0.250061]
+          },
+          {
+            "min": [0, 0, 0.749939],
+            "max": [1, 1, 0.75]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.625, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 184,
+      "name": "Farmland",
+      "textures": [129, 108, 128],
+      "icon": 128,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.9375, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 190,
+      "name": "TNT",
+      "textures": [408, 405, 407],
+      "icon": 407,
+      "solid": true,
+      "opaque": true,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 0.2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": null
+    },
+    {
+      "id": 191,
+      "name": "Bounce Pad",
+      "textures": [40, 37, 38],
+      "icon": 38,
+      "solid": true,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 1,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.1875, 1],
+            "tex": [37, 37, 38]
+          },
+          {
+            "min": [0.125, 0.1875, 0.125],
+            "max": [0.3125, 0.5625, 0.3125],
+            "tex": [39, 39, 39]
+          },
+          {
+            "min": [0.6875, 0.1875, 0.125],
+            "max": [0.875, 0.5625, 0.3125],
+            "tex": [39, 39, 39]
+          },
+          {
+            "min": [0.125, 0.1875, 0.6875],
+            "max": [0.3125, 0.5625, 0.875],
+            "tex": [39, 39, 39]
+          },
+          {
+            "min": [0.6875, 0.1875, 0.6875],
+            "max": [0.875, 0.5625, 0.875],
+            "tex": [39, 39, 39]
+          },
+          {
+            "min": [0, 0.5625, 0],
+            "max": [1, 0.75, 1],
+            "tex": [40, 40, 38]
+          }
+        ],
+        "collision": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.75, 1]
+          }
+        ],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.75, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 192,
+      "name": "Iron Spikes",
+      "textures": [383, 383, 383],
+      "icon": 383,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 2,
+      "replaceable": false,
+      "climbable": false,
+      "cross": null,
+      "shape": {
+        "visual": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 0.0625, 1],
+            "tex": [384, 384, 384]
+          },
+          {
+            "min": [0.125, 0.0625, 0.125],
+            "max": [0.375, 0.203125, 0.375]
+          },
+          {
+            "min": [0.164063, 0.203125, 0.164063],
+            "max": [0.335938, 0.34375, 0.335938]
+          },
+          {
+            "min": [0.203125, 0.34375, 0.203125],
+            "max": [0.296875, 0.484375, 0.296875]
+          },
+          {
+            "min": [0.234375, 0.484375, 0.234375],
+            "max": [0.265625, 0.625, 0.265625]
+          },
+          {
+            "min": [0.625, 0.0625, 0.125],
+            "max": [0.875, 0.203125, 0.375]
+          },
+          {
+            "min": [0.664063, 0.203125, 0.164063],
+            "max": [0.835938, 0.34375, 0.335938]
+          },
+          {
+            "min": [0.703125, 0.34375, 0.203125],
+            "max": [0.796875, 0.484375, 0.296875]
+          },
+          {
+            "min": [0.734375, 0.484375, 0.234375],
+            "max": [0.765625, 0.625, 0.265625]
+          },
+          {
+            "min": [0.125, 0.0625, 0.625],
+            "max": [0.375, 0.203125, 0.875]
+          },
+          {
+            "min": [0.164063, 0.203125, 0.664063],
+            "max": [0.335938, 0.34375, 0.835938]
+          },
+          {
+            "min": [0.203125, 0.34375, 0.703125],
+            "max": [0.296875, 0.484375, 0.796875]
+          },
+          {
+            "min": [0.234375, 0.484375, 0.734375],
+            "max": [0.265625, 0.625, 0.765625]
+          },
+          {
+            "min": [0.625, 0.0625, 0.625],
+            "max": [0.875, 0.203125, 0.875]
+          },
+          {
+            "min": [0.664063, 0.203125, 0.664063],
+            "max": [0.835938, 0.34375, 0.835938]
+          },
+          {
+            "min": [0.703125, 0.34375, 0.703125],
+            "max": [0.796875, 0.484375, 0.796875]
+          },
+          {
+            "min": [0.734375, 0.484375, 0.734375],
+            "max": [0.765625, 0.625, 0.765625]
+          },
+          {
+            "min": [0.375, 0.0625, 0.375],
+            "max": [0.625, 0.25, 0.625]
+          },
+          {
+            "min": [0.414063, 0.25, 0.414063],
+            "max": [0.585938, 0.4375, 0.585938]
+          },
+          {
+            "min": [0.453125, 0.4375, 0.453125],
+            "max": [0.546875, 0.625, 0.546875]
+          },
+          {
+            "min": [0.484375, 0.625, 0.484375],
+            "max": [0.515625, 0.8125, 0.515625]
+          }
+        ],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0.0625, 0, 0.0625],
+            "max": [0.9375, 0.75, 0.9375]
+          }
+        ],
+        "dynamic": false
+      }
+    },
+    {
+      "id": 200,
+      "name": "Cobweb",
+      "textures": [70, 70, 70],
+      "icon": 70,
+      "solid": false,
+      "opaque": false,
+      "translucent": false,
+      "liquid": false,
+      "breakable": true,
+      "light": 0,
+      "hardness": 4,
+      "replaceable": false,
+      "climbable": false,
+      "cross": {
+        "height": 1,
+        "inset": 0
+      },
+      "shape": {
+        "visual": [],
+        "collision": [],
+        "selection": [
+          {
+            "min": [0, 0, 0],
+            "max": [1, 1, 1]
+          }
+        ],
+        "dynamic": false
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": 256,
+      "name": "Stick",
+      "icon": 388,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 257,
+      "name": "Coal",
+      "icon": 66,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 258,
+      "name": "Iron Ingot",
+      "icon": 199,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 259,
+      "name": "Gold Ingot",
+      "icon": 149,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 260,
+      "name": "Diamond",
+      "icon": 105,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 268,
+      "name": "Wooden Pickaxe",
+      "icon": 317,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 269,
+      "name": "Stone Pickaxe",
+      "icon": 316,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 270,
+      "name": "Iron Pickaxe",
+      "icon": 315,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 271,
+      "name": "Diamond Pickaxe",
+      "icon": 314,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 272,
+      "name": "Wooden Axe",
+      "icon": 17,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 273,
+      "name": "Stone Axe",
+      "icon": 16,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 274,
+      "name": "Iron Axe",
+      "icon": 15,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 275,
+      "name": "Diamond Axe",
+      "icon": 14,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 276,
+      "name": "Wooden Shovel",
+      "icon": 370,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 277,
+      "name": "Stone Shovel",
+      "icon": 369,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 278,
+      "name": "Iron Shovel",
+      "icon": 368,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 279,
+      "name": "Diamond Shovel",
+      "icon": 367,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 280,
+      "name": "Mining Drill",
+      "icon": 114,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 281,
+      "name": "Flint and Steel",
+      "icon": 134,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 288,
+      "name": "Blaze Rod",
+      "icon": 29,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 289,
+      "name": "Blaze Powder",
+      "icon": 28,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 290,
+      "name": "Ender Pearl",
+      "icon": 124,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 291,
+      "name": "Eye of Ender",
+      "icon": 125,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 298,
+      "name": "Skateboard",
+      "icon": 371,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 299,
+      "name": "Car",
+      "icon": 55,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 300,
+      "name": "Plane",
+      "icon": 322,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 301,
+      "name": "Helicopter",
+      "icon": 163,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 302,
+      "name": "Boat",
+      "icon": 30,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 303,
+      "name": "Truck",
+      "icon": 411,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 308,
+      "name": "Leather Helmet",
+      "icon": 9,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 309,
+      "name": "Leather Chestplate",
+      "icon": 3,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 310,
+      "name": "Leather Leggings",
+      "icon": 12,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 311,
+      "name": "Leather Boots",
+      "icon": 6,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 312,
+      "name": "Iron Helmet",
+      "icon": 8,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 313,
+      "name": "Iron Chestplate",
+      "icon": 2,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 314,
+      "name": "Iron Leggings",
+      "icon": 11,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 315,
+      "name": "Iron Boots",
+      "icon": 5,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 316,
+      "name": "Diamond Helmet",
+      "icon": 7,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 317,
+      "name": "Diamond Chestplate",
+      "icon": 1,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 318,
+      "name": "Diamond Leggings",
+      "icon": 10,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 319,
+      "name": "Diamond Boots",
+      "icon": 4,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 323,
+      "name": "Leather",
+      "icon": 205,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 324,
+      "name": "Feather",
+      "icon": 130,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 328,
+      "name": "Wooden Sword",
+      "icon": 400,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 329,
+      "name": "Stone Sword",
+      "icon": 399,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 330,
+      "name": "Iron Sword",
+      "icon": 398,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 331,
+      "name": "Diamond Sword",
+      "icon": 397,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 338,
+      "name": "Raw Porkchop",
+      "icon": 349,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 339,
+      "name": "Cooked Porkchop",
+      "icon": 83,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 340,
+      "name": "Raw Beef",
+      "icon": 345,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 341,
+      "name": "Steak",
+      "icon": 387,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 342,
+      "name": "Raw Mutton",
+      "icon": 348,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 343,
+      "name": "Cooked Mutton",
+      "icon": 82,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 344,
+      "name": "Raw Chicken",
+      "icon": 346,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 345,
+      "name": "Cooked Chicken",
+      "icon": 80,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 350,
+      "name": "Wooden Hoe",
+      "icon": 167,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 351,
+      "name": "Stone Hoe",
+      "icon": 166,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 352,
+      "name": "Iron Hoe",
+      "icon": 165,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 353,
+      "name": "Diamond Hoe",
+      "icon": 164,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 354,
+      "name": "Wheat Seeds",
+      "icon": 418,
+      "stack": 64,
+      "places": 171
+    },
+    {
+      "id": 355,
+      "name": "Wheat",
+      "icon": 417,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 356,
+      "name": "Bread",
+      "icon": 42,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 357,
+      "name": "Carrot",
+      "icon": 56,
+      "stack": 64,
+      "places": 175
+    },
+    {
+      "id": 358,
+      "name": "Potato",
+      "icon": 328,
+      "stack": 64,
+      "places": 180
+    },
+    {
+      "id": 359,
+      "name": "Baked Potato",
+      "icon": 18,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 360,
+      "name": "Bone Meal",
+      "icon": 32,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 361,
+      "name": "Pumpkin Pie",
+      "icon": 338,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 370,
+      "name": "Apple",
+      "icon": 0,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 371,
+      "name": "Melon Slice",
+      "icon": 212,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 372,
+      "name": "Sugar",
+      "icon": 396,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 373,
+      "name": "Copper Ingot",
+      "icon": 86,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 374,
+      "name": "Ruby",
+      "icon": 353,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 375,
+      "name": "Snowball",
+      "icon": 377,
+      "stack": 16,
+      "places": null
+    },
+    {
+      "id": 390,
+      "name": "Wooden Door",
+      "icon": 109,
+      "stack": 16,
+      "places": 128
+    },
+    {
+      "id": 410,
+      "name": "Bow",
+      "icon": 41,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 411,
+      "name": "Arrow",
+      "icon": 13,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 412,
+      "name": "Stone Hammer",
+      "icon": 158,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 413,
+      "name": "Iron Hammer",
+      "icon": 157,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 414,
+      "name": "Diamond Hammer",
+      "icon": 156,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 415,
+      "name": "Bucket",
+      "icon": 44,
+      "stack": 16,
+      "places": null
+    },
+    {
+      "id": 416,
+      "name": "Water Bucket",
+      "icon": 46,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 417,
+      "name": "Lava Bucket",
+      "icon": 45,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 440,
+      "name": "Bone",
+      "icon": 31,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 441,
+      "name": "String",
+      "icon": 395,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 442,
+      "name": "Slimeball",
+      "icon": 375,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 443,
+      "name": "Fuse Powder",
+      "icon": 137,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 444,
+      "name": "Raw Fish",
+      "icon": 347,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 445,
+      "name": "Cooked Fish",
+      "icon": 81,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 446,
+      "name": "Shears",
+      "icon": 365,
+      "stack": 1,
+      "places": null
+    },
+    {
+      "id": 447,
+      "name": "Raw Rabbit",
+      "icon": 350,
+      "stack": 64,
+      "places": null
+    },
+    {
+      "id": 448,
+      "name": "Cooked Rabbit",
+      "icon": 84,
+      "stack": 64,
+      "places": null
+    }
+  ]
+}
