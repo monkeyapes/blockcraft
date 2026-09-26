@@ -653,12 +653,28 @@ const approx = (a: number, b: number, eps: number) => Math.abs(a - b) <= eps;
   for (let x = -6; x <= 6; x++) for (let y = Y; y < Y + 6; y++) for (let z = -6; z <= 6; z++) g.put(x, y, z, Block.Dirt);
   g.player.x = 0.5; g.player.y = Y + 20; g.player.z = 20.5;
   g.put(0, Y + 2, 0, Block.Air);
+  g.put(0, Y + 3, 1, Block.Furnace);
+  let sounds = 0;
+  let debris = 0;
+  g.sound = new Proxy({}, { get: () => () => { sounds++; } }) as GameContext['sound'];
+  g.breakParticles = () => { debris++; };
+  const solidBefore: Array<[number, number, number]> = [];
+  for (let x = -10; x <= 10; x++) {
+    for (let y = GROUND - 8; y < Y + 10; y++) {
+      for (let z = -10; z <= 10; z++) if (g.getBlock(x, y, z) !== Block.Air) solidBefore.push([x, y, z]);
+    }
+  }
   explosions.explode(g, 0.5, Y + 2.5, 0.5, TNT_POWER);
-  const total = g.broken.length;
-  const dropped = g.broken.filter((b) => b.drops).length;
-  check('a blast destroys a good crater of dirt', total > 60, `${total} blocks`);
+  const total = explosions.history[explosions.history.length - 1].destroyed;
+  const air = solidBefore.filter(([x, y, z]) => g.getBlock(x, y, z) === Block.Air).length;
+  const dropped = g.dropped.filter((d) => d.id === Block.Dirt).length;
+  check('a blast destroys a good crater of dirt', total > 60 && air === total, `${total} blocks, ${air} now air`);
   check(`about ${DROP_CHANCE * 100}% of them drop as items`, dropped / total > DROP_CHANCE - 0.1 && dropped / total < DROP_CHANCE + 0.1,
     `${dropped}/${total}`);
+  check('a machine in the blast is broken the way that returns what it held',
+    g.broken.length === 1 && g.broken[0].id === Block.Furnace, JSON.stringify(g.broken.map((b) => b.id)));
+  check('the blast is one bang, not a break sound per block', sounds <= 4, `${sounds} sounds`);
+  check('and throws debris from a spread of the crater', debris >= 10 && debris <= 30, `${debris} bursts`);
   check('the blast leaves smoke and flame behind', effects.puffs.length > 40);
 }
 

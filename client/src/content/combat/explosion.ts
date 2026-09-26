@@ -15,8 +15,10 @@
  */
 
 import { Block, blockDef, isSolid } from '@shared/blocks.js';
-import type { GameContext } from '../api.js';
+import { blockDrops } from '@shared/items.js';
+import { dispatchBreak, type GameContext } from '../api.js';
 import type { Atlas } from '../../gfx/atlas.js';
+import { isMachine } from '../../machines.js';
 import { PLAYER_HEIGHT, collisionBoxesAt } from '../../player.js';
 import type { Effects } from './effects.js';
 import { lightAt, substeps, WORLD_AXES, type MeshBuilder } from './geometry.js';
@@ -204,16 +206,23 @@ export class Explosions {
     this.throwCharges(x, y, z, power);
 
     const cells = blastCells((bx, by, bz) => ctx.getBlock(bx, by, bz), x, y, z, power, random);
-    for (const [cx, cy, cz] of cells) {
+    // Break particles from a spread of the cells, not all of them: the
+    // particle pool keeps only the newest few hundred, so a burst per cell
+    // would show just the last handful of blocks anyway.
+    const puffEvery = Math.max(1, Math.ceil(cells.length / MAX_DEBRIS_BURSTS));
+    let destroyed = 0;
+    cells.forEach(([cx, cy, cz], i) => {
       const id = ctx.getBlock(cx, cy, cz);
-      if (id === Block.Air) continue; // taken already, with a door's other half
+      if (id === Block.Air) return; // taken already, with a door's other half
       if (id === Block.TNT) {
         this.prime(ctx, cx, cy, cz, CHAIN_FUSE_MIN + random() * (CHAIN_FUSE_MAX - CHAIN_FUSE_MIN));
-        continue;
+        return;
       }
-      ctx.breakBlock(cx, cy, cz, { drops: random() < DROP_CHANCE });
-    }
-    this.history.push({ x, y, z, power, destroyed: cells.length });
+      if (!blastBreak(ctx, cx, cy, cz, id, random() < DROP_CHANCE)) return;
+      destroyed++;
+      if (i % puffEvery === 0) ctx.breakParticles(cx, cy, cz, id);
+    });
+    this.history.push({ x, y, z, power, destroyed });
     if (this.history.length > 32) this.history.shift();
   }
 
@@ -305,6 +314,33 @@ export class Explosions {
     this.charges.length = 0;
     this.history.length = 0;
   }
+}
+
+/** Most cells of one blast that get a burst of break particles. */
+const MAX_DEBRIS_BURSTS = 24;
+
+/**
+ * Takes one block out for a blast, dropping it as an item when `drops`.
+ * Returns whether it went.
+ *
+ * Not ctx.breakBlock, which is the player's break: it plays the block's
+ * break sound and throws its particles every time, and two hundred break
+ * thumps landing on the same instant sum far past full scale -- a blast
+ * that clips the speakers. A machine still goes through breakBlock, since
+ * that is what hands back whatever it held. Everything else is the same
+ * edit, the same drops and the same break hook, only quiet.
+ */
+function blastBreak(ctx: GameContext, x: number, y: number, z: number, id: number, drops: boolean): boolean {
+  if (isMachine(id)) {
+    ctx.breakBlock(x, y, z, { drops });
+    return ctx.getBlock(x, y, z) !== id;
+  }
+  if (!ctx.setBlock(x, y, z, Block.Air)) return false;
+  if (drops && !ctx.creative) {
+    for (const d of blockDrops(id, ctx.random, null)) ctx.dropItem(x + 0.5, y + 0.3, z + 0.5, d.id, d.count);
+  }
+  dispatchBreak(ctx, x, y, z, id, null);
+  return true;
 }
 
 function away(dx: number, dy: number, dz: number): [number, number, number] {
