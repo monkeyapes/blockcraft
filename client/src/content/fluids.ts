@@ -174,15 +174,13 @@ export class FluidFlow {
     let id = ctx.getBlock(x, y, z);
     const fluid = fluidOf(id);
     if (!fluid) return;
-    // Unloaded columns read as air. A cell at the edge of what has streamed
-    // in waits for its neighbours rather than pouring into the unknown.
-    if (!this.loadedAround(ctx, x, z)) {
-      this.schedule(ctx, x, y, z);
-      return;
-    }
+    if (!ctx.world.isLoaded(x, z)) return;
     if (isLava(id) && this.meet(ctx, x, y, z)) return;
 
-    if (!isFluidSource(id)) {
+    // Unloaded columns read as air, which would dry up a stream fed from
+    // beyond the edge of what has streamed in. Beside unknown ground a cell
+    // keeps its level; it still spreads into what is known (see passable).
+    if (!isFluidSource(id) && this.loadedAround(ctx, x, z)) {
       const want = this.fed(ctx, x, y, z, fluid);
       if (want !== id) {
         if (!this.set(ctx, x, y, z, want) || want === Block.Air) return;
