@@ -98,7 +98,8 @@ def(Block.Sand, 'Sand', 'sand', { hardness: 0.8 });
 def(Block.Gravel, 'Gravel', 'gravel', { hardness: 0.9 });
 def(Block.Bedrock, 'Bedrock', 'bedrock', { breakable: false });
 def(Block.Log, 'Log', ['log_top', 'log_top', 'log_side'], { hardness: 2 });
-def(Block.Leaves, 'Leaves', 'leaves', { hardness: 0.3 });
+// Shears are the leaf tool; the tier stays 0, so bare hands still clear them.
+def(Block.Leaves, 'Leaves', 'leaves', { hardness: 0.3, tool: 'shears' });
 def(Block.Planks, 'Planks', 'planks', { hardness: 2 });
 def(Block.Bricks, 'Bricks', 'brick', { hardness: 3 });
 def(Block.Glass, 'Glass', 'glass', { opaque: false, translucent: true, hardness: 0.5 });

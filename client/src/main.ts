@@ -1581,6 +1581,9 @@ async function start(
         survival.defense = inventory.defense((id) => armorSpec(id)?.defense ?? 0);
         survival.update(dt, player, world);
 
+        // Mobs need to know how dark it is outdoors: monsters spawn on the
+        // surface at night, and spiders turn hostile in the dark.
+        mobs.daylight = dimension === Dimension.Overworld ? skyBrightness : 1;
         const bitten = mobs.update(dt, world, player);
         if (bitten > 0) survival.damage(bitten, 'was attacked');
 

@@ -244,8 +244,11 @@ export class Projectiles {
   private strikeMob(ctx: GameContext, p: Projectile, mob: Mob, speed: number): void {
     const damage = this.damageTo(p, speed, mob.kind);
     // The blow comes from behind the projectile, so the knockback carries on
-    // the way it was flying.
-    ctx.hurtMob(mob, damage, p.x - p.hx * 2, p.z - p.hz * 2);
+    // the way it was flying. Only the player's shots carry a direction: a hit
+    // with a direction and no other striker reads as the player's, and a
+    // skeleton's stray arrow must not set your wolves on the zombie it hit.
+    if (p.shooter === 'player') ctx.hurtMob(mob, damage, p.x - p.hx * 2, p.z - p.hz * 2);
+    else ctx.hurtMob(mob, damage);
     if (!mob.dead && !mob.def.flying && !mob.def.boss) {
       mob.vy = Math.max(mob.vy, p.kind === 'snowball' ? 4.5 : 3.5);
     }
