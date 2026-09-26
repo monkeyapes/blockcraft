@@ -451,23 +451,26 @@ function wolf(mob: Mob): Part[] {
 }
 
 function bat(mob: Mob): Part[] {
-  const flap = Math.sin(mob.age * 20) * 0.9;
+  // Small: a fist-sized body under a wingspan wider than a block. Wings beat
+  // fast from the shoulder, the outer panel lagging behind at the wrist.
+  const flap = Math.sin(mob.age * 20) * 0.75;
   const wings: Part[] = [];
   for (const side of [1, -1]) {
-    const inner = box(-3, 11.6, side > 0 ? 1.5 : -8, 2, 12.4, side > 0 ? 8 : -1.5, 'mob_bat_wing');
-    const outer = box(-2.5, 11.6, side > 0 ? 8 : -14, 1, 12.4, side > 0 ? 14 : -8, 'mob_bat_wing', { uv: [4, 4] });
-    const shoulder = rot([0, 12, side * 1.5], side * flap, 0, 0);
-    outer.xf.push(rot([0, 12, side * 8], side * flap * 0.6, 0, 0), shoulder);
+    const inner = box(-3, 8.6, side > 0 ? 1.5 : -8, 2, 9.4, side > 0 ? 8 : -1.5, 'mob_bat_wing');
+    const outer = box(-2.5, 8.6, side > 0 ? 8 : -14, 1, 9.4, side > 0 ? 14 : -8, 'mob_bat_wing', { uv: [4, 4] });
+    const shoulder = rot([0, 9, side * 1.5], side * flap, 0, 0);
+    outer.xf.push(rot([0, 9, side * 8], side * flap * 0.6, 0, 0), shoulder);
     inner.xf.push(shoulder);
     wings.push(inner, outer);
   }
   return [
-    box(-1.5, 6, -1.5, 1.5, 12.5, 1.5, 'mob_bat_fur'),
+    box(-1.5, 3, -1.5, 1.5, 9.5, 1.5, 'mob_bat_fur'),
     ...pose([
-      box(-2, 12.5, -2, 2, 16.5, 2, 'mob_bat_fur', { faces: { front: 'mob_bat_face' }, uv: [4, 0] }),
-      ...pair(-1, 16.5, 0.6, 0.5, 18.5, 1.8, 'mob_bat_ear'),
-    ], headXf(mob, [0, 12.5, 0], 0.5)),
-    ...pair(-0.5, 4, 0.3, 0.5, 6, 1.2, 'mob_bat_ear'),
+      box(-2, 9.5, -2, 2, 13.5, 2, 'mob_bat_fur', { faces: { front: 'mob_bat_face' }, uv: [4, 0] }),
+      ...pair(-1, 13.5, 0.6, 0.5, 15.5, 1.8, 'mob_bat_ear'),
+    ], headXf(mob, [0, 9.5, 0], 0.5)),
+    // Little hooked feet, tucked up under the body.
+    ...pair(-0.5, 1, 0.3, 0.5, 3, 1.2, 'mob_bat_ear'),
     ...wings,
   ];
 }
