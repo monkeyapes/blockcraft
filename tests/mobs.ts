@@ -179,6 +179,23 @@ check('smelting ore still works', smeltResult(Block.IronOre)?.id === Item.IronIn
   check('the mob cap is respected', world.mobs.length <= 30, `${world.mobs.length}`);
 }
 
+// --- creative: monsters leave the player alone ------------------------------
+{
+  const bitesNear = (peaceful: boolean): number => {
+    const world = new MobWorld(Dimension.Overworld);
+    world.peaceful = peaceful;
+    world.daylight = 0.1;
+    const player = { x: 0.5, y: 41, z: 0.5 };
+    world.spawn(MobKind.Zombie, 3.5, 41, 0.5);
+    let total = 0;
+    for (let i = 0; i < 60 * 4; i++) total += world.update(1 / 60, flat, player, () => 0.5);
+    return total;
+  };
+  const survival = bitesNear(false);
+  check('control: a zombie beside a survival player bites', survival > 0, `${survival} damage`);
+  check('a zombie beside a creative player does not', bitesNear(true) === 0);
+}
+
 {
   const world = new MobWorld(Dimension.Overworld);
   const mob = world.spawn(MobKind.Pig, 0.5, 41, 0.5);

@@ -120,16 +120,48 @@ function plate(base: RGB, light: RGB, dark: RGB, rim: RGB, steps: number): Recip
 }
 
 /** Faceted gem blocks: a plate with bright diagonal facets struck across it. */
+/**
+ * A gem block: four cut stones set in a dark setting inside a bevelled
+ * frame.
+ *
+ * It used to be a plain plate with two diagonal glints, which read as a pane
+ * of tinted glass. Cut stones -- a bright table, a lit crown, a shadowed
+ * pavilion, a white glint -- are what the eye knows as "gem", and a darker
+ * setting between them keeps the block from reading as one flat slab.
+ */
 function gem(base: RGB, light: RGB, dark: RGB, rim: RGB): Recipe {
+  const setting: RGB = [dark[0] * 0.55, dark[1] * 0.55, dark[2] * 0.55];
+  // One stone, 6x6: table, crown, girdle, pavilion.
+  const stone = [
+    '.lTTl.',
+    'lTTTLl',
+    'LLLLLM',
+    'MMMMMd',
+    '.MMdd.',
+    '..dd..',
+  ];
+  const pal: Record<string, RGB> = {
+    T: [Math.min(255, light[0] + 40), Math.min(255, light[1] + 40), Math.min(255, light[2] + 40)],
+    l: light, L: base, M: [base[0] * 0.85, base[1] * 0.85, base[2] * 0.85], d: dark,
+  };
   return (t) => {
-    plate(base, light, dark, rim, 12)(t);
-    for (let i = 0; i < 5; i++) {
-      t.set(3 + i, 7 - i, light[0] + 20, light[1] + 20, light[2] + 20);
-      t.set(9 + i, 13 - i, light[0] + 20, light[1] + 20, light[2] + 20);
+    t.fill(setting, 3);
+    for (const [ox, oy] of [[1, 1], [9, 1], [1, 9], [9, 9]]) {
+      stone.forEach((row, y) => {
+        for (let x = 0; x < 6; x++) {
+          const c = pal[row[x]];
+          if (c) t.set(ox + x, oy + y, c[0], c[1], c[2]);
+        }
+      });
+      t.set(ox + 1, oy + 1, 255, 255, 255);   // the glint
     }
-    for (let i = 0; i < 4; i++) t.set(4 + i, 12 - i, dark[0], dark[1], dark[2]);
-    t.set(3, 3, 255, 255, 255);
-    t.set(11, 4, 255, 255, 255);
+    // A bevelled frame of the gem's own colour, so the block is one block.
+    for (let i = 0; i < TILE; i++) {
+      t.set(i, 0, rim[0] + 40, rim[1] + 40, rim[2] + 40);
+      t.set(0, i, rim[0] + 30, rim[1] + 30, rim[2] + 30);
+      t.set(i, TILE - 1, rim[0], rim[1], rim[2]);
+      t.set(TILE - 1, i, rim[0], rim[1], rim[2]);
+    }
   };
 }
 

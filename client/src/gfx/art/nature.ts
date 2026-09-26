@@ -587,8 +587,13 @@ export const NATURE_ART: Record<string, Recipe> = {
     for (let y = 0; y < TILE; y++) {
       for (let x = 0; x < TILE; x++) {
         const a = Math.atan2(y - 7.5, x - 7.5);
-        // Eight grooves radiating from the stem.
-        if (Math.abs(Math.sin(a * 4)) < 0.2) t.set(x, y, 170, 90, 22);
+        const r = Math.hypot(x - 7.5, y - 7.5);
+        // Eight grooves radiating from the stem, stopping short of the
+        // edges. Run into the corners, they joined up with the next
+        // pumpkin's and a field of them tiled into a diamond lattice.
+        if (r < 6.2 && Math.abs(Math.sin(a * 4)) < 0.2) t.set(x, y, 170, 90, 22);
+        // A darker shoulder where the top curves over into the sides.
+        else if (r > 6.8) t.shade(x, y, -14);
       }
     }
     t.patches(8, [236, 150, 54], 5, 2);
@@ -612,7 +617,11 @@ export const NATURE_ART: Record<string, Recipe> = {
     for (let y = 0; y < TILE; y++) {
       for (let x = 0; x < TILE; x++) {
         const a = Math.atan2(y - 7.5, x - 7.5);
-        if (Math.abs(Math.sin(a * 4)) < 0.25) t.set(x, y, 58, 110, 30);
+        const r = Math.hypot(x - 7.5, y - 7.5);
+        // Stripes stop short of the edges, like the pumpkin's grooves, so a
+        // patch of melons does not tile into a diamond lattice.
+        if (r < 6.2 && Math.abs(Math.sin(a * 4)) < 0.25) t.set(x, y, 58, 110, 30);
+        else if (r > 6.8) t.shade(x, y, -12);
       }
     }
     t.rect(7, 7, 2, 2, [90, 74, 40]);

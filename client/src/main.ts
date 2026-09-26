@@ -1584,6 +1584,7 @@ async function start(
         // Mobs need to know how dark it is outdoors: monsters spawn on the
         // surface at night, and spiders turn hostile in the dark.
         mobs.daylight = dimension === Dimension.Overworld ? skyBrightness : 1;
+        mobs.peaceful = survival.creative;
         const bitten = mobs.update(dt, world, player);
         if (bitten > 0) survival.damage(bitten, 'was attacked');
 

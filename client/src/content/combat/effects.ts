@@ -73,8 +73,11 @@ export class Effects {
    */
   explosion(x: number, y: number, z: number, power: number, random: () => number): void {
     const r = Math.max(1, power);
-    this.burst('flame', x, y, z, Math.round(10 * r), r * 0.6, r * 2.2, random, 0.34);
-    this.burst('smoke', x, y, z, Math.round(14 * r), r * 0.9, r * 2.8, random, 0.5);
+    // Puffs are kept small and many. At half a block, growing to 1.4, a
+    // power-3 blast's 40-odd smoke puffs filled the whole screen as grey
+    // cubes whenever it went off near the camera, as a boomshroom does.
+    this.burst('flame', x, y, z, Math.round(10 * r), r * 0.6, r * 2.2, random, 0.22);
+    this.burst('smoke', x, y, z, Math.round(12 * r), r * 0.9, r * 2.8, random, 0.28);
     this.burst('spark', x, y, z, Math.round(6 * r), r * 0.4, r * 4, random, 0.08);
   }
 

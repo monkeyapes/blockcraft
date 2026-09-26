@@ -689,24 +689,27 @@ cutPair('raw_chicken', 'cooked_chicken', {
   sear: [120, 66, 24],
 });
 
-// A rabbit haunch: a long leg tapering to a thin shank bone.
+// A whole dressed rabbit on its side: a long arched body, the hind leg
+// stretched out behind with its bone end showing, a short foreleg tucked
+// under the front. A single haunch read as the chicken drumstick with a
+// different tint; the whole animal has a silhouette nothing else shares.
 cutPair('raw_rabbit', 'cooked_rabbit', {
   rows: [
     '................',
     '................',
-    '.........hMMM...',
-    '........hMMMMMm.',
-    '.......hMMMMMMm.',
-    '.......MMMMMMMm.',
-    '......MMMMMMMmm.',
-    '.....MMMMMMMmm..',
-    '....MMMMMMmmm...',
-    '...MMMMMmm......',
-    '..bBMMmm........',
-    '.bBBb...........',
-    '.bBb............',
-    '..b.............',
     '................',
+    '................',
+    '.....hhhhh......',
+    '...hhMMMMMMh....',
+    '..hMMMMMMMMMMh..',
+    '.hMMMMMMMMMMMMm.',
+    '.MMMMMMMMMMMMMMm',
+    '.MMMMMMMMMMMMMmm',
+    '..MMMmmmMMMMMMmm',
+    '..MMm....mMMMmmB',
+    '..Mm......mmmmBB',
+    '..bB...........b',
+    '..BB............',
     '................',
   ],
   raw: {

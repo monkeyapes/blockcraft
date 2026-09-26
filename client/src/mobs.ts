@@ -1089,6 +1089,12 @@ export class MobWorld {
    * brightly mobs are drawn out in the open.
    */
   daylight = 1;
+  /**
+   * Creative mode: monsters leave the player alone. main.ts sets it each
+   * frame. Without it a boomshroom summoned to look at would walk up and
+   * blow a hole in the build you were showing it off in.
+   */
+  peaceful = false;
 
   constructor(private dimension: Dimension) {}
 
@@ -1156,8 +1162,13 @@ export class MobWorld {
       const mob = this.mobs[i];
       // Nothing moves where the world has not loaded: it would fall forever.
       if (!mob.dead && !world.isLoaded(Math.floor(mob.x), Math.floor(mob.z))) continue;
-      mob.update(dt, world, player, random, env);
-      if (mob.aggressive) {
+      // In creative, monsters are shown a player far out of their range, so
+      // every brain -- chasing, keeping range, lighting a fuse -- simply finds
+      // no one to hunt. Animals and tamed wolves still see the real player.
+      const hunter = this.peaceful && mob.def.temper === 'hostile';
+      mob.update(dt, world, hunter ? { x: player.x + 1e4, y: player.y, z: player.z + 1e4 } : player,
+        random, env);
+      if (mob.aggressive && !hunter) {
         const bite = mob.tryAttack(player.x, player.y, player.z);
         if (bite > 0) {
           damage += bite;

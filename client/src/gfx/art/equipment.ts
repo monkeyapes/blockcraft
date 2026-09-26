@@ -303,8 +303,11 @@ export const EQUIPMENT_ART: Record<string, Recipe> = {
     fineLine(t, 13.4, 2.6, 2.6, 13.4, [236, 232, 218], 2);
   },
   arrow: (t) => {
+    // A copper head: arrows are made from copper ingots, and the arrow in
+    // flight has a copper head, so the icon in the bag should too.
     paint(t, ARROW, {
-      ...rampPalette(RAMPS.stone), ...STICK,
+      H: [252, 196, 150], L: [226, 148, 96], M: [196, 112, 64], D: [150, 78, 44], S: [104, 52, 30],
+      ...STICK,
       f: [240, 236, 226], F: [200, 194, 182], r: [198, 60, 48], R: [232, 104, 84],
     });
     rim(t);
