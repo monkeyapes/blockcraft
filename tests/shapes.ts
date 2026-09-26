@@ -14,15 +14,44 @@ import { CHUNK_X, CHUNK_Z, Dimension, SECTION_Y, WORLD_Y } from '../shared/src/c
 import { ClientWorld } from '../client/src/world.js';
 import { meshSection, FLOATS_PER_VERTEX } from '../client/src/mesher.js';
 import {
-  CABLE_INSET, CONVEYOR_HEIGHT, FULL_BOX, GANTRY_BASE, boundingBox, isFullCube, shapeOf,
-  supportHeight,
+  CABLE_INSET, CONVEYOR_HEIGHT, FULL_BOX, GANTRY_BASE, NOVOLT_BLOCKS, boundingBox, isFullCube,
+  shapeOf, supportHeight,
 } from '../shared/src/shapes.js';
+import { demandOf, isSource } from '../shared/src/novolt.js';
 import { PLAYER_WIDTH, Player, type InputState } from '../client/src/player.js';
 
 let failures = 0;
 function check(label: string, ok: boolean, extra = ''): void {
   if (!ok) failures++;
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}${extra ? '  ' + extra : ''}`);
+}
+
+// --- conduits show what they connect to --------------------------------------
+{
+  // The cable's join list has to be the network's: a cable that draws an arm
+  // to something the solver ignores (or none to something it powers) shows
+  // the player a network that is not the real one.
+  const mismatched: number[] = [];
+  for (let id = 1; id < 256; id++) {
+    const onNetwork = isSource(id) || demandOf(id) !== null || id === Block.Booster;
+    if (onNetwork !== NOVOLT_BLOCKS.has(id)) mismatched.push(id);
+  }
+  check('conduit joins match the NoVolt network exactly', mismatched.length === 0,
+    mismatched.map((id) => Block[id]).join(', '));
+
+  const alone = shapeOf(Block.Cable, () => Block.Air);
+  check('a lone conduit is just its hub', alone.length === 1 && alone[0].x1 < 1);
+  const toGenerator = shapeOf(Block.Cable, (dx, dy, dz) =>
+    dx === 1 && dy === 0 && dz === 0 ? Block.Generator : Block.Air);
+  check('a conduit reaches toward a generator beside it',
+    toGenerator.length === 2 && toGenerator.some((b) => b.x1 === 1));
+  const inLine = shapeOf(Block.Cable, (dx, dy, dz) =>
+    dy === 0 && dz === 0 && dx !== 0 ? Block.Cable : Block.Air);
+  check('a conduit in a run reaches both ways', inLine.length === 3 &&
+    inLine.some((b) => b.x0 === 0) && inLine.some((b) => b.x1 === 1));
+  const toStone = shapeOf(Block.Cable, (dx, dy, dz) =>
+    dx === 1 && dy === 0 && dz === 0 ? Block.Stone : Block.Air);
+  check('...but not toward a block that is not on the network', toStone.length === 1);
 }
 
 // --- the shape data itself ----------------------------------------------
@@ -41,8 +70,11 @@ check('every conveyor direction has the same shape',
     .every((b) => shapeOf(b)[0].y1 === CONVEYOR_HEIGHT));
 
 check('a cable is inset on x and z', shapeOf(Block.Cable)[0].x0 === CABLE_INSET);
-check('a cable runs the full height',
-  shapeOf(Block.Cable)[0].y0 === 0 && shapeOf(Block.Cable)[0].y1 === 1);
+// A cable is a hub that reaches toward what it joins, so a vertical run
+// fills the full height of its cell and a lone one does not.
+const vertical = shapeOf(Block.Cable, (dx, dy, dz) => (dx === 0 && dz === 0 && dy !== 0 ? Block.Cable : Block.Air));
+check('a cable in a vertical run fills the full height',
+  vertical.some((b) => b.y0 === 0) && vertical.some((b) => b.y1 === 1));
 
 check('a sorter is two boxes: belt plus housing', shapeOf(Block.Sorter).length === 2);
 // The housing is a gantry over the belt, not a box sitting on it. Cargo rests

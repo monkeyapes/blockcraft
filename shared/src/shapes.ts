@@ -46,6 +46,18 @@ export const TUBE_INSET = 3 / 16;
  */
 export const GANTRY_BASE = 7 / 16;
 
+/**
+ * Blocks on a NoVolt network besides conduits: sources, storage and every
+ * machine that draws or relays power. Mirrors shared/src/novolt.ts, which
+ * shapes.ts cannot import (novolt imports the block registry this file sits
+ * beside); tests/shapes.ts checks the two lists agree.
+ */
+export const NOVOLT_BLOCKS: ReadonlySet<number> = new Set<number>([
+  Block.Generator, Block.SolarPanel, Block.WaterWheel, Block.Battery, Block.Booster,
+  Block.Miner, Block.Crusher, Block.Elevator, Block.StoneGenerator, Block.ElectricFurnace,
+  Block.Sawmill, Block.Compressor, Block.Quarry, Block.Incinerator, Block.Furnace, Block.Collector,
+]);
+
 const SHAPES: Partial<Record<Block, Box[]>> = {
   // Belts: a low slab you walk across.
   [Block.Conveyor]: slab(CONVEYOR_HEIGHT),
@@ -63,7 +75,6 @@ const SHAPES: Partial<Record<Block, Box[]>> = {
   ],
 
   // Conduit: a thin run. Walkable past rather than through.
-  [Block.Cable]: post(CABLE_INSET),
 
   // A collector sits low and wide, like a hopper mouth.
   [Block.Collector]: slab(10 / 16),
@@ -135,6 +146,30 @@ function register(id: number, entry: ShapeEntry, from: string): void {
 }
 
 for (const [id, boxes] of Object.entries(SHAPES)) register(Number(id), { visual: boxes }, 'shapes.ts');
+
+/**
+ * A conduit: a hub in the middle of the cell with an arm toward every
+ * neighbour it joins -- another conduit, or any NoVolt source or machine.
+ *
+ * It used to be a bare vertical post whatever was around it, so a run of
+ * cables never looked connected, and neither did a cable beside a
+ * generator; players read that as the power not flowing. Now the picture
+ * shows exactly what the network solver sees.
+ */
+function conduitShape(around: Around): Box[] {
+  const lo = CABLE_INSET;
+  const hi = 1 - CABLE_INSET;
+  const boxes: Box[] = [{ x0: lo, y0: lo, z0: lo, x1: hi, y1: hi, z1: hi }];
+  const joins = (id: number): boolean => id === Block.Cable || NOVOLT_BLOCKS.has(id);
+  if (joins(around(1, 0, 0))) boxes.push({ x0: hi, y0: lo, z0: lo, x1: 1, y1: hi, z1: hi });
+  if (joins(around(-1, 0, 0))) boxes.push({ x0: 0, y0: lo, z0: lo, x1: lo, y1: hi, z1: hi });
+  if (joins(around(0, 0, 1))) boxes.push({ x0: lo, y0: lo, z0: hi, x1: hi, y1: hi, z1: 1 });
+  if (joins(around(0, 0, -1))) boxes.push({ x0: lo, y0: lo, z0: 0, x1: hi, y1: hi, z1: lo });
+  if (joins(around(0, 1, 0))) boxes.push({ x0: lo, y0: hi, z0: lo, x1: hi, y1: 1, z1: hi });
+  if (joins(around(0, -1, 0))) boxes.push({ x0: lo, y0: 0, z0: lo, x1: hi, y1: lo, z1: hi });
+  return boxes;
+}
+register(Block.Cable, { visual: conduitShape }, 'shapes.ts');
 for (const pack of PACKS) {
   for (const [ids, entry] of pack.shapes ?? []) {
     for (const id of Array.isArray(ids) ? ids : [ids]) register(id, entry, `the ${pack.name} pack`);

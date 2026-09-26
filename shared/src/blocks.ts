@@ -119,9 +119,12 @@ def(Block.DiamondOre, 'Diamond Ore', 'diamond_ore', { hardness: 5 });
 def(Block.IronBlock, 'Block of Iron', 'iron_block', { hardness: 5 });
 def(Block.CraftingTable, 'Crafting Table', ['crafting_top', 'planks', 'crafting_side'], { hardness: 2 });
 def(Block.Furnace, 'Furnace', ['furnace_top', 'furnace_top', 'furnace_front'], { hardness: 3 });
-def(Block.Conveyor, 'Conveyor Belt', ['conveyor', 'iron_block', 'iron_block'], { hardness: 1 });
-def(Block.Sorter, 'Item Sorter', ['sorter', 'iron_block', 'iron_block'], { hardness: 1 });
-def(Block.Cable, 'NoVolt Conduit', 'cable', { hardness: 1 });
+// Every block below with a partial shape (shared/src/shapes.ts) is opaque:false.
+// Marked opaque, the lighting treated its cell as solid rock holding no light,
+// so the ground beside a cable went black, and it hid its neighbours' faces.
+def(Block.Conveyor, 'Conveyor Belt', ['conveyor', 'iron_block', 'iron_block'], { hardness: 1, opaque: false });
+def(Block.Sorter, 'Item Sorter', ['sorter', 'iron_block', 'iron_block'], { hardness: 1, opaque: false });
+def(Block.Cable, 'NoVolt Conduit', 'cable', { hardness: 1, opaque: false });
 
 // Machines. Conveyors drop the plain item so the four facings never show up
 // separately in an inventory.
@@ -130,7 +133,7 @@ for (const [id, tex] of [
   [Block.ConveyorSouth, 'conveyor_s'], [Block.ConveyorWest, 'conveyor_w'],
 ] as const) {
   def(id, 'Conveyor Belt', [tex, 'iron_block', 'iron_block'],
-    { hardness: 1, drop: Block.Conveyor });
+    { hardness: 1, drop: Block.Conveyor, opaque: false });
 }
 // Opaque false: the building pack gives the chest an inset lidded model, and
 // an opaque partial block would cull its neighbours' faces into holes.
@@ -146,19 +149,19 @@ def(Block.Bed, 'Bed', ['bed_top', 'planks', 'bed_side'], {
   opaque: false, translucent: true, hardness: 0.4,
 });
 def(Block.Collector, 'Collector', ['collector_top', 'iron_block', 'collector_side'],
-  { hardness: 2 });
+  { hardness: 2, opaque: false });
 def(Block.Miner, 'Miner', ['miner_top', 'iron_block', 'miner_side'], { hardness: 3 });
 def(Block.Generator, 'Generator', ['generator_top', 'iron_block', 'generator_side'],
   { hardness: 3 });
 def(Block.Crusher, 'Crusher', ['crusher_top', 'iron_block', 'crusher_side'], { hardness: 3 });
 def(Block.SolarPanel, 'Solar Panel', ['solar_top', 'iron_block', 'solar_side'],
-  { hardness: 2 });
+  { hardness: 2, opaque: false });
 def(Block.Battery, 'Battery', ['battery_top', 'iron_block', 'battery_side'],
   { hardness: 2 });
 def(Block.Elevator, 'Item Elevator', ['elevator_top', 'iron_block', 'elevator_side'],
   { solid: false, opaque: false, translucent: true, hardness: 2 });
 def(Block.Booster, 'NoVolt Booster', ['booster_top', 'iron_block', 'booster_side'],
-  { hardness: 2, light: 4 });
+  { hardness: 2, light: 4, opaque: false });
 def(Block.StoneGenerator, 'Stone Generator',
   ['stonegen_top', 'iron_block', 'stonegen_side'], { hardness: 3 });
 def(Block.ElectricFurnace, 'Electric Furnace',

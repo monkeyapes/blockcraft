@@ -117,9 +117,9 @@ check('pack recipes are in the crafting list',
     isLoaded: () => true,
   } as any;
   const p = new Player();
-  // Eye at y = 50.1 + 1.62 would miss; put the eye exactly at the cell's
-  // lower quarter, off to the side of the post, looking along +x.
-  p.x = 2.5; p.y = 50.1 - 1.62; p.z = 0.1; p.yaw = 0; p.pitch = 0;
+  // The eye at the height of the conduit's hub (5/16..11/16 of the cell),
+  // off to the side of it, looking along +x.
+  p.x = 2.5; p.y = 50.5 - 1.62; p.z = 0.1; p.yaw = 0; p.pitch = 0;
   const hit = p.raycast(world, 10);
   check('a ray beside a thin post passes through its cell', hit?.id === Block.Stone,
     JSON.stringify(hit));

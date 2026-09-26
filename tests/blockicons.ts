@@ -148,10 +148,13 @@ const se = extent(stone);
   check('Solar Panel (a 2/16 slab) is a thin plate', sideHeight(panel) < stoneSide * 0.3,
     `side ${sideHeight(panel)}px vs a block's ${stoneSide}px`);
 
-  const cablePx = renderBlockIcon(Block.Cable, tiles);
+  const cablePx = renderBlockIcon(Block.Chain, tiles);
   const cable = extent(cablePx);
-  check('Cable (a thin post) is much narrower than a block', cable.w < se.w * 0.5, `${cable.w}px vs ${se.w}px`);
-  check('...but its sides are as tall as a full block\'s', Math.abs(sideHeight(cablePx) - stoneSide) <= 3,
+  check('Chain (a thin post) is much narrower than a block', cable.w < se.w * 0.5, `${cable.w}px vs ${se.w}px`);
+  // A post this thin shows its top face in the column measured, so its side
+  // can read taller than a block's -- never shorter, which is what a
+  // squashed post would look like.
+  check('...but its sides are at least as tall as a full block\'s', sideHeight(cablePx) >= stoneSide - 3,
     `${sideHeight(cablePx)}px vs ${stoneSide}px`);
 
   const sorter = renderBlockIcon(Block.Sorter, tiles);

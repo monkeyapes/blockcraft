@@ -364,11 +364,21 @@ async function start(
     chunk: (msg) => {
       if (msg.dim !== dimension) return;
       world?.applyEdits(msg.cx, msg.cz, msg.edits);
+      // Machines were only ever registered when placed, so every generator,
+      // panel and machine already in a world sat dead after a reload -- no
+      // NoVolt, nothing running. Edits are the only way a machine gets into
+      // a chunk, so registering from them catches every one.
+      for (const [index, block] of msg.edits) {
+        if (!isMachine(block)) continue;
+        machines.register(msg.cx * 16 + (index & 15), index >> 8, msg.cz * 16 + ((index >> 4) & 15));
+      }
     },
     set: (msg) => {
       if (msg.dim !== dimension || msg.by === net.selfId) return;
       world?.setBlock(msg.x, msg.y, msg.z, msg.b);
       noteBlockChanged(msg.x, msg.y, msg.z);
+      // Another player built a machine: run it here too.
+      if (isMachine(msg.b)) machines.register(msg.x, msg.y, msg.z);
     },
     reject: (msg) => {
       // Server said no: roll the optimistic edit back to its truth.
