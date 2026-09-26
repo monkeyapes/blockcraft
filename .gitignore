@@ -31,3 +31,7 @@ host/dist/
 # Renders from tests/diagnostics, made while looking at art
 .scratch/
 *.png.tmp
+
+# Parallel build worktrees and their progress snapshots
+.claude/worktrees/
+.claude/backups/

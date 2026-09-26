@@ -167,7 +167,8 @@ const run = (m: MachineWorld, w: ClientWorld, s: number, dt = 1/30) => {
   const { Player } = await import('../client/src/player.js');
   check('a ladder is not solid', !isSolid(Block.Ladder));
   check('a ladder does not hide the wall behind it', !isOpaque(Block.Ladder));
-  check('a bed is not solid either', !isSolid(Block.Bed));
+  // A bed is a low solid frame now (building pack), not a cell you walk through.
+  check('a bed is solid, like the low frame it is drawn as', isSolid(Block.Bed));
 
   // A shaft of ladders: holding jump must gain height, and letting go must
   // hold position rather than dropping you.

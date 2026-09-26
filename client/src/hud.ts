@@ -3,6 +3,7 @@
 import { HOTBAR_SIZE, type Inventory } from '@shared/inventory.js';
 import { itemDef } from '@shared/items.js';
 import type { Atlas } from './gfx/atlas.js';
+import { itemIconURL } from './gfx/blockicon.js';
 import { MAX_FOOD, MAX_HEALTH } from './survival.js';
 
 export class Hud {
@@ -64,7 +65,7 @@ export class Hud {
         return;
       }
       const def = itemDef(stack.id);
-      el.style.backgroundImage = `url(${this.atlas.iconURL(def.texture)})`;
+      el.style.backgroundImage = `url(${itemIconURL(this.atlas, stack.id)})`;
       el.title = def.name;
       count.textContent = stack.count > 1 ? String(stack.count) : '';
     });
