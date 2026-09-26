@@ -319,7 +319,7 @@ mod tests {
 
     fn setup(radius: i32) -> (Streamer, JobPool) {
         let table = Arc::new(BlockTable::load(None).unwrap());
-        let pool = JobPool::new(3, 7, table.clone());
+        let pool = JobPool::new(3, 7, crate::jobs::Terrain::Worldgen, table.clone());
         (Streamer::new(table, radius), pool)
     }
 

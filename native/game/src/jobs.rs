@@ -22,6 +22,26 @@ use crate::content::BlockTable;
 use crate::mesher::{mesh_section, Neighbourhood, Scratch, SectionMesh};
 use crate::world::{Chunk, ChunkPos};
 
+/// Where chunk data comes from.
+#[derive(Clone, Copy, Debug)]
+pub enum Terrain {
+    /// The real generator, `worldgen`.
+    Worldgen,
+    /// The busy synthetic world for measuring the engine (stress.rs).
+    Stress(crate::stress::Palette),
+}
+
+impl Terrain {
+    pub fn generate(&self, seed: i32, pos: ChunkPos) -> Vec<u8> {
+        match self {
+            Terrain::Worldgen => {
+                worldgen::generate_chunk(seed, worldgen::Dimension::Overworld, pos.0, pos.1)
+            }
+            Terrain::Stress(palette) => crate::stress::generate(seed, pos.0, pos.1, palette),
+        }
+    }
+}
+
 pub enum Job {
     Generate {
         pos: ChunkPos,
@@ -112,7 +132,7 @@ pub struct JobPool {
 }
 
 impl JobPool {
-    pub fn new(threads: usize, seed: i32, table: Arc<BlockTable>) -> Self {
+    pub fn new(threads: usize, seed: i32, terrain: Terrain, table: Arc<BlockTable>) -> Self {
         let queue = Arc::new(Queue {
             state: Mutex::new(State {
                 jobs: Vec::new(),
@@ -129,7 +149,7 @@ impl JobPool {
                 let table = table.clone();
                 std::thread::Builder::new()
                     .name(format!("worker-{i}"))
-                    .spawn(move || worker(&queue, &tx, seed, &table))
+                    .spawn(move || worker(&queue, &tx, seed, terrain, &table))
                     .expect("spawn worker thread")
             })
             .collect();
@@ -184,14 +204,13 @@ impl Drop for JobPool {
     }
 }
 
-fn worker(queue: &Queue, tx: &Sender<Done>, seed: i32, table: &BlockTable) {
+fn worker(queue: &Queue, tx: &Sender<Done>, seed: i32, terrain: Terrain, table: &BlockTable) {
     let mut scratch = Scratch::default();
     while let Some(job) = queue.pop() {
         let start = Instant::now();
         let done = match job {
             Job::Generate { pos } => {
-                let blocks =
-                    worldgen::generate_chunk(seed, worldgen::Dimension::Overworld, pos.0, pos.1);
+                let blocks = terrain.generate(seed, pos);
                 Done::Generated {
                     pos,
                     chunk: Chunk::new(blocks, table),
@@ -225,7 +244,7 @@ mod tests {
     #[test]
     fn generates_nearest_first_and_returns_everything() {
         let table = Arc::new(BlockTable::load(None).unwrap());
-        let pool = JobPool::new(1, 1, table);
+        let pool = JobPool::new(1, 1, Terrain::Worldgen, table);
         // Queue far chunks first; with one worker, results come back in
         // priority order after whichever job the worker had already begun.
         pool.set_center((0, 0));

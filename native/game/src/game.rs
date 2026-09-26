@@ -12,7 +12,7 @@ use worldgen::{CHUNK_X, WORLD_Y};
 
 use crate::content::BlockTable;
 use crate::hud::HOTBAR_SIZE;
-use crate::jobs::JobPool;
+use crate::jobs::{JobPool, Terrain};
 use crate::player::{Input, Player, RaycastHit, REACH};
 use crate::streaming::{Event, Streamer};
 use crate::world::{chunk_of, surface_y, Voxels};
@@ -21,8 +21,9 @@ use crate::world::{chunk_of, surface_y, Voxels};
 pub const SKY: [f32; 3] = [0.55, 0.72, 0.93];
 /// Floor brightness, so a cave is gloomy rather than black.
 pub const AMBIENT: f32 = 0.06;
-/// Fog is full strength at this fraction of the far plane (dimension.ts).
-const FOG_FAR: f32 = 0.95;
+/// Fog starts at this fraction of the distance where it is full strength
+/// (renderer.ts).
+const FOG_START: f32 = 0.58;
 /// Vertical field of view in degrees, the web game's default.
 pub const FOV: f32 = 72.0;
 /// Degrees of turn per raw mouse count: the web game's default setting.
@@ -72,17 +73,23 @@ pub struct View {
 }
 
 impl Game {
-    pub fn new(table: Arc<BlockTable>, seed: i32, distance: i32, threads: usize) -> Self {
+    pub fn new(
+        table: Arc<BlockTable>,
+        terrain: Terrain,
+        seed: i32,
+        distance: i32,
+        threads: usize,
+    ) -> Self {
         // Spawn on the surface at 0,0: generate that one chunk here, which
         // takes a millisecond, rather than wait for the pool to reach it.
-        let spawn = worldgen::generate_chunk(seed, worldgen::Dimension::Overworld, 0, 0);
+        let spawn = terrain.generate(seed, (0, 0));
         let y = surface_y(&spawn, &table, 0, 0).min(WORLD_Y as i32 - 2);
         let mut hotbar = [0u8; HOTBAR_SIZE];
         for (slot, name) in hotbar.iter_mut().zip(STARTER) {
             *slot = table.id_by_name(name).unwrap_or(0);
         }
         Game {
-            pool: JobPool::new(threads, seed, table.clone()),
+            pool: JobPool::new(threads, seed, terrain, table.clone()),
             streamer: Streamer::new(table.clone(), distance),
             table,
             player: Player::new(Vec3::new(0.5, y as f32, 0.5)),
@@ -212,13 +219,76 @@ impl Game {
     /// Camera matrices and fog for a framebuffer of this aspect ratio.
     pub fn view(&self, aspect: f32) -> View {
         let far = (self.streamer.radius * CHUNK_X as i32 + 48) as f32;
+        // Fog is solid by the edge of the loaded area, so chunks streaming in
+        // at the rim fade up out of the sky instead of popping into view.
+        // (The web game fogs a little further out, at 95% of its far plane,
+        // and shows its rim; the edge here is the nearest unloaded chunk.)
+        let edge = (self.streamer.radius * CHUNK_X as i32) as f32 - 8.0;
         let eye = self.player.eye();
         let proj = glam::camera::rh::proj::directx::perspective(FOV.to_radians(), aspect, 0.1, far);
         let view = glam::camera::rh::view::look_to_mat4(eye, self.player.forward(), Vec3::Y);
         View {
             view_proj: proj * view,
             eye,
-            fog: (far * FOG_FAR * 0.58, far * FOG_FAR),
+            fog: (edge * FOG_START, edge),
+        }
+    }
+
+    /// Builds a row of assorted blocks in front of the spawn, and a small
+    /// roofed shelter beside it: every kind of shape, both render passes,
+    /// and shade under a roof, in one view. For `--showcase` screenshots.
+    pub fn build_showcase(&mut self) {
+        let names = [
+            "Grass Block",
+            "Cobblestone",
+            "Planks",
+            "Log",
+            "Stone Bricks",
+            "Glass",
+            "Stone Slab",
+            "Plank Stairs",
+            "Torch",
+            "Water",
+            "Glass Pane",
+            "Fence",
+            "Lantern",
+            "Campfire",
+            "Chest",
+            "Poppy",
+            "Tall Grass",
+            "Snow Layer",
+            "Leaves",
+        ];
+        let ground = |g: &Game, x: i32, z: i32| {
+            (0..WORLD_Y as i32)
+                .rev()
+                .find(|&y| g.table.get(g.streamer.world.block(x, y, z)).solid)
+                .unwrap_or(0)
+        };
+        for (i, name) in names.iter().enumerate() {
+            let Some(id) = self.table.id_by_name(name) else {
+                continue;
+            };
+            let x = i as i32 - names.len() as i32 / 2;
+            let z = -6;
+            let y = ground(self, x, z) + 1;
+            self.streamer.set_block(x, y, z, id, &self.pool);
+        }
+        // The shelter: four posts and a flat roof over a patch of ground.
+        let bricks = self.table.id_by_name("Stone Bricks").unwrap_or(3);
+        let (x0, z0) = (-4, -12);
+        let y = ground(self, x0 + 2, z0 + 2) + 1;
+        for (dx, dz) in [(0, 0), (4, 0), (0, 4), (4, 4)] {
+            for dy in 0..3 {
+                self.streamer
+                    .set_block(x0 + dx, y + dy, z0 + dz, bricks, &self.pool);
+            }
+        }
+        for dz in 0..=4 {
+            for dx in 0..=4 {
+                self.streamer
+                    .set_block(x0 + dx, y + 3, z0 + dz, bricks, &self.pool);
+            }
         }
     }
 
@@ -248,7 +318,7 @@ mod tests {
 
     fn game() -> Game {
         let table = Arc::new(BlockTable::load(None).unwrap());
-        Game::new(table, 1, 2, 2)
+        Game::new(table, Terrain::Worldgen, 1, 2, 2)
     }
 
     fn settle(g: &mut Game) {

@@ -2,13 +2,14 @@
 //!
 //!     blockcraft-native [--seed N] [--distance N] [--size WxH] [--no-vsync]
 //!                       [--threads N] [--assets DIR] [--run-for SECONDS]
-//!                       [--screenshot PATH [--camera X,Y,Z,YAW,PITCH]]
-//!                       [--log PATH]
+//!                       [--screenshot PATH [--camera X,Y,Z,YAW,PITCH]
+//!                       [--showcase]] [--stress-world] [--log PATH]
 //!
 //! `--screenshot` renders one frame offscreen once the world around the spawn
 //! has loaded, writes it as a PNG and exits, logging load and frame timings on
 //! the way; it needs a GPU but no window, which makes it the way to check the
-//! renderer from a script.
+//! renderer from a script. `--stress-world` swaps the generator for a busy
+//! synthetic one (stress.rs) to measure the engine under load.
 
 // A game has no console window. Debug builds keep one for the log.
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
@@ -22,6 +23,7 @@ mod mesher;
 mod player;
 mod render;
 mod streaming;
+mod stress;
 mod world;
 
 use std::io::Write;
@@ -67,6 +69,20 @@ pub struct Options {
     pub camera: Option<[f32; 5]>,
     pub run_for: Option<f32>,
     pub log: Option<PathBuf>,
+    /// Play the synthetic benchmark world instead of the real generator.
+    pub stress_world: bool,
+    /// Build a row of sample blocks at the spawn (screenshots).
+    pub showcase: bool,
+}
+
+impl Options {
+    pub fn terrain(&self, table: &BlockTable) -> jobs::Terrain {
+        if self.stress_world {
+            jobs::Terrain::Stress(stress::Palette::new(table))
+        } else {
+            jobs::Terrain::Worldgen
+        }
+    }
 }
 
 /// The seed a world gets when none is given, so two runs match.
@@ -89,6 +105,8 @@ impl Default for Options {
             camera: None,
             run_for: None,
             log: None,
+            stress_world: false,
+            showcase: false,
         }
     }
 }
@@ -115,6 +133,8 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Options, String> {
                 o.height = num("--size", h.into())? as u32;
             }
             "--no-vsync" => o.vsync = false,
+            "--stress-world" => o.stress_world = true,
+            "--showcase" => o.showcase = true,
             "--assets" => o.assets = Some(value("--assets")?.into()),
             "--screenshot" => o.screenshot = Some(value("--screenshot")?.into()),
             "--camera" => {
@@ -135,7 +155,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Options, String> {
                 return Err(
                     "usage: blockcraft-native [--seed N] [--distance N] [--size WxH] \
                     [--no-vsync] [--threads N] [--assets DIR] [--run-for SECONDS] \
-                    [--screenshot PATH [--camera X,Y,Z,YAW,PITCH]] [--log PATH]"
+                    [--screenshot PATH [--camera X,Y,Z,YAW,PITCH] [--showcase]] [--stress-world] [--log PATH]"
                         .into(),
                 )
             }
@@ -176,7 +196,13 @@ fn screenshot(
         &table,
         atlas,
     )?;
-    let mut game = Game::new(table.clone(), o.seed, o.distance, o.threads);
+    let mut game = Game::new(
+        table.clone(),
+        o.terrain(&table),
+        o.seed,
+        o.distance,
+        o.threads,
+    );
     log!(
         "seed {}, render distance {}, {} worker threads",
         o.seed,
@@ -213,6 +239,20 @@ fn screenshot(
         per(s.mesh_time, s.meshed),
         s.quads
     );
+
+    if o.showcase {
+        game.build_showcase();
+        let edits = Instant::now();
+        while !game.streamer.settled() {
+            renderer.apply(game.tick(0.0));
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        renderer.apply(game.tick(0.0));
+        log!(
+            "showcase built and re-meshed in {:.1} ms",
+            edits.elapsed().as_secs_f64() * 1000.0
+        );
+    }
 
     if let Some([x, y, z, yaw, pitch]) = o.camera {
         game.player.pos = glam::Vec3::new(x, y, z);

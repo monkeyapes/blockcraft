@@ -169,7 +169,13 @@ struct App {
 pub fn run(opts: Options, table: Arc<BlockTable>, atlas: Vec<u8>) -> Result<(), String> {
     let event_loop = EventLoop::new().map_err(|e| format!("event loop: {e}"))?;
     event_loop.set_control_flow(ControlFlow::Poll);
-    let game = Game::new(table.clone(), opts.seed, opts.distance, opts.threads);
+    let game = Game::new(
+        table.clone(),
+        opts.terrain(&table),
+        opts.seed,
+        opts.distance,
+        opts.threads,
+    );
     let mut app = App {
         opts,
         table,
