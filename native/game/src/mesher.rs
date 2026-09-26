@@ -359,7 +359,7 @@ pub fn sky_light(s: &mut Scratch) {
         let x = i % R;
         let z = (i / R) % R;
         let y = i / R2;
-        let mut visit = |j: usize, s: &mut Scratch| {
+        let visit = |j: usize, s: &mut Scratch| {
             if !s.opaque[j] && s.sky[j] < next {
                 s.sky[j] = next;
                 s.queue.push(j as u16);
