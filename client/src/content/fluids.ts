@@ -53,6 +53,14 @@ export const UPDATE_BUDGET = 384;
 export const EDIT_BUDGET = 32;
 /** Cells waiting at once, at most. Past this a flood simply stops spreading. */
 export const MAX_QUEUED = 16384;
+/**
+ * How far from the player, horizontally, fluids keep moving. Further off a
+ * due cell is set aside until the player comes back: the server takes flow
+ * edits only so far from the player who sends them (FLUID_REACH in
+ * server/src/index.ts, comfortably more than this), and a stream nobody is
+ * near is not worth a frame's budget.
+ */
+export const FLOW_RANGE = 80;
 
 const HORIZONTAL: ReadonlyArray<readonly [number, number]> = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 const AROUND: ReadonlyArray<readonly [number, number, number]> = [
@@ -108,6 +116,9 @@ class Queue {
 export class FluidFlow {
   private readonly queues = new Map<FluidKind, Queue>(FLUIDS.map((f) => [f, new Queue()]));
   private readonly queued = new Set<number>();
+  /** Cells that came due out of range, waiting for the player to return. */
+  private readonly parked = new Map<number, readonly [number, number, number]>();
+  private sinceUnpark = 0;
   private clock = 0;
   private edits = 0;
   private soundThisFrame = false;
@@ -119,6 +130,11 @@ export class FluidFlow {
   /** Cells waiting to be looked at. */
   get pending(): number {
     return this.queued.size;
+  }
+
+  /** Cells set aside because the player is too far away. */
+  get parkedCount(): number {
+    return this.parked.size;
   }
 
   /**
@@ -141,6 +157,11 @@ export class FluidFlow {
     this.clock += dt;
     this.edits = 0;
     this.soundThisFrame = false;
+    this.sinceUnpark += dt;
+    if (this.sinceUnpark >= 1) {
+      this.sinceUnpark = 0;
+      this.unpark(ctx);
+    }
     let updates = 0;
     // Lava first: it is rare and slow, and a water flood using up the
     // budget should not leave a lava fall hanging.
@@ -150,8 +171,13 @@ export class FluidFlow {
         const next = queue.peek();
         if (!next || next.at > this.clock) break;
         queue.shift();
-        this.queued.delete(cellKey(next.x, next.y, next.z));
+        const key = cellKey(next.x, next.y, next.z);
+        this.queued.delete(key);
         updates++;
+        if (!inRange(ctx, next.x, next.z)) {
+          if (this.parked.size < MAX_QUEUED) this.parked.set(key, [next.x, next.y, next.z]);
+          continue;
+        }
         this.tick(ctx, next.x, next.y, next.z);
       }
     }
@@ -162,10 +188,21 @@ export class FluidFlow {
   reset(): void {
     for (const q of this.queues.values()) q.clear();
     this.queued.clear();
+    this.parked.clear();
+    this.sinceUnpark = 0;
     this.clock = 0;
     this.peakQueued = 0;
     this.last.updates = 0;
     this.last.edits = 0;
+  }
+
+  /** Queues again whatever was set aside that the player is now near. */
+  private unpark(ctx: GameContext): void {
+    for (const [key, [x, y, z]] of this.parked) {
+      if (!inRange(ctx, x, z)) continue;
+      this.parked.delete(key);
+      this.schedule(ctx, x, y, z);
+    }
   }
 
   // --- one cell ------------------------------------------------------------------------
@@ -362,6 +399,11 @@ export class FluidFlow {
     return w.isLoaded(x, z) && w.isLoaded(x + 1, z) && w.isLoaded(x - 1, z) &&
       w.isLoaded(x, z + 1) && w.isLoaded(x, z - 1);
   }
+}
+
+function inRange(ctx: GameContext, x: number, z: number): boolean {
+  const p = ctx.player;
+  return (x + 0.5 - p.x) ** 2 + (z + 0.5 - p.z) ** 2 <= FLOW_RANGE * FLOW_RANGE;
 }
 
 /** Close enough to the player for a hiss to be worth playing. */

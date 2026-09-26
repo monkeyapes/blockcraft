@@ -24,7 +24,7 @@ import {
 } from '../client/src/content/api.js';
 import '../client/src/content/index.js';
 import { liquidInSight } from '../client/src/content/combat.js';
-import { EDIT_BUDGET, MAX_QUEUED, UPDATE_BUDGET, flow, fluidSystem } from '../client/src/content/fluids.js';
+import { EDIT_BUDGET, FLOW_RANGE, MAX_QUEUED, UPDATE_BUDGET, flow, fluidSystem } from '../client/src/content/fluids.js';
 import { MachineWorld } from '../client/src/machines.js';
 import { FLOATS_PER_VERTEX, meshSection } from '../client/src/mesher.js';
 import { Mob, MobWorld } from '../client/src/mobs.js';
@@ -467,11 +467,13 @@ const name = (id: number): string => blockDef(id).name + `#${id}`;
     // And as a save with edits in it would arrive: applied, not placed.
     world.applyEdits(ox >> 4, oz >> 4, []);
     const g = contextOver(world);
+    g.player.x = ox + 0.5; g.player.y = SEA_LEVEL + 1; g.player.z = oz + 0.5;
     let water = 0;
     for (let x = ox - 8; x < ox + 8; x++) for (let z = oz - 8; z < oz + 8; z++) if (isWater(g.getBlock(x, SEA_LEVEL, z))) water++;
     check('the chunk is ocean', water > 200, String(water));
     g.run(3);
-    check('an ocean loaded from the generator does not start flowing', flow.pending === 0 && g.edits.length === 0,
+    check('an ocean loaded from the generator does not start flowing',
+      flow.pending === 0 && flow.parkedCount === 0 && g.edits.length === 0,
       `${flow.pending} pending, ${g.edits.length} edits`);
 
     // Scooping one bucket out of the sea wakes only the water around it,
@@ -609,6 +611,30 @@ function stream(): Game {
   check('on dry ground an item falls to the floor instead', sunk.items[0].y < Y + 0.05, sunk.items[0].y.toFixed(2));
 }
 
+// --- the water wheel ------------------------------------------------------------------------------------
+
+{
+  // A wheel driving a miner down a short cable, with the wheel's water
+  // changed between runs.
+  const g = makeGame();
+  const w = g.world;
+  w.setBlock(20, Y, 20, Block.WaterWheel);
+  w.setBlock(21, Y, 20, Block.Cable);
+  w.setBlock(22, Y, 20, Block.Miner);
+  const powered = (water: number): boolean => {
+    w.setBlock(19, Y, 20, water);
+    const m = new MachineWorld();
+    m.register(20, Y, 20);
+    m.register(22, Y, 20);
+    for (let i = 0; i < 60; i++) m.update(1 / 60, w, { x: 1000, y: Y, z: 1000 }, () => 0);
+    return m.isPowered(22, Y, 20);
+  };
+  check('a dry water wheel does not turn', !powered(Block.Air));
+  check('still water turns it', powered(Block.Water));
+  check('and so does running water', powered(Block.WaterFlow5) && powered(Block.WaterFalling));
+  check('but not lava', !powered(Block.LavaFlow1));
+}
+
 // --- buckets ------------------------------------------------------------------------------------------------
 
 {
@@ -642,6 +668,22 @@ function stream(): Game {
   h.held = Item.WaterBucket;
   dispatchUse(useOn(h, 20, GROUND, 20, [0, 1, 0]));
   check('water poured into running lava makes cobblestone', h.getBlock(20, Y, 20) === Block.Cobblestone);
+}
+
+// --- far from the player ------------------------------------------------------------------------------
+
+{
+  const g = makeGame();
+  g.player.x = 8.5 + FLOW_RANGE + 20;
+  g.player.z = 8.5;
+  pour(g, 8, Y, 8, Block.Water);
+  g.run(2);
+  check('water poured out of range waits', g.getBlock(9, Y, 8) === Block.Air && flow.parkedCount > 0,
+    `${flow.parkedCount} parked`);
+  g.player.x = 8.5;
+  g.run(1.5);
+  check('and runs once the player is back', level(g, 9, Y, 8) === 1 && flow.parkedCount === 0,
+    `${name(g.getBlock(9, Y, 8))}, ${flow.parkedCount} parked`);
 }
 
 // --- multiplayer ------------------------------------------------------------------------------------------

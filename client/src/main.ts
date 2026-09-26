@@ -375,8 +375,10 @@ async function start(
         const z = msg.cz * 16 + ((index >> 4) & 15);
         // Running water saved mid-flow picks up where it left off, rather
         // than standing frozen until something beside it changes. Still
-        // water is left alone: a settled pond has nothing to do.
-        if (isFlowing(block)) noteBlockChanged(x, y, z);
+        // water is left alone: a settled pond has nothing to do. Only in a
+        // world of our own: on a server, water still running is some other
+        // player's, and their client is the one moving it.
+        if (!multiplayer && isFlowing(block)) noteBlockChanged(x, y, z);
         if (!isMachine(block)) continue;
         machines.register(x, y, z);
       }
