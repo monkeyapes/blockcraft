@@ -510,7 +510,8 @@ pub fn mesh_section(
                                     sky += s.sky[i2] as u32;
                                     count += 1;
                                 }
-                                if !oc && !(o1 && o2) {
+                                // The diagonal only counts if light can reach it round a side.
+                                if !(oc || o1 && o2) {
                                     sky += s.sky[ic] as u32;
                                     count += 1;
                                 }
@@ -763,7 +764,7 @@ mod tests {
         });
         let ao: Vec<u8> = m.opaque.iter().map(|v| v.shade[1]).collect();
         assert!(ao.iter().any(|&a| a < 255));
-        assert!(ao.iter().any(|&a| a == 255));
+        assert!(ao.contains(&255));
     }
 
     #[test]

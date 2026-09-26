@@ -267,7 +267,12 @@ fn screenshot(
         // Looking a little down, so the ground and the horizon both show.
         game.player.pitch = -18.0;
     }
-    game.tick(0.0);
+    // A camera elsewhere moves the loaded area with it; let that finish too.
+    renderer.apply(game.tick(0.0));
+    while !game.streamer.settled() {
+        std::thread::sleep(Duration::from_millis(1));
+        renderer.apply(game.tick(0.0));
+    }
 
     let (w, h) = (o.width, o.height);
     let target = renderer.device.create_texture(&wgpu::TextureDescriptor {

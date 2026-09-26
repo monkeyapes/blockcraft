@@ -381,10 +381,7 @@ mod tests {
     fn embedded_content_parses_and_has_the_core_blocks() {
         let t = table();
         assert_eq!(t.atlas.grid * t.atlas.tile_px, t.atlas.size);
-        assert_eq!(
-            t.atlas.tiles.len() as u32 <= t.atlas.grid * t.atlas.grid,
-            true
-        );
+        assert!(t.atlas.tiles.len() as u32 <= t.atlas.grid * t.atlas.grid);
         let grass = t.get(1);
         assert_eq!(grass.name, "Grass Block");
         assert!(grass.solid && grass.opaque && grass.full_cube);
