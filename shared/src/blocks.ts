@@ -106,8 +106,10 @@ def(Block.Water, 'Water', 'water', {
   solid: false, opaque: false, translucent: true, liquid: true, breakable: false, hardness: 0,
 });
 def(Block.Glowstone, 'Glowstone', 'glowstone', { light: 15, hardness: 0.6 });
+// The inventory shows the flat torch sprite: the placed model is a thin stick
+// that would be a speck at icon size.
 def(Block.Torch, 'Torch', 'torch', {
-  solid: false, opaque: false, translucent: true, light: 14, hardness: 0,
+  solid: false, opaque: false, translucent: true, light: 14, hardness: 0, icon: 'torch',
 });
 def(Block.CoalOre, 'Coal Ore', 'coal_ore', { hardness: 3 });
 def(Block.IronOre, 'Iron Ore', 'iron_ore', { hardness: 4 });
@@ -129,14 +131,18 @@ for (const [id, tex] of [
   def(id, 'Conveyor Belt', [tex, 'iron_block', 'iron_block'],
     { hardness: 1, drop: Block.Conveyor });
 }
-def(Block.Chest, 'Chest', ['chest_top', 'chest_top', 'chest_side'], { hardness: 2 });
+// Opaque false: the building pack gives the chest an inset lidded model, and
+// an opaque partial block would cull its neighbours' faces into holes.
+def(Block.Chest, 'Chest', ['chest_top', 'chest_top', 'chest_side'], { hardness: 2, opaque: false });
 // A ladder is climbed, not stood on, so it must not be solid or opaque --
 // the climbing itself is handled in the player's vertical movement.
 def(Block.Ladder, 'Ladder', 'ladder', {
   solid: false, opaque: false, translucent: true, hardness: 0.4, climbable: true,
 });
+// Solid since the building pack gave it a real 9/16 frame: you can stand on a
+// bed, and walking through one looked like a rendering bug.
 def(Block.Bed, 'Bed', ['bed_top', 'planks', 'bed_side'], {
-  solid: false, opaque: false, translucent: true, hardness: 0.4,
+  opaque: false, translucent: true, hardness: 0.4,
 });
 def(Block.Collector, 'Collector', ['collector_top', 'iron_block', 'collector_side'],
   { hardness: 2 });

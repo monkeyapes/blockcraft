@@ -208,7 +208,12 @@ export enum Block {
   Campfire = 160,
   Terracotta = 161,
   Chain = 162,
-  // 163-169 free for the building pack.
+  BrickSlab = 163,
+  BrickStairsN = 164,
+  BrickStairsE = 165,
+  BrickStairsS = 166,
+  BrickStairsW = 167,
+  // 168-169 free for the building pack.
 
   // --- farming: 170-189 (shared/src/content/farming.ts) ---------------------
   Farmland = 170,
@@ -225,7 +230,8 @@ export enum Block {
   Potatoes1 = 181,
   Potatoes2 = 182,
   Potatoes3 = 183,
-  // 184-189 free for the farming pack.
+  FarmlandWet = 184,
+  // 185-189 free for the farming pack.
 
   // --- mechanics and combat: 190-199 (shared/src/content/combat.ts) ---------
   TNT = 190,

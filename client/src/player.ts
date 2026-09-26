@@ -145,6 +145,11 @@ export class Player {
   contactDamage = 0;
   private sneaking = false;
 
+  /** Whether the player was sneaking on the last update: sneaking spares farmland and bounce pads. */
+  get isSneaking(): boolean {
+    return this.sneaking;
+  }
+
   get eye(): Vec3 {
     return [this.x, this.y + EYE_HEIGHT, this.z];
   }
@@ -371,6 +376,12 @@ export class Player {
       const id = world.getBlock(bx, by, bz);
       if (!isSolid(id)) continue;
       for (const box of collisionBoxesAt(world, id, bx, by, bz)) {
+        // Only the part of the shape right at the leading edge: a stair's
+        // tall back half is the *next* step, not this one.
+        const along = axis === 0 ? px - bx : pz - bz;
+        if (along < (axis === 0 ? box.x0 : box.z0) || along > (axis === 0 ? box.x1 : box.z1)) continue;
+        const across = axis === 0 ? this.z - bz : this.x - bx;
+        if (across + probe <= (axis === 0 ? box.z0 : box.x0) || across - probe >= (axis === 0 ? box.z1 : box.x1)) continue;
         const boxTop = by + box.y1;
         if (boxTop <= this.y + SKIN) continue;
         if (top === null || boxTop > top) top = boxTop;

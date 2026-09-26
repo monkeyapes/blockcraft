@@ -768,32 +768,45 @@ ITEM_ART.wheat_seeds = (t) => {
 };
 
 /**
- * A sheaf: grain heads fanned at the top, a tie round the middle, the
- * stalks splaying out below. Heads and tie are outlined; the stalks go on
- * after, as single strands of straw, so the ring does not swallow them.
+ * One ear of wheat on its stalk, leaning up to the right.
+ *
+ * It used to be a sheaf of three heads, which read as three wheats in one
+ * slot -- the icon has to say "one of these". A single plump ear of paired
+ * kernels with its bristles (awns) at the tip, on a straw stalk with one
+ * leaf, is unmistakably one wheat. Ear, stalk and leaf are one outlined
+ * shape -- the stalk two units thick, since a one-unit diagonal breaks into
+ * separate dots at icon size -- and only the awns go on afterwards, as fine
+ * strands with a light rim.
  */
 ITEM_ART.wheat = (t) => {
   sprite(t, [
     '................',
-    '..h....h....h...',
-    '.hGg..hGg..hGg..',
-    '.GgG..GgG..GgG..',
-    '.hGg..hGg..hGg..',
-    '.GgG..GgG..GgG..',
-    '..Gg...Gg..Gg...',
     '................',
-    '................',
-    '.....TTTTT......',
+    '...........hK...',
+    '..........hKGg..',
+    '..........KGsK..',
+    '.........hKGKg..',
+    '.........KGsK...',
+    '........hKGKg...',
+    '........KGsK....',
+    '.......SgKg.....',
+    '......SSs.......',
+    '.....SSs.LL.....',
+    '....SSsLLl......',
+    '...SSs..........',
+    '..SSs...........',
+    '..Ss............',
   ], {
-    h: [250, 226, 140], G: [226, 180, 70], g: [184, 136, 40], T: [150, 110, 50],
-  }, 4);
+    h: [252, 232, 150], K: [226, 180, 70], G: [242, 208, 110], s: [196, 148, 50],
+    g: [176, 128, 38], S: [220, 186, 96], L: [170, 176, 80], l: [132, 140, 58],
+  }, 3);
   finish(t, [70, 46, 10]);
-  const straw: RGB = [212, 176, 84];
-  for (const [x0, y0, x1, y1] of [
-    [3, 7, 6, 9], [8, 7, 7, 9], [12, 7, 9, 9],
-    [6, 10, 2, 14], [7, 10, 7, 14], [8, 10, 12, 14],
-  ] as const) t.line(x0, y0, x1, y1, straw, 1);
-  rim(t, [70, 46, 10]);
+  // Awns: three bristles up and out from the tip of the ear.
+  const awn: RGB = [240, 212, 128];
+  for (const [x0, y0, x1, y1] of [[12, 2, 14, 0], [13, 3, 15, 1], [11, 2, 11, 0]] as const) {
+    t.line(x0, y0, x1, y1, awn, 1);
+  }
+  rim(t, [70, 46, 10], 0.5);
 };
 
 // A loaf: domed crust with three slashes scored across it.
