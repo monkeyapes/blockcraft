@@ -1,6 +1,6 @@
 [package]
 name = "blockcraft-host"
-version = "0.3.0"
+version = "0.4.0"
 description = "Blockcraft Server - host a game from your own machine"
 authors = ["Blockcraft"]
 edition = "2021"
