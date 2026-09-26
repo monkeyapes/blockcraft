@@ -209,7 +209,7 @@ mod tests {
         for i in -50..50 {
             let h = hash2(i * 7919, i * -31, i);
             assert!((0.0..1.0).contains(&h));
-            let h = hash3(i, i * 3, -i, i32::MAX - i);
+            let h = hash3(i, i * 3, -i, i32::MAX.wrapping_sub(i));
             assert!((0.0..1.0).contains(&h));
         }
     }

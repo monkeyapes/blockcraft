@@ -1155,6 +1155,10 @@ fn generate_end(seed: i32, cx: i32, cz: i32, data: &mut [u8]) {
 }
 
 /// Base terrain for one chunk. Player edits are layered on top by the caller.
+///
+/// The same bytes as the TypeScript `generateChunk(seed, dim, cx, cz)` for any
+/// chunk the game can address: chunk keys are 16-bit, so |cx|, |cz| < 32768,
+/// and block coordinates stay far inside i32.
 pub fn generate_chunk(seed: i32, dim: Dimension, cx: i32, cz: i32) -> Vec<u8> {
     let mut data = vec![0u8; CHUNK_VOLUME];
     match dim {
