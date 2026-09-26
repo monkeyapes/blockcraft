@@ -5,7 +5,7 @@ import { Dimension, WORLD_Y } from '../shared/src/constants.js';
 import { Item, attackDamage, cookedForm, foodValue, isFood, smeltResult } from '../shared/src/items.js';
 import { MobKind, mobDef, rollDrops, spawnableIn } from '../shared/src/mobs.js';
 import { findRecipe, type Grid } from '../shared/src/recipes.js';
-import { Mob, MobWorld } from '../client/src/mobs.js';
+import { DEATH_TIME, Mob, MobWorld } from '../client/src/mobs.js';
 import { buildMobMesh } from '../client/src/gfx/mobmesh.js';
 
 let failures = 0;
@@ -42,8 +42,15 @@ function sim(mob: Mob, world: any, player: any, seconds: number, rng = () => 0.5
 check('animals are passive', mobDef(MobKind.Pig).temper === 'passive' &&
   mobDef(MobKind.Cow).temper === 'passive' && mobDef(MobKind.Chicken).temper === 'passive');
 check('zombies are hostile', mobDef(MobKind.Zombie).temper === 'hostile');
-check('only animals spawn as passives in the overworld',
-  spawnableIn(Dimension.Overworld, 'passive').length === 4);
+{
+  // The farm animals, plus the wild ones the creatures pack added: rabbits
+  // in the meadows, bats in caves, fish in the water. Nothing hostile.
+  const passives = spawnableIn(Dimension.Overworld, 'passive').map((d) => d.kind).sort((a, b) => a - b);
+  const expected = [MobKind.Pig, MobKind.Cow, MobKind.Sheep, MobKind.Chicken,
+    MobKind.Bat, MobKind.Rabbit, MobKind.Fish].sort((a, b) => a - b);
+  check('only animals spawn as passives in the overworld',
+    passives.join() === expected.join(), passives.map((k) => mobDef(k).name).join(', '));
+}
 check('zombies do not spawn in the nether',
   !spawnableIn(Dimension.Nether, 'hostile').some((d) => d.kind === MobKind.Zombie));
 check('nothing peaceful lives in the nether',
@@ -218,9 +225,13 @@ check('smelting ore still works', smeltResult(Block.IronOre)?.id === Item.IronIn
       `y ${(minY - 40).toFixed(2)}..${(maxY - 40).toFixed(2)} for a ${def.height} tall mob`);
   }
 
+  // A corpse is drawn while it tips over and fades, then not at all.
   const dead = new Mob(MobKind.Pig, 0, 40, 0);
   dead.hurt(1000);
-  check('dead mobs are not drawn', buildMobMesh(stubAtlas, [dead]).indices.length === 0);
+  check('a fresh corpse is still drawn', buildMobMesh(stubAtlas, [dead]).indices.length > 0);
+  dead.deathTime = DEATH_TIME;
+  check('dead mobs are not drawn once the death animation ends',
+    buildMobMesh(stubAtlas, [dead]).indices.length === 0);
 }
 
 // --- the ending: blaze, enderman, dragon ------------------------------------
