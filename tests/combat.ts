@@ -820,15 +820,12 @@ const approx = (a: number, b: number, eps: number) => Math.abs(a - b) <= eps;
   check('sneaking onto it lands normally', !sneaking.bounced && sneaking.landed);
 
   // A fast landing -- a long drop, or a slow frame -- is sub-stepped by the
-  // player's physics, and the sub-steps after the bounce still carry the
+  // player's physics, and the sub-steps after the bounce used to carry the
   // frame's downward travel, land on the pad again and zero the rebound.
-  // That is player.ts's to fix (requested at merge); reported here rather
-  // than failed, so this suite measures the pack and flags the physics.
   for (const [height, fps] of [[10, 60], [3, 30]] as const) {
     const hard = drop(false, height, fps);
-    const ok = hard.bounced && hard.peak > height * 0.6;
-    console.log(`${ok ? 'PASS' : 'KNOWN'}  a ${height} block drop at ${fps} fps bounces too` +
-      `${ok ? '' : '  (player.ts sub-step bug, fix requested)'}`);
+    check(`a ${height} block drop at ${fps} fps bounces too`, hard.bounced && hard.peak > height * 0.6,
+      `back up ${hard.peak.toFixed(2)}`);
   }
 
   const spikes = blockDef(Block.IronSpikes);

@@ -929,6 +929,14 @@ async function start(
     toast: (text) => hud.toast(text),
     chat: (text) => hud.addChat(text, true),
     breakParticles: (x, y, z, id) => particles.spawnBreak(atlas, x, y, z, id),
+    countItem: (id) => inventory.countOf(id),
+    takeItem: (id, count) => {
+      if (survival.creative) return true;
+      if (inventory.countOf(id) < count) return false;
+      inventory.remove(id, count);
+      hud.refreshHotbar();
+      return true;
+    },
     swing: () => { swing = Math.max(swing, 0.001); },
     random: Math.random,
   };
