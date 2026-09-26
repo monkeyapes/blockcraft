@@ -614,14 +614,15 @@ function stream(): Game {
 {
   const g = stream();
   const p = g.player;
-  p.x = 3.5; p.y = Y + 2; p.z = 6.5;
-  // Looking down at the running water: nothing to scoop.
+  // Hovering over the stream, looking straight down into it: nothing to scoop.
+  p.x = 6.5; p.y = Y + 1.2; p.z = 8.5;
   g.held = Item.Bucket;
   lookAt(p, 6.5, Y + 0.5, 8.5);
+  check('a bucket looks straight through running water', liquidInSight(g) === null);
   dispatchUseAir(g, Item.Bucket);
-  check('a bucket will not fill from running water', g.held === Item.Bucket && isFlowing(g.getBlock(6, Y, 8)));
-  // At the spring it does.
-  lookAt(p, 2.5, Y + 0.5, 8.7);
+  check('and will not fill from it', g.held === Item.Bucket && isFlowing(g.getBlock(6, Y, 8)));
+  // Looking upstream along it, at the spring, it does.
+  lookAt(p, 2.5, Y + 0.5, 8.5);
   check('it sees the source through the stream', liquidInSight(g)?.id === Block.Water);
   dispatchUseAir(g, Item.Bucket);
   check('and fills from the source', g.held === Item.WaterBucket && g.getBlock(2, Y, 8) === Block.Air);

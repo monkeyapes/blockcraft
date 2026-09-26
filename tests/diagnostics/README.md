@@ -39,5 +39,11 @@ tile is not blank, not that a sword looks like a sword.
   `npx tsx tests/diagnostics/scene.ts --scene=layout.json --out=layout.png`
   (a JSON list of `[x, y, z, "BlockName"]`), or `--mobs=all`.
   Camera: `--yaw`, `--pitch`, `--scale`.
+- `fluid-scene.ts` -- lets water and lava run (a waterfall off a plateau, lava
+  meeting water) and writes what they left as a `--scene` file for `scene.ts`,
+  since a flow has no hand-written layout to draw.
+  `npx tsx tests/diagnostics/fluid-scene.ts --out=flow.json` then
+  `npx tsx tests/diagnostics/scene.ts --scene=flow.json --out=flow.png`
+  (`--xmin`/`--xmax` crop it, `--seconds` runs it longer)
 - `offscreen.ts` -- the library behind both: a Node-side atlas, a z-buffered
   rasteriser for the terrain vertex format, a PNG encoder and a bitmap font.
